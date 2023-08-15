@@ -10,7 +10,7 @@ export default function Document(props) {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <body>
+      <body data-theme="night">
         <Main />
         <NextScript />
       </body>
