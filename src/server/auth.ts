@@ -33,6 +33,30 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthOptions = {
+  callbacks: {
+    jwt({ token, user, session }) {
+      // console.log("jwt callback", token, user, session);
+      if (user) {
+        return {
+          ...token,
+          id: user.id,
+          username: user.username,
+        };
+      }
+      return token;
+    },
+    session({ session, token, user }) {
+      // console.log("session callback", session, token, user);
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.id,
+          username: token.username,
+        },
+      };
+    },
+  },
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60,
@@ -65,7 +89,7 @@ export const authOptions: NextAuthOptions = {
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) return null;
-        console.log(user);
+        // console.log(user);
 
         return user;
       },
@@ -80,28 +104,6 @@ export const authOptions: NextAuthOptions = {
      * @see https://next-auth.js.org/providers/github
      */
   ],
-  callbacks: {
-    jwt: ({ token, user }) => {
-      if (user) {
-        return {
-          ...token,
-          id: user.id,
-          username: user,
-        };
-      }
-
-      return token;
-    },
-    session: ({ session, user }) => {
-      return {
-        ...session,
-        user: {
-          ...session.user,
-          ...user,
-        },
-      };
-    },
-  },
   secret: env.NEXTAUTH_SECRET,
   pages: {
     signIn: "/login",
