@@ -10,7 +10,6 @@ import {
   type DefaultSession,
 } from "next-auth";
 import bcrypt from "bcryptjs";
-import DiscordProvider from "next-auth/providers/discord";
 import { env } from "@/env.mjs";
 import { prisma } from "@/server/db";
 import Credentials from "next-auth/providers/credentials";
@@ -22,14 +21,6 @@ import Credentials from "next-auth/providers/credentials";
  * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
  */
 declare module "next-auth" {
-  interface Session extends DefaultSession {
-    user: DefaultSession["user"] & {
-      id: string;
-      // ...other properties
-      // role: UserRole;
-    };
-  }
-
   // interface User {
   //   // ...other properties
   //   // role: UserRole;
@@ -42,15 +33,6 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthOptions = {
-  callbacks: {
-    session: ({ session, user }) => {
-      console.log({ session, user });
-      return {
-        ...session,
-        user,
-      };
-    },
-  },
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60,
@@ -83,6 +65,7 @@ export const authOptions: NextAuthOptions = {
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) return null;
+        console.log(user);
 
         return user;
       },
@@ -97,7 +80,28 @@ export const authOptions: NextAuthOptions = {
      * @see https://next-auth.js.org/providers/github
      */
   ],
+  callbacks: {
+    jwt: ({ token, user }) => {
+      if (user) {
+        return {
+          ...token,
+          id: user.id,
+          username: user,
+        };
+      }
 
+      return token;
+    },
+    session: ({ session, user }) => {
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          ...user,
+        },
+      };
+    },
+  },
   secret: env.NEXTAUTH_SECRET,
   pages: {
     signIn: "/login",
