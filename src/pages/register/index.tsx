@@ -4,6 +4,8 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { User } from "@prisma/client";
 import { signIn } from "next-auth/react";
+import { redirect } from "next/dist/server/api-utils";
+import Link from "next/link";
 import React, { type FormEvent } from "react";
 
 const Register = (props: unknown) => {
@@ -98,10 +100,16 @@ const Register = (props: unknown) => {
         <p className="text-red-500">{errors?.error as string}</p>
         <button
           type="submit"
-          className="rounded-full bg-primary py-3 text-primary-content focus:bg-primary-focus"
+          className="rounded-full bg-primary py-3 text-primary-content hover:bg-primary-focus"
         >
           Register
         </button>
+        <Link
+          href={"/login"}
+          className="rounded-full bg-primary py-3 text-center text-primary-content hover:bg-primary-focus"
+        >
+          Login
+        </Link>
       </form>
     </div>
   );
