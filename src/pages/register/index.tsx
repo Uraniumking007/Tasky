@@ -8,7 +8,7 @@ import { redirect } from "next/dist/server/api-utils";
 import Link from "next/link";
 import React, { type FormEvent } from "react";
 
-const Register = (props: unknown) => {
+const Register = () => {
   const [errors, setErrors] = React.useState();
 
   async function handleFormSubmit(e: FormEvent) {

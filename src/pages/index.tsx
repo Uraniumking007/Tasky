@@ -5,7 +5,7 @@ import Link from "next/link";
 import { api } from "@/utils/api";
 import Navbar from "@/components/Navbar";
 
-export default function Home(props) {
+export default function Home() {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
 
   return (

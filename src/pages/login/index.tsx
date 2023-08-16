@@ -2,7 +2,7 @@
 import { signIn } from "next-auth/react";
 import React, { type FormEvent } from "react";
 
-const Index = (props: never) => {
+const Index = () => {
   async function handleFormSubmit(e: FormEvent) {
     e.preventDefault();
 
