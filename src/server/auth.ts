@@ -10,20 +10,27 @@ import {
   type NextAuthOptions,
   type DefaultSession,
   type DefaultUser,
+  Session,
 } from "next-auth";
 import bcrypt from "bcryptjs";
 import { env } from "@/env.mjs";
 import { prisma } from "@/server/db";
 import Credentials from "next-auth/providers/credentials";
+import { JWT } from "next-auth/jwt";
+import { User } from "@prisma/client";
+import { AdapterUser } from "next-auth/adapters";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
-    user: {
-      id: string;
-      username: string;
-    };
+    user: User;
   }
   interface User extends DefaultUser {
+    username: string;
+  }
+}
+declare module "next-auth/adapters" {
+  interface AdapterUser extends User {
+    id: string;
     username: string;
   }
 }
@@ -41,7 +48,15 @@ export const authOptions: NextAuthOptions = {
       }
       return token;
     },
-    session({ session, token, user }) {
+    session({
+      session,
+      token,
+      user,
+    }: {
+      session: Session;
+      token: JWT;
+      user: AdapterUser;
+    }) {
       // console.log("session callback", session, token, user);
       return {
         ...session,
