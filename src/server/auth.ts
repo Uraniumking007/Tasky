@@ -9,6 +9,7 @@ import {
   getServerSession,
   type NextAuthOptions,
   type DefaultSession,
+  type DefaultUser,
 } from "next-auth";
 import bcrypt from "bcryptjs";
 import { env } from "@/env.mjs";
@@ -21,6 +22,9 @@ declare module "next-auth" {
       id: string;
       username: string;
     };
+  }
+  interface User extends DefaultUser {
+    username: string;
   }
 }
 
