@@ -1,3 +1,5 @@
+import { themeAtom } from "@/utils/atoms";
+import { useAtom } from "jotai";
 import { Html, Head, Main, NextScript } from "next/document";
 
 export default function Document(props) {
@@ -10,7 +12,7 @@ export default function Document(props) {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <body data-theme="night">
+      <body>
         <Main />
         <NextScript />
       </body>
