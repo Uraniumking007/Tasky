@@ -8,8 +8,8 @@ import { redirect } from "next/dist/server/api-utils";
 import Link from "next/link";
 import React, { type FormEvent } from "react";
 
-const Register = () => {
-  const [errors, setErrors] = React.useState();
+const Register = (props) => {
+  const [errors, setErrors] = React.useState<unknown>();
 
   async function handleFormSubmit(e: FormEvent) {
     e.preventDefault();
@@ -97,7 +97,7 @@ const Register = () => {
             className="input input-bordered w-full max-w-xs"
           />
         </div>
-        <p className="text-red-500">{errors?.error as string}</p>
+        <p className="text-red-500">{errors as string}</p>
         <button
           type="submit"
           className="rounded-full bg-primary py-3 text-primary-content hover:bg-primary-focus"
