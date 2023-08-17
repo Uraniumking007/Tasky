@@ -5,7 +5,7 @@ import Link from "next/link";
 import { api } from "@/utils/api";
 import Navbar from "@/components/Navbar";
 
-export default function Home() {
+export default function Home(props) {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
 
   return (
@@ -14,11 +14,11 @@ export default function Home() {
         <title>Tasky</title>
       </Head>
       {/* <Navbar /> */}
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-base-100 to-base-300">
         <AuthShowcase />
         <div className="flex flex-col items-center justify-center gap-4">
           <Link href="/tasks">
-            <p className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20">
+            <p className="rounded-full bg-base-100 px-10 py-3 font-semibold text-base-content no-underline transition hover:bg-base-200">
               Tasks
             </p>
           </Link>
@@ -41,12 +41,12 @@ function AuthShowcase() {
 
   return (
     <div className="flex flex-col items-center justify-center gap-4">
-      <p className="text-center text-2xl text-white">
+      <p className="text-center text-2xl text-base-content">
         {sessionData && <span>Logged in as {sessionData.user?.username}</span>}
         {secretMessage && <span> - {secretMessage}</span>}
       </p>
       <button
-        className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
+        className="rounded-full bg-base-100 px-10 py-3 font-semibold text-base-content no-underline transition hover:bg-base-200"
         onClick={sessionData ? () => void signOut() : () => void signIn()}
       >
         {sessionData ? "Sign out" : "Sign in"}
