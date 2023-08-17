@@ -15,6 +15,15 @@ import { env } from "@/env.mjs";
 import { prisma } from "@/server/db";
 import Credentials from "next-auth/providers/credentials";
 
+declare module "next-auth" {
+  interface Session extends DefaultSession {
+    user: {
+      id: string;
+      username: string;
+    };
+  }
+}
+
 export const authOptions: NextAuthOptions = {
   callbacks: {
     jwt({ token, user, session }) {
