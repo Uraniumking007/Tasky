@@ -29,19 +29,19 @@ async function post(req: NextApiRequest, res: NextApiResponse) {
     confirmPassword: string;
   };
   if (password !== confirmPassword) {
-    res.status(400).json({ error: "Passwords do not match" });
+    res.status(400).json("Passwords do not match");
     return;
   }
   if (password.length < 6) {
-    res.status(400).json({ error: "Password must be at least 8 characters" });
+    res.status(400).json("Password must be at least 8 characters");
     return;
   }
   if (username.length < 3) {
-    res.status(400).json({ error: "Username must be at least 3 characters" });
+    res.status(400).json("Username must be at least 3 characters");
     return;
   }
   if (email.length < 3) {
-    res.status(400).json({ error: "Email is Invalid" });
+    res.status(400).json("Email is Invalid");
     return;
   }
 
@@ -55,7 +55,7 @@ async function post(req: NextApiRequest, res: NextApiResponse) {
   });
 
   if (existingUser) {
-    res.status(400).json({ error: "User already exists" });
+    res.status(400).json("User already exists");
     return;
   }
 
