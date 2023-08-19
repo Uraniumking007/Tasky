@@ -7,6 +7,10 @@ import { api } from "@/utils/api";
 import { Player } from "@lottiefiles/react-lottie-player";
 
 export default function Home(props) {
+  const { data: sessionData, status } = useSession();
+
+  console.log(sessionData);
+
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
 
   return (
