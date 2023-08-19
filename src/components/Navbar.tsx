@@ -1,6 +1,6 @@
 import { themeAtom } from "@/utils/atoms";
 import { useAtom } from "jotai";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { Moon, Sun } from "lucide-react";
 
 const Navbar = () => {
@@ -9,6 +9,12 @@ const Navbar = () => {
 
   function handleThemeChange() {
     setTheme(theme === "fantasy" ? "night" : "fantasy");
+  }
+
+  function handleLogout() {
+    void signOut({
+      callbackUrl: "/",
+    });
   }
 
   const { user } = sessionData ?? {};
@@ -166,7 +172,7 @@ const Navbar = () => {
             <li>
               <a>Settings</a>
             </li>
-            <li>
+            <li onClick={handleLogout}>
               <a>Logout</a>
             </li>
             <li>
