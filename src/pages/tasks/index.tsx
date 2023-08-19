@@ -3,7 +3,6 @@ import { useSession } from "next-auth/react";
 import React, { type FormEvent, useEffect } from "react";
 import { useRouter } from "next/router";
 import { api } from "@/utils/api";
-import { Tasks } from "@prisma/client";
 import Loading from "@/components/Loading";
 import TasksView from "@/components/TaskView";
 
@@ -35,8 +34,10 @@ const Index = (props) => {
     const data = new FormData(form);
     const title = data.get("title") as string;
     const description = data.get("description") as string | null;
-    const categories = (data.get("categories") as unknown as string[]) || [];
-    mutate({ title, description, categories });
+
+    const categories = [];
+    const priority = data.get("categories") as string;
+    mutate({ title, description, categories, priority });
     form.reset();
   }
 
@@ -51,11 +52,24 @@ const Index = (props) => {
         <div className="form-control flex h-fit w-full items-center gap-3">
           <input
             type="text"
-            placeholder="Type here"
+            placeholder="Enter Task Here"
             name="title"
             disabled={isLoading}
             className="input input-bordered w-11/12 "
           />
+          <select
+            name="categories"
+            disabled={isLoading}
+            className="select w-full max-w-xs"
+          >
+            <option disabled selected>
+              Priority
+            </option>
+            <option>No Priority</option>
+            <option>Low Priority</option>
+            <option>Medium Priority</option>
+            <option>High Priority</option>
+          </select>
           <button
             type="submit"
             disabled={isLoading}
