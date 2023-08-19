@@ -47,7 +47,7 @@ const Register = (props) => {
   }
 
   return (
-    <div className="flex h-screen items-center justify-center bg-base-300">
+    <div className="flex items-center justify-center bg-base-300">
       <form
         onSubmit={handleFormSubmit}
         action=""

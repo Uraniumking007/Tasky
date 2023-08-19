@@ -41,7 +41,7 @@ const Index = (props) => {
   }
 
   return (
-    <div className="mt-5 flex min-h-screen flex-col items-center gap-5">
+    <div className="mt-5 flex flex-col items-center gap-5">
       <p className="text-center text-2xl font-bold">Manage Tasks</p>
       <form
         className="flex w-full flex-col items-center"

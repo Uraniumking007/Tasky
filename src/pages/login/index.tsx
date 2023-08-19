@@ -2,7 +2,7 @@
 import { signIn } from "next-auth/react";
 import React, { type FormEvent } from "react";
 
-const Index = () => {
+const Index = (props) => {
   async function handleFormSubmit(e: FormEvent) {
     e.preventDefault();
 
@@ -19,7 +19,7 @@ const Index = () => {
     console.log(email, password);
   }
   return (
-    <div className="flex h-screen items-center justify-center bg-base-300">
+    <div className="flex items-center justify-center bg-base-300">
       <form
         onSubmit={handleFormSubmit}
         action=""

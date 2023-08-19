@@ -18,7 +18,7 @@ export default function Home(props) {
       <Head>
         <title>Tasky</title>
       </Head>
-      <main className="flex min-h-screen flex-col items-center justify-center overflow-auto bg-gradient-to-b from-base-100 to-base-300">
+      <main className="flex flex-col items-center justify-center overflow-auto bg-gradient-to-b from-base-100 to-base-300">
         <div className="flex items-center justify-center gap-4">
           <div className="flex flex-col items-center justify-center gap-4 text-center">
             <h1 className="text-4xl font-bold">Tasky</h1>

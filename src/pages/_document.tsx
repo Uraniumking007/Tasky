@@ -12,7 +12,7 @@ export default function Document(props) {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <body>
+      <body className="h-screen w-screen">
         <Main />
         <NextScript />
       </body>
