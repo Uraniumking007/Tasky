@@ -19,6 +19,7 @@ export const TaskRouter = createTRPCRouter({
         title: z.string(),
         description: z.string().nullable(),
         categories: z.array(z.string()),
+        priority: z.string(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -28,6 +29,7 @@ export const TaskRouter = createTRPCRouter({
           Description: input.description,
           Categories: input.categories,
           isComplete: false,
+          Priority: input.priority,
           UserId: ctx.session.user.id,
         },
       });
