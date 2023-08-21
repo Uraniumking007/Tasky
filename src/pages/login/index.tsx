@@ -19,7 +19,7 @@ const Index = (props) => {
     console.log(email, password);
   }
   return (
-    <div className="flex items-center justify-center bg-base-300">
+    <div className="flex h-screen w-screen items-center justify-center bg-gradient-to-b from-base-100 to-base-300">
       <form
         onSubmit={handleFormSubmit}
         action=""

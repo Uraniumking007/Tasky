@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { api } from "@/utils/api";
 import Loading from "@/components/Loading";
 import TasksView from "@/components/TaskView";
+import Layout from "@/components/Layout";
 
 const Index = (props) => {
   const { data: SessionData, status } = useSession();
@@ -85,3 +86,7 @@ const Index = (props) => {
 };
 
 export default Index;
+
+Index.getLayout = function getLayout(page) {
+  return <Layout>{page}</Layout>;
+};

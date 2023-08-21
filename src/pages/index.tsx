@@ -5,6 +5,8 @@ import Link from "next/link";
 import { api } from "@/utils/api";
 
 import { Player } from "@lottiefiles/react-lottie-player";
+import Layout from "@/components/Layout";
+import { ReactElement } from "react";
 
 export default function Home(props) {
   const { data: sessionData, status } = useSession();
@@ -18,7 +20,7 @@ export default function Home(props) {
       <Head>
         <title>Tasky</title>
       </Head>
-      <main className="flex flex-col items-center justify-center overflow-auto bg-gradient-to-b from-base-100 to-base-300">
+      <main className="flex h-full flex-col items-center justify-center overflow-auto bg-gradient-to-b from-base-100 to-base-300">
         <div className="flex items-center justify-center gap-4">
           <div className="flex flex-col items-center justify-center gap-4 text-center">
             <h1 className="text-4xl font-bold">Tasky</h1>
@@ -71,3 +73,7 @@ function AuthShowcase() {
     </div>
   );
 }
+
+Home.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};
