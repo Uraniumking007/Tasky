@@ -10,16 +10,17 @@ import {
   protectedProcedure,
 } from "@/server/api/trpc";
 import { prisma } from "@/server/db";
-import { Tasks } from "@prisma/client";
+import type { Tasks } from "@prisma/client";
 
 export const TaskRouter = createTRPCRouter({
   createTasky: protectedProcedure
     .input(
       z.object({
-        title: z.string(),
+        title: z.string().trim().nonempty("Title cannot be empty"),
         description: z.string().nullable(),
         categories: z.array(z.string()),
         priority: z.string(),
+        date: z.date(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -31,6 +32,7 @@ export const TaskRouter = createTRPCRouter({
           isComplete: false,
           Priority: input.priority,
           UserId: ctx.session.user.id,
+          Deadline: input.date,
         },
       });
 
