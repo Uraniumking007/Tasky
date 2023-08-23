@@ -1,15 +1,29 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useSession } from "next-auth/react";
-import React, { type FormEvent, useEffect } from "react";
+import React, { type FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { api } from "@/utils/api";
 import Loading from "@/components/Loading";
 import TasksView from "@/components/TaskView";
 import Layout from "@/components/Layout";
+import { MultiSelect } from "@mantine/core";
+
+const options: { label: string; value: string }[] = [
+  "Personal",
+  "Work",
+  "Errands",
+  "Goals",
+].map((item) => ({
+  label: item,
+  value: item,
+}));
 
 const Index = (props) => {
   const { data: SessionData, status } = useSession();
+  const [categories, setCategories] = useState<(typeof options)[number][]>([]);
   const router = useRouter();
+  // const [categories, setCategories] = useState<string[]>([]);
 
   useEffect(() => {
     if (!SessionData?.user && status !== "loading") {
@@ -35,12 +49,15 @@ const Index = (props) => {
     const data = new FormData(form);
     const title = data.get("title") as string;
     const description = data.get("description") as string | null;
+    const date = new Date(data.get("deadline") as string);
+    const priority = data.get("priority") as string;
+    console.log(categories);
 
-    const categories = [];
-    const priority = data.get("categories") as string;
-    mutate({ title, description, categories, priority });
+    // mutate({ title, description, categories, priority, date });
     form.reset();
   }
+
+  // console.log(options);
 
   return (
     <div className="mt-5 flex flex-col items-center gap-5">
@@ -59,8 +76,9 @@ const Index = (props) => {
             className="input input-bordered w-11/12 "
           />
           <select
-            name="categories"
+            name="priority"
             disabled={isLoading}
+            defaultValue={"No Priority"}
             className="select w-full max-w-xs"
           >
             <option disabled selected>
@@ -71,10 +89,46 @@ const Index = (props) => {
             <option>Medium Priority</option>
             <option>High Priority</option>
           </select>
+          <input
+            type="date"
+            name="deadline"
+            id="deadline"
+            className="bg-base-200  px-4 py-2 text-base-content"
+          />
+          <MultiSelect
+            label="Select Categories"
+            classNames={{
+              defaultValue: "select select-bordered select-sm",
+              input: "input  input-bordered flex mr-4 w-full",
+              label: "text-base-content",
+              defaultValueLabel:
+                "flex justify-center items-center text-base-content",
+              values: "",
+              rightSection: "ml-4",
+            }}
+            data={options}
+            placeholder="Select items"
+            searchable
+            creatable
+            getCreateLabel={(query) => `+ Create ${query}`}
+            onCreate={(query) => {
+              const item = { value: query, label: query };
+              setCategories((current) => [...current, item]);
+              return item;
+            }}
+            onChange={(query) => {
+              setCategories(
+                query.map((item) => ({
+                  label: item,
+                  value: item,
+                }))
+              );
+            }}
+          />
           <button
             type="submit"
             disabled={isLoading}
-            className="btn flex items-center justify-center px-10 py-5 align-middle sm:btn-md md:btn-md lg:btn-lg"
+            className="btn flex  items-center justify-center px-10 py-5 align-middle sm:btn-md md:btn-md lg:btn-lg"
           >
             Add
           </button>
