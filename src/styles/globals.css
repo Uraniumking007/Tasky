@@ -1,3 +1,4 @@
+@import "rsuite/dist/rsuite.min.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

@@ -18,8 +18,10 @@ export const TaskRouter = createTRPCRouter({
       z.object({
         title: z.string().trim().nonempty("Title cannot be empty"),
         description: z.string().nullable(),
-        categories: z.array(z.string()),
-        priority: z.string(),
+        categories: z
+          .array(z.object({ value: z.string(), label: z.string() }))
+          .default([]),
+        priority: z.string().default("No Priority"),
         date: z.date(),
       })
     )
