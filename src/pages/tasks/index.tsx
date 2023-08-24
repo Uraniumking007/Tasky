@@ -23,7 +23,6 @@ const Index = (props) => {
   const { data: SessionData, status } = useSession();
   const [categories, setCategories] = useState<(typeof options)[number][]>([]);
   const router = useRouter();
-  // const [categories, setCategories] = useState<string[]>([]);
 
   useEffect(() => {
     if (!SessionData?.user && status !== "loading") {
@@ -53,7 +52,7 @@ const Index = (props) => {
     const priority = data.get("priority") as string;
     console.log(categories);
 
-    // mutate({ title, description, categories, priority, date });
+    mutate({ title, description, categories, priority, date });
     form.reset();
   }
 
@@ -111,14 +110,14 @@ const Index = (props) => {
             searchable
             creatable
             getCreateLabel={(query) => `+ Create ${query}`}
-            onCreate={(query) => {
+            onCreate={(query: string) => {
               const item = { value: query, label: query };
               setCategories((current) => [...current, item]);
               return item;
             }}
-            onChange={(query) => {
+            onChange={(query: string[]) => {
               setCategories(
-                query.map((item) => ({
+                query.map((item: string) => ({
                   label: item,
                   value: item,
                 }))
