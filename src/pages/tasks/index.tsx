@@ -70,7 +70,7 @@ const Index = (props) => {
             placeholder="Enter Task Here"
             name="title"
             disabled={isLoading}
-            className="input input-bordered w-11/12 "
+            className="input input-bordered w-11/12"
           />
           <select
             name="priority"
