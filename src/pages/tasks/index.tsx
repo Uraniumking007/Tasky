@@ -56,8 +56,6 @@ const Index = (props) => {
     form.reset();
   }
 
-  // console.log(options);
-
   return (
     <div className="mt-5 flex flex-col items-center gap-5">
       <p className="text-center text-2xl font-bold">Manage Tasks</p>
@@ -92,13 +90,13 @@ const Index = (props) => {
             type="date"
             name="deadline"
             id="deadline"
-            className="bg-base-200  px-4 py-2 text-base-content"
+            className="bg-base-200 px-4 py-2 text-base-content"
           />
           <MultiSelect
             label="Select Categories"
             classNames={{
               defaultValue: "select select-bordered select-sm",
-              input: "input  input-bordered flex mr-4 w-full",
+              input: "input input-bordered flex mr-4 w-full",
               label: "text-base-content",
               defaultValueLabel:
                 "flex justify-center items-center text-base-content",
@@ -110,14 +108,14 @@ const Index = (props) => {
             searchable
             creatable
             getCreateLabel={(query) => `+ Create ${query}`}
-            onCreate={(query: string) => {
+            onCreate={(query) => {
               const item = { value: query, label: query };
               setCategories((current) => [...current, item]);
               return item;
             }}
-            onChange={(query: string[]) => {
+            onChange={(query) => {
               setCategories(
-                query.map((item: string) => ({
+                query.map((item) => ({
                   label: item,
                   value: item,
                 }))
@@ -127,7 +125,7 @@ const Index = (props) => {
           <button
             type="submit"
             disabled={isLoading}
-            className="btn flex  items-center justify-center px-10 py-5 align-middle sm:btn-md md:btn-md lg:btn-lg"
+            className="btn flex items-center justify-center px-10 py-5 align-middle sm:btn-md md:btn-md lg:btn-lg"
           >
             Add
           </button>
