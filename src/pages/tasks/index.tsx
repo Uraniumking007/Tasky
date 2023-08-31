@@ -7,7 +7,11 @@ import { api } from "@/utils/api";
 import Loading from "@/components/Loading";
 import TasksView from "@/components/TaskView";
 import Layout from "@/components/Layout";
-import { MultiSelect } from "@mantine/core";
+import {
+  MantineProvider,
+  MultiSelect,
+  MultiSelectValueProps,
+} from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 
 const options: { label: string; value: string }[] = [
@@ -88,37 +92,72 @@ const Index = (props) => {
               <option>Medium Priority</option>
               <option>High Priority</option>
             </select>
-            <DateInput value={date} onChange={setDate} />
-            <MultiSelect
-              label="Select Categories"
-              classNames={{
-                defaultValue: "select select-bordered select-sm",
-                input: "input input-bordered flex mr-4 w-full",
-                label: "text-base-content",
-                defaultValueLabel:
-                  "flex justify-center items-center text-base-content",
-                values: "",
-                rightSection: "ml-4",
-              }}
-              data={options}
-              placeholder="Select items"
-              searchable
-              creatable
-              getCreateLabel={(query) => `+ Create ${query}`}
-              onCreate={(query) => {
-                const item = { value: query, label: query };
-                setCategories((current) => [...current, item]);
-                return item;
-              }}
-              onChange={(query) => {
-                setCategories(
-                  query.map((item) => ({
-                    label: item,
-                    value: item,
-                  }))
-                );
-              }}
-            />
+            <MantineProvider
+              withCSSVariables
+              withGlobalStyles
+              withNormalizeCSS
+              // theme={{
+              //   colorScheme: "dark",
+              //   primaryColor: "bg-base-100",
+              //   colors: {
+              //     "bg-base-100": ["#000"],
+              //   },
+              // }}
+            >
+              <DateInput
+                value={date}
+                onChange={setDate}
+                minDate={new Date()}
+                classNames={{
+                  input: "input w-full text-base-content",
+                  day: "text-base-content",
+                  decadeLevel: "bg-base-100 text-base-content",
+                  decadeLevelGroup: "bg-base-100 text-base-content",
+                  calendar: "bg-base-100 text-base-content",
+                  root: "bg-base-100 text-base-content border-none",
+                }}
+              />
+              <MultiSelect
+                label="Select Categories"
+                itemComponent={(
+                  props: MultiSelectValueProps & { value: string }
+                ) => {
+                  return <div>{props.value}</div>;
+                }}
+                classNames={{
+                  defaultValue: "select select-bordered select-sm",
+                  input: "input input-bordered flex mr-4 w-full",
+                  label: "text-base-content",
+                  defaultValueLabel:
+                    "flex justify-center items-center text-base-content",
+                  rightSection: "ml-4",
+                  dropdown: "bg-base-100 text-base-content",
+                  // item: "text-base-content bg-base-100 hover:bg-base-200 visited:bg-base-200 focus:bg-base-200 active:bg-base-200",
+                  // itemsWrapper:
+                  //   "text-base-content bg-base-100 hover:bg-base-200 ",
+                  wrapper: "text-base-content bg-base-100 hover:bg-base-200",
+                }}
+                data={options}
+                placeholder="Select items"
+                searchable
+                creatable
+                getCreateLabel={(query) => `+ Create ${query}`}
+                onCreate={(query) => {
+                  const item = { value: query, label: query };
+                  setCategories((current) => [...current, item]);
+                  return item;
+                }}
+                onChange={(query) => {
+                  setCategories(
+                    query.map((item) => ({
+                      label: item,
+                      value: item,
+                    }))
+                  );
+                }}
+              />
+            </MantineProvider>
+
             <button
               type="submit"
               disabled={isLoading}
