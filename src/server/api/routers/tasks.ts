@@ -22,7 +22,7 @@ export const TaskRouter = createTRPCRouter({
           .array(z.object({ value: z.string(), label: z.string() }))
           .default([]),
         priority: z.string().default("No Priority"),
-        date: z.date(),
+        date: z.date().nullable(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -40,7 +40,14 @@ export const TaskRouter = createTRPCRouter({
 
       console.log(task);
 
-      const tasks: Tasks[] = await prisma.tasks.findMany();
+      const tasks: Tasks[] = await prisma.tasks.findMany({
+        where: {
+          UserId: ctx.session.user.id,
+        },
+        orderBy: {
+          CreatedAt: "desc",
+        },
+      });
 
       return tasks;
     }),
@@ -48,6 +55,9 @@ export const TaskRouter = createTRPCRouter({
     const tasks: Tasks[] = await prisma.tasks.findMany({
       where: {
         UserId: ctx.session.user.id,
+      },
+      orderBy: {
+        CreatedAt: "desc",
       },
     });
 
