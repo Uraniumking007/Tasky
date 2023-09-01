@@ -89,7 +89,7 @@ const Index = (props) => {
               defaultValue={"No Priority"}
               className="select w-full border border-base-content"
             >
-              <option disabled selected>
+              <option disabled defaultValue="No Priority">
                 Priority
               </option>
               <option>No Priority</option>
