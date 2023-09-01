@@ -7,13 +7,16 @@ import { api } from "@/utils/api";
 import { Player } from "@lottiefiles/react-lottie-player";
 import Layout from "@/components/Layout";
 import { ReactElement } from "react";
+import Loading from "@/components/Loading";
 
 export default function Home(props) {
   const { data: sessionData, status } = useSession();
 
   console.log(sessionData);
 
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
+  if (status === "loading") {
+    return <Loading />;
+  }
 
   return (
     <>
@@ -28,9 +31,15 @@ export default function Home(props) {
               A simple task manager for your everyday tasks be they may perosnal
               or corporate.
             </p>
-            <button className="btn rounded-full bg-base-100 px-10 py-3 font-semibold normal-case text-base-content no-underline shadow-sm transition hover:bg-base-200">
-              <Link href={"/tasks"}>Get Started</Link>
-            </button>
+            {status === "authenticated" ? (
+              <button className="btn rounded-full bg-base-100 px-10 py-3 font-semibold normal-case text-base-content no-underline shadow-sm transition hover:bg-base-200">
+                <Link href={"/tasks"}>Get Started</Link>
+              </button>
+            ) : (
+              <button className="btn rounded-full bg-base-100 px-10 py-3 font-semibold normal-case text-base-content no-underline shadow-sm transition hover:bg-base-200">
+                <Link href={"/login"}>Get Started</Link>
+              </button>
+            )}
           </div>
           <Player
             autoplay
@@ -45,32 +54,6 @@ export default function Home(props) {
         </div>
       </main>
     </>
-  );
-}
-
-function AuthShowcase() {
-  const { data: sessionData } = useSession();
-
-  console.log(sessionData);
-
-  const { data: secretMessage } = api.example.getSecretMessage.useQuery(
-    undefined, // no input
-    { enabled: sessionData?.user !== undefined }
-  );
-
-  return (
-    <div className="flex flex-col items-center justify-center gap-4">
-      <p className="text-center text-2xl text-base-content">
-        {sessionData && <span>Logged in as {sessionData.user?.username}</span>}
-        {secretMessage && <span> - {secretMessage}</span>}
-      </p>
-      <button
-        className="rounded-full bg-base-100 px-10 py-3 font-semibold text-base-content no-underline transition hover:bg-base-200"
-        onClick={sessionData ? () => void signOut() : () => void signIn()}
-      >
-        {sessionData ? "Sign out" : "Sign in"}
-      </button>
-    </div>
   );
 }
 
