@@ -1,24 +1,19 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { type GetServerSidePropsContext } from "next";
-import {
-  getServerSession,
-  type NextAuthOptions,
-  type DefaultSession,
-  type DefaultUser,
+import { getServerSession } from "next-auth";
+import type {
+  NextAuthOptions,
+  DefaultSession,
+  DefaultUser,
   Session,
 } from "next-auth";
 import bcrypt from "bcryptjs";
 import { env } from "@/env.mjs";
 import { prisma } from "@/server/db";
 import Credentials from "next-auth/providers/credentials";
-import { JWT } from "next-auth/jwt";
-import { User } from "@prisma/client";
-import { AdapterUser } from "next-auth/adapters";
+import type { JWT } from "next-auth/jwt";
+import type { User } from "@prisma/client";
+import type { AdapterUser } from "next-auth/adapters";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -37,7 +32,7 @@ declare module "next-auth/adapters" {
 
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    jwt({ token, user, session }) {
+    jwt({ token, user }) {
       // console.log("jwt callback", token, user, session);
       if (user) {
         return {
@@ -51,7 +46,6 @@ export const authOptions: NextAuthOptions = {
     session({
       session,
       token,
-      user,
     }: {
       session: Session;
       token: JWT;
@@ -85,7 +79,7 @@ export const authOptions: NextAuthOptions = {
           type: "password",
         },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         const { email, password } = credentials!;
 
         const user = await prisma.user.findFirst({
@@ -100,7 +94,6 @@ export const authOptions: NextAuthOptions = {
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) return null;
-        // console.log(user);
 
         return user;
       },
