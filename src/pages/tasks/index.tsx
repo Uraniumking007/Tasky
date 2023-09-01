@@ -7,13 +7,9 @@ import { api } from "@/utils/api";
 import Loading from "@/components/Loading";
 import TasksView from "@/components/TaskView";
 import Layout from "@/components/Layout";
-import {
-  MantineProvider,
-  MultiSelect,
-  MultiSelectValueProps,
-} from "@mantine/core";
-import { DateInput } from "@mantine/dates";
-import { DefaultItem } from "./components/defaultiItem";
+import { MantineProvider, MultiSelect } from "@mantine/core";
+import DefaultItem from "./components/defaultItem";
+import { DatePickerDemo } from "@/components/ui/datePicker";
 
 const options: { label: string; value: string }[] = [
   "Personal",
@@ -27,9 +23,10 @@ const options: { label: string; value: string }[] = [
 
 const Index = (props) => {
   const { data: SessionData, status } = useSession();
+
   const [categories, setCategories] = useState<(typeof options)[number][]>([]);
   const router = useRouter();
-  const [date, setDate] = useState<Date | null>(null);
+  const [date, setDate] = useState<Date | undefined>(undefined);
 
   useEffect(() => {
     if (!SessionData?.user && status !== "loading") {
@@ -46,6 +43,8 @@ const Index = (props) => {
   const { mutate, isLoading } = api.tasks.createTasky.useMutation({
     onSuccess: () => {
       void ctx.tasks.getAll.invalidate();
+      setDate(undefined);
+      setCategories([]);
     },
   });
 
@@ -85,7 +84,7 @@ const Index = (props) => {
               defaultValue={"No Priority"}
               className="select w-full border border-base-content"
             >
-              <option disabled selected>
+              <option disabled defaultValue="No Priority">
                 Priority
               </option>
               <option>No Priority</option>
@@ -93,6 +92,7 @@ const Index = (props) => {
               <option>Medium Priority</option>
               <option>High Priority</option>
             </select>
+            <DatePickerDemo date={date} setDate={setDate} />
             <MantineProvider
               withCSSVariables
               withGlobalStyles
@@ -105,20 +105,6 @@ const Index = (props) => {
               //   },
               // }}
             >
-              <DateInput
-                value={date}
-                onChange={setDate}
-                minDate={new Date()}
-                classNames={{
-                  input:
-                    "input w-full text-base-content border-1 border-slate-300 ",
-                  day: "text-base-content",
-                  decadeLevel: "bg-base-100 text-base-content",
-                  decadeLevelGroup: "bg-base-100 text-base-content",
-                  calendar: "bg-base-100 text-base-content",
-                  root: "bg-base-100 text-base-content border-none",
-                }}
-              />
               <MultiSelect
                 label="Select Categories"
                 itemComponent={DefaultItem}
@@ -129,7 +115,7 @@ const Index = (props) => {
                   defaultValueLabel:
                     "flex justify-center items-center text-base-content",
                   rightSection: "ml-4",
-                  dropdown: "bg-base-100 text-base-content",
+                  dropdown: "bg-base-100 text-base-content border-1 ",
                   // item: "text-base-content bg-base-100 hover:bg-base-200 visited:bg-base-200 focus:bg-base-200 active:bg-base-200",
                   // itemsWrapper:
                   //   "text-base-content bg-base-100 hover:bg-base-200 ",

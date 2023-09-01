@@ -22,7 +22,7 @@ export const TaskRouter = createTRPCRouter({
           .array(z.object({ value: z.string(), label: z.string() }))
           .default([]),
         priority: z.string().default("No Priority"),
-        date: z.date().nullable(),
+        date: z.date().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
