@@ -13,6 +13,7 @@ import {
   MultiSelectValueProps,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
+import { DefaultItem } from "./components/defaultiItem";
 
 const options: { label: string; value: string }[] = [
   "Personal",
@@ -109,7 +110,8 @@ const Index = (props) => {
                 onChange={setDate}
                 minDate={new Date()}
                 classNames={{
-                  input: "input w-full text-base-content",
+                  input:
+                    "input w-full text-base-content border-1 border-slate-300 ",
                   day: "text-base-content",
                   decadeLevel: "bg-base-100 text-base-content",
                   decadeLevelGroup: "bg-base-100 text-base-content",
@@ -119,14 +121,10 @@ const Index = (props) => {
               />
               <MultiSelect
                 label="Select Categories"
-                itemComponent={(
-                  props: MultiSelectValueProps & { value: string }
-                ) => {
-                  return <div>{props.value}</div>;
-                }}
+                itemComponent={DefaultItem}
                 classNames={{
                   defaultValue: "select select-bordered select-sm",
-                  input: "input input-bordered flex mr-4 w-full",
+                  input: "input input-bordered flex mr-4 w-full h-fit py-2",
                   label: "text-base-content",
                   defaultValueLabel:
                     "flex justify-center items-center text-base-content",
