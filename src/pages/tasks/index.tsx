@@ -13,7 +13,8 @@ import {
   MultiSelectValueProps,
 } from "@mantine/core";
 import { DateInput, DatePicker } from "@mantine/dates";
-import { DefaultItem } from "./components/defaultiItem";
+import { DefaultItem } from "./components/defaultItem";
+import { DatePickerDemo } from "@/components/ui/datePicker";
 
 const options: { label: string; value: string }[] = [
   "Personal",
@@ -27,9 +28,10 @@ const options: { label: string; value: string }[] = [
 
 const Index = (props) => {
   const { data: SessionData, status } = useSession();
+
   const [categories, setCategories] = useState<(typeof options)[number][]>([]);
   const router = useRouter();
-  const [date, setDate] = useState<Date | null>(null);
+  const [date, setDate] = useState<Date | undefined>(undefined);
 
   useEffect(() => {
     if (!SessionData?.user && status !== "loading") {
@@ -46,6 +48,8 @@ const Index = (props) => {
   const { mutate, isLoading } = api.tasks.createTasky.useMutation({
     onSuccess: () => {
       void ctx.tasks.getAll.invalidate();
+      setDate(undefined);
+      setCategories([]);
     },
   });
 
@@ -93,6 +97,7 @@ const Index = (props) => {
               <option>Medium Priority</option>
               <option>High Priority</option>
             </select>
+            <DatePickerDemo date={date} setDate={setDate} />
             <MantineProvider
               withCSSVariables
               withGlobalStyles
@@ -105,21 +110,6 @@ const Index = (props) => {
               //   },
               // }}
             >
-              <DatePicker />
-              {/* <DateInput
-                value={date}
-                onChange={setDate}
-                minDate={new Date()}
-                classNames={{
-                  input:
-                    "input w-full text-base-content border-1 border-slate-300 ",
-                  day: "text-base-content",
-                  decadeLevel: "bg-base-100 text-base-content",
-                  decadeLevelGroup: "bg-base-100 text-base-content",
-                  calendar: "bg-base-100 text-base-content",
-                  root: "bg-base-100 text-base-content border-none",
-                }}
-              /> */}
               <MultiSelect
                 label="Select Categories"
                 itemComponent={DefaultItem}
