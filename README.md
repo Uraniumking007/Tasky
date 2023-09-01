@@ -1,6 +1,6 @@
 # Task Manager
 
-![Task Manager Logo](Tasky.png)
+![Task Manager Logo](./public/Tasky.png)
 
 # Under Development
 
