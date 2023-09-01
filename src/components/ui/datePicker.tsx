@@ -1,5 +1,5 @@
 import * as React from "react";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -11,8 +11,14 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-export function DatePickerDemo() {
-  const [date, setDate] = React.useState<Date>();
+export function DatePickerDemo({
+  date,
+  setDate,
+}: {
+  date: Date | undefined;
+  setDate: React.Dispatch<React.SetStateAction<Date | undefined>>;
+}) {
+  // const [date, setDate] = React.useState<Date>();
 
   return (
     <Popover>
@@ -20,7 +26,7 @@ export function DatePickerDemo() {
         <Button
           variant={"outline"}
           className={cn(
-            "w-[280px] justify-start text-left font-normal",
+            "w-full justify-start bg-base-100 text-left font-normal text-base-content hover:bg-base-200 hover:text-base-content",
             !date && "text-muted-foreground"
           )}
         >
@@ -31,7 +37,8 @@ export function DatePickerDemo() {
       <PopoverContent className="w-auto p-0">
         <Calendar
           mode="single"
-          selected={date}
+          fromDate={new Date()}
+          selected={date ? date : undefined}
           onSelect={setDate}
           initialFocus
         />
