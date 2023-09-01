@@ -2,7 +2,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-misused-promises */
+import { themeAtom } from "@/utils/atoms";
 import { User } from "@prisma/client";
+import { useAtom } from "jotai";
 import { signIn } from "next-auth/react";
 import { redirect } from "next/dist/server/api-utils";
 import Link from "next/link";
@@ -10,6 +12,7 @@ import React, { type FormEvent } from "react";
 
 const Register = (props) => {
   const [errors, setErrors] = React.useState<unknown>();
+  const [theme] = useAtom(themeAtom);
 
   async function handleFormSubmit(e: FormEvent) {
     e.preventDefault();
@@ -47,7 +50,10 @@ const Register = (props) => {
   }
 
   return (
-    <div className="flex items-center justify-center bg-base-300">
+    <div
+      className="flex h-screen items-center justify-center bg-base-300"
+      data-theme={theme == "fantasy" ? "fantasy" : "night"}
+    >
       <form
         onSubmit={handleFormSubmit}
         action=""

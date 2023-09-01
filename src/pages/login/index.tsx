@@ -1,8 +1,11 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
+import { themeAtom } from "@/utils/atoms";
+import { useAtom } from "jotai";
 import { signIn } from "next-auth/react";
 import React, { type FormEvent } from "react";
 
 const Index = (props) => {
+  const [theme] = useAtom(themeAtom);
   async function handleFormSubmit(e: FormEvent) {
     e.preventDefault();
 
@@ -19,7 +22,10 @@ const Index = (props) => {
     console.log(email, password);
   }
   return (
-    <div className="flex h-screen w-screen items-center justify-center bg-gradient-to-b from-base-100 to-base-300">
+    <div
+      className="flex h-screen w-screen items-center justify-center bg-gradient-to-b from-base-100 to-base-300"
+      data-theme={theme == "fantasy" ? "fantasy" : "night"}
+    >
       <form
         onSubmit={handleFormSubmit}
         action=""
