@@ -1,6 +1,6 @@
 # Task Manager
 
-![Task Manager Logo](task_manager_logo.png)
+![Task Manager Logo](Tasky.png)
 
 # Under Development
 
