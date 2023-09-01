@@ -12,7 +12,7 @@ import {
   MultiSelect,
   MultiSelectValueProps,
 } from "@mantine/core";
-import { DateInput } from "@mantine/dates";
+import { DateInput, DatePicker } from "@mantine/dates";
 import { DefaultItem } from "./components/defaultiItem";
 
 const options: { label: string; value: string }[] = [
@@ -105,7 +105,8 @@ const Index = (props) => {
               //   },
               // }}
             >
-              <DateInput
+              <DatePicker />
+              {/* <DateInput
                 value={date}
                 onChange={setDate}
                 minDate={new Date()}
@@ -118,7 +119,7 @@ const Index = (props) => {
                   calendar: "bg-base-100 text-base-content",
                   root: "bg-base-100 text-base-content border-none",
                 }}
-              />
+              /> */}
               <MultiSelect
                 label="Select Categories"
                 itemComponent={DefaultItem}
@@ -129,7 +130,7 @@ const Index = (props) => {
                   defaultValueLabel:
                     "flex justify-center items-center text-base-content",
                   rightSection: "ml-4",
-                  dropdown: "bg-base-100 text-base-content",
+                  dropdown: "bg-base-100 text-base-content border-1 ",
                   // item: "text-base-content bg-base-100 hover:bg-base-200 visited:bg-base-200 focus:bg-base-200 active:bg-base-200",
                   // itemsWrapper:
                   //   "text-base-content bg-base-100 hover:bg-base-200 ",
