@@ -7,13 +7,8 @@ import { api } from "@/utils/api";
 import Loading from "@/components/Loading";
 import TasksView from "@/components/TaskView";
 import Layout from "@/components/Layout";
-import {
-  MantineProvider,
-  MultiSelect,
-  MultiSelectValueProps,
-} from "@mantine/core";
-import { DateInput, DatePicker } from "@mantine/dates";
-import { DefaultItem } from "./components/defaultItem";
+import { MantineProvider, MultiSelect } from "@mantine/core";
+import DefaultItem from "./components/defaultItem";
 import { DatePickerDemo } from "@/components/ui/datePicker";
 
 const options: { label: string; value: string }[] = [

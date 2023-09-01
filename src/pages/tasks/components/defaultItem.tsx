@@ -1,3 +1,4 @@
+import { de } from "date-fns/locale";
 import React, { forwardRef } from "react";
 
 export interface SelectItemProps
@@ -6,7 +7,7 @@ export interface SelectItemProps
   value?: string;
 }
 
-export const DefaultItem = forwardRef<HTMLDivElement, SelectItemProps>(
+const DefaultItem = forwardRef<HTMLDivElement, SelectItemProps>(
   ({ label, value, ...others }: SelectItemProps, ref) => (
     <div
       ref={ref}
@@ -19,3 +20,4 @@ export const DefaultItem = forwardRef<HTMLDivElement, SelectItemProps>(
 );
 
 DefaultItem.displayName = "@mantine/core/DefaultItem";
+export default DefaultItem;
