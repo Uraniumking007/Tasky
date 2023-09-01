@@ -1,16 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { z } from "zod";
-import {
-  createTRPCRouter,
-  publicProcedure,
-  protectedProcedure,
-} from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { prisma } from "@/server/db";
 import type { Tasks } from "@prisma/client";
+import { TRPCError } from "@trpc/server";
 
 export const TaskRouter = createTRPCRouter({
   createTasky: protectedProcedure
@@ -26,7 +18,7 @@ export const TaskRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const task: Tasks = await prisma.tasks.create({
+      await prisma.tasks.create({
         data: {
           Title: input.title,
           Description: input.description,
@@ -37,19 +29,13 @@ export const TaskRouter = createTRPCRouter({
           Deadline: input.date,
         },
       });
-
-      console.log(task);
-
-      const tasks: Tasks[] = await prisma.tasks.findMany({
-        where: {
-          UserId: ctx.session.user.id,
-        },
-        orderBy: {
-          CreatedAt: "desc",
-        },
-      });
-
-      return tasks;
+      return {
+        status: "success",
+        message: "Task created successfully",
+        data: input,
+        code: 200,
+        error: null,
+      };
     }),
   getAll: protectedProcedure.query(async ({ ctx }) => {
     const tasks: Tasks[] = await prisma.tasks.findMany({
@@ -60,6 +46,12 @@ export const TaskRouter = createTRPCRouter({
         CreatedAt: "desc",
       },
     });
+
+    if (tasks.length === 0)
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "No tasks found",
+      });
 
     return tasks;
   }),
