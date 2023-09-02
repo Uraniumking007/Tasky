@@ -1,5 +1,5 @@
 import React from "react";
-import { toast, type Renderable, type Toast } from "react-hot-toast";
+import { type Renderable, type Toast } from "react-hot-toast";
 
 const SuccessToast = ({
   t,
