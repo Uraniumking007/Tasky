@@ -4,6 +4,7 @@
 import { themeAtom } from "@/utils/atoms";
 import { useAtom } from "jotai";
 import { signIn } from "next-auth/react";
+import Link from "next/link";
 import React, { type FormEvent } from "react";
 
 const Index = (props) => {
@@ -61,6 +62,11 @@ const Index = (props) => {
         >
           Login
         </button>
+        <Link href={"/register"}>
+          <button className="rounded-full bg-primary py-3 text-primary-content focus:bg-primary-focus">
+            Register
+          </button>
+        </Link>
       </form>
     </div>
   );
