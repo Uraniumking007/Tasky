@@ -62,7 +62,10 @@ const Index = (props) => {
         >
           Login
         </button>
-        <Link href={"/register"}>
+        <Link
+          href={"/register"}
+          className="rounded-full bg-primary py-3 text-primary-content focus:bg-primary-focus"
+        >
           <button className="rounded-full bg-primary py-3 text-primary-content focus:bg-primary-focus">
             Register
           </button>
