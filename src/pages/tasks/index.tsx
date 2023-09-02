@@ -7,12 +7,10 @@ import { api } from "@/utils/api";
 import Loading from "@/components/Loading";
 import TasksView from "@/components/TaskView";
 import Layout from "@/components/Layout";
-import { MantineProvider, MultiSelect } from "@mantine/core";
-import DefaultItem from "./components/defaultItem";
-import { DatePickerDemo } from "@/components/ui/datePicker";
-import toast, { Toast, Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import SuccessToast from "@/components/Toast/successToast";
 import ErrorToast from "@/components/Toast/errorToast";
+import TaskPopUp from "@/components/PopUp/TaskPopUp";
 
 const options: { label: string; value: string }[] = [
   "Personal",
@@ -72,8 +70,11 @@ const Index = (props) => {
 
   return (
     <div className="mt-5 flex flex-col items-center gap-5">
-      <p className="text-center text-2xl font-bold">Manage Tasks</p>
-      <form
+      <div className="flex w-full justify-between px-36">
+        <p className="text-center text-2xl font-bold">Manage Tasks</p>
+        <TaskPopUp />
+      </div>
+      {/* <form
         className="flex w-full flex-col items-center p-12"
         onSubmit={addTask}
         action=""
@@ -160,8 +161,10 @@ const Index = (props) => {
             </button>
           </div>
         </div>
-      </form>
-      {data ? <TasksView data={data} /> : <Loading />}
+      </form> */}
+      <div className="flex w-11/12 rounded-3xl bg-base-100 p-4 py-8  drop-shadow-xl">
+        {data ? <TasksView data={data} /> : <Loading />}
+      </div>
       <Toaster
         position="bottom-right"
         toastOptions={{ duration: 3000 }}
