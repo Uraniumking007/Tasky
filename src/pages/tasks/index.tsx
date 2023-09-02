@@ -10,6 +10,9 @@ import Layout from "@/components/Layout";
 import { MantineProvider, MultiSelect } from "@mantine/core";
 import DefaultItem from "./components/defaultItem";
 import { DatePickerDemo } from "@/components/ui/datePicker";
+import toast, { Toast, Toaster } from "react-hot-toast";
+import SuccessToast from "@/components/Toast/successToast";
+import ErrorToast from "@/components/Toast/errorToast";
 
 const options: { label: string; value: string }[] = [
   "Personal",
@@ -43,8 +46,14 @@ const Index = (props) => {
   const { mutate, isLoading } = api.tasks.createTasky.useMutation({
     onSuccess: () => {
       void ctx.tasks.getAll.invalidate();
+      toast.custom((t) => (
+        <SuccessToast t={t} message="Task Created Successfully" />
+      ));
       setDate(undefined);
       setCategories([]);
+    },
+    onError: () => {
+      toast.custom((t) => <ErrorToast t={t} message="Task Creation Failed" />);
     },
   });
 
@@ -153,6 +162,11 @@ const Index = (props) => {
         </div>
       </form>
       {data ? <TasksView data={data} /> : <Loading />}
+      <Toaster
+        position="bottom-right"
+        toastOptions={{ duration: 3000 }}
+        reverseOrder={true}
+      />
     </div>
   );
 };
