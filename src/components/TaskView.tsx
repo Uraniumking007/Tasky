@@ -1,6 +1,6 @@
 import type { Tasks } from "@prisma/client";
 
-function TasksView({ data }: { data: unknown[] }) {
+function TasksView({ data }: { data: Tasks[] }) {
   return (
     <div className="items flex h-fit w-full flex-col gap-5 pl-16">
       {data?.map((task: Tasks) => {
