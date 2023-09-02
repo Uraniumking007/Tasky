@@ -1,5 +1,5 @@
 import * as React from "react";
-import { format, set } from "date-fns";
+import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -27,7 +27,7 @@ export function DatePickerDemo({
           variant={"outline"}
           className={cn(
             "w-full justify-start bg-base-100 text-left font-normal text-base-content hover:bg-base-200 hover:text-base-content",
-            !date && "text-muted-foreground"
+            !date && "text-base-content"
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
