@@ -15,11 +15,9 @@ import { useState } from "react";
 import { DatePickerDemo } from "../ui/datePicker";
 import { MantineProvider, MultiSelect } from "@mantine/core";
 import DefaultItem from "@/pages/tasks/components/defaultItem";
-import { ComboboxDemo } from "../ui/comboBox";
 import { toast } from "react-hot-toast";
 import SuccessToast from "../Toast/successToast";
 import ErrorToast from "../Toast/errorToast";
-import { title } from "process";
 
 interface Task {
   title: string;
@@ -91,6 +89,7 @@ export default function TaskPopUp() {
                 setTaskData({ ...taskData, title: e.target.value });
               }}
               className="col-span-3"
+              disabled={isLoading}
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
@@ -104,6 +103,7 @@ export default function TaskPopUp() {
                 setTaskData({ ...taskData, description: e.target.value });
               }}
               className="col-span-3"
+              disabled={isLoading}
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
@@ -113,7 +113,7 @@ export default function TaskPopUp() {
             {/* <ComboboxDemo value={priority} setValue={setPriority} /> */}
             <select
               name="priority"
-              //   disabled={isLoading}
+              disabled={isLoading}
               defaultValue={"No Priority"}
               className="select w-full border border-base-content text-base-content"
               onChange={(e) => {
@@ -154,6 +154,7 @@ export default function TaskPopUp() {
               <MultiSelect
                 label="Select Categories"
                 itemComponent={DefaultItem}
+                disabled={isLoading}
                 classNames={{
                   defaultValue: "select select-bordered select-sm",
                   input: "input input-bordered flex mr-4 w-full h-fit py-2",
@@ -202,6 +203,7 @@ export default function TaskPopUp() {
                   categories: taskData.categories,
                 });
               }}
+              disabled={isLoading}
             >
               Save changes
             </Button>

@@ -1,5 +1,4 @@
-import { themeAtom } from "@/utils/atoms";
-import { useAtom } from "jotai";
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Html, Head, Main, NextScript } from "next/document";
 
 export default function Document(props) {

@@ -6,7 +6,7 @@ import { api } from "@/utils/api";
 
 import { Player } from "@lottiefiles/react-lottie-player";
 import Layout from "@/components/Layout";
-import { ReactElement } from "react";
+import type { ReactElement } from "react";
 import Loading from "@/components/Loading";
 
 export default function Home(props) {

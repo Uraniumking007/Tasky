@@ -3,7 +3,7 @@ import { useAtom } from "jotai";
 import Navbar from "./Navbar";
 
 export default function Layout({ children }) {
-  const [theme, setTheme] = useAtom(themeAtom);
+  const [theme] = useAtom(themeAtom);
   return (
     <div
       className="h-screen w-screen"

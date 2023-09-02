@@ -1,4 +1,3 @@
-import { de } from "date-fns/locale";
 import React, { forwardRef } from "react";
 
 export interface SelectItemProps

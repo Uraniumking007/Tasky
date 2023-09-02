@@ -1,10 +1,10 @@
+/* eslint-disable @next/next/no-img-element */
 import { themeAtom } from "@/utils/atoms";
 import { useAtom } from "jotai";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import { Moon, Sun } from "lucide-react";
 
 const Navbar = () => {
-  const { data: sessionData } = useSession();
   const [theme, setTheme] = useAtom(themeAtom);
 
   function handleThemeChange() {
@@ -17,7 +17,6 @@ const Navbar = () => {
     });
   }
 
-  const { user } = sessionData ?? {};
   return (
     <div className="navbar bg-base-100 drop-shadow-2xl">
       <div className="navbar-start">
@@ -156,7 +155,10 @@ const Navbar = () => {
         <div className="dropdown-end dropdown">
           <label tabIndex={0} className="avatar btn btn-circle btn-ghost">
             <div className="w-10 rounded-full">
-              <img src="/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+              <img
+                src="/images/stock/photo-1534528741775-53994a69daeb.jpg"
+                alt="testing"
+              />
             </div>
           </label>
           <ul

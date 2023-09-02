@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { themeAtom } from "@/utils/atoms";
 import { useAtom } from "jotai";
 import { signIn } from "next-auth/react";
