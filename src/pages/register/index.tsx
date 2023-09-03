@@ -51,7 +51,7 @@ const Register = (props) => {
 
   return (
     <div
-      className="flex h-screen items-center justify-center bg-base-300"
+      className="flex h-screen items-center justify-center bg-gradient-to-b from-base-100 to-base-300"
       data-theme={theme == "fantasy" ? "fantasy" : "night"}
     >
       <form
