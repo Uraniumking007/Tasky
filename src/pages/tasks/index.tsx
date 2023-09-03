@@ -162,7 +162,7 @@ const Index = (props) => {
           </div>
         </div>
       </form> */}
-      <div className="flex w-11/12 rounded-3xl bg-base-100 p-4 py-8  drop-shadow-xl">
+      <div className="-z-0 flex w-11/12 rounded-3xl bg-base-100 p-4 py-8 drop-shadow-xl">
         {data ? <TasksView data={data} /> : <Loading />}
       </div>
       <Toaster
