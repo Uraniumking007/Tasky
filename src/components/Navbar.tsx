@@ -1,11 +1,14 @@
 /* eslint-disable @next/next/no-img-element */
 import { themeAtom } from "@/utils/atoms";
 import { useAtom } from "jotai";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { Moon, Sun } from "lucide-react";
+import { Button } from "./ui/button";
+import Link from "next/link";
 
 const Navbar = () => {
   const [theme, setTheme] = useAtom(themeAtom);
+  const { data: session } = useSession();
 
   function handleThemeChange() {
     setTheme(theme === "fantasy" ? "night" : "fantasy");
@@ -152,44 +155,50 @@ const Navbar = () => {
       </div>
       <div className="navbar-end z-10">
         {/* <a className="btn">Button</a> */}
-        <div className="dropdown-end dropdown">
-          <label tabIndex={0} className="avatar btn btn-circle btn-ghost">
-            <div className="w-10 rounded-full">
-              <img
-                src="/images/stock/photo-1534528741775-53994a69daeb.jpg"
-                alt="testing"
-              />
-            </div>
-          </label>
-          <ul
-            tabIndex={0}
-            className="menu dropdown-content rounded-box menu-sm z-[10] mt-3 w-52 bg-base-100 p-2 shadow"
-          >
-            <li>
-              <a className="justify-between">
-                Profile
-                <span className="badge">New</span>
-              </a>
-            </li>
-            <li>
-              <a>Settings</a>
-            </li>
-            <li onClick={handleLogout}>
-              <a>Logout</a>
-            </li>
-            <li>
-              <a>
-                <span>Theme </span>
-                <label className="swap swap-rotate ">
-                  {/* this hidden checkbox controls the state */}
-                  <input type="checkbox" onClick={handleThemeChange} />
+        {session?.user ? (
+          <div className="dropdown-end dropdown">
+            <label tabIndex={0} className="avatar btn btn-circle btn-ghost">
+              <div className="w-10 rounded-full">
+                <img
+                  src="/images/stock/photo-1534528741775-53994a69daeb.jpg"
+                  alt="testing"
+                />
+              </div>
+            </label>
+            <ul
+              tabIndex={0}
+              className="menu dropdown-content rounded-box menu-sm z-[10] mt-3 w-52 bg-base-100 p-2 shadow"
+            >
+              <li>
+                <a className="justify-between">
+                  Profile
+                  <span className="badge">New</span>
+                </a>
+              </li>
+              <li>
+                <a>Settings</a>
+              </li>
+              <li onClick={handleLogout}>
+                <a>Logout</a>
+              </li>
+              <li>
+                <a>
+                  <span>Theme </span>
+                  <label className="swap swap-rotate ">
+                    {/* this hidden checkbox controls the state */}
+                    <input type="checkbox" onClick={handleThemeChange} />
 
-                  {theme === "fantasy" ? <Sun /> : <Moon />}
-                </label>
-              </a>
-            </li>
-          </ul>
-        </div>
+                    {theme === "fantasy" ? <Sun /> : <Moon />}
+                  </label>
+                </a>
+              </li>
+            </ul>
+          </div>
+        ) : (
+          <Link href={"/login"} className="pr-8">
+            <Button variant={"base-300"}>Login</Button>
+          </Link>
+        )}
       </div>
     </div>
   );
