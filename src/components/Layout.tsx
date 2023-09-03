@@ -9,8 +9,10 @@ export default function Layout({ children }) {
       className="h-screen w-screen"
       data-theme={theme == "fantasy" ? "fantasy" : "night"}
     >
-      <Navbar />
-      {children}
+      <div className="z-50 flex">
+        <Navbar />
+      </div>
+      <div className="z-0">{children}</div>
     </div>
   );
 }

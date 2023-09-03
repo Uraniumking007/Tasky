@@ -18,7 +18,7 @@ const Navbar = () => {
   }
 
   return (
-    <div className="navbar bg-base-100 drop-shadow-2xl">
+    <div className="navbar z-10 bg-base-100 drop-shadow-2xl">
       <div className="navbar-start">
         <div className="drawer lg:hidden">
           <input id="my-drawer" type="checkbox" className="drawer-toggle" />
@@ -150,7 +150,7 @@ const Navbar = () => {
           </li>
         </ul>
       </div>
-      <div className="navbar-end">
+      <div className="navbar-end z-10">
         {/* <a className="btn">Button</a> */}
         <div className="dropdown-end dropdown">
           <label tabIndex={0} className="avatar btn btn-circle btn-ghost">
@@ -163,7 +163,7 @@ const Navbar = () => {
           </label>
           <ul
             tabIndex={0}
-            className="menu dropdown-content rounded-box menu-sm z-[1] mt-3 w-52 bg-base-100 p-2 shadow"
+            className="menu dropdown-content rounded-box menu-sm z-[10] mt-3 w-52 bg-base-100 p-2 shadow"
           >
             <li>
               <a className="justify-between">
