@@ -1,8 +1,24 @@
 import type { Tasks } from "@prisma/client";
 import { Edit, Trash2 } from "lucide-react";
 import CircularButton from "./Button/circularButton";
+import { api } from "@/utils/api";
+import { toast } from "react-hot-toast";
+import SuccessToast from "./Toast/successToast";
+import { useRouter } from "next/router";
 
 function TasksView({ data }: { data: Tasks[] }) {
+  const ctx = api.useContext();
+
+  const { mutate, isLoading } = api.tasks.deleteTask.useMutation({
+    onSuccess: () => {
+      void ctx.tasks.getAll.invalidate();
+      toast.custom((t) => (
+        <SuccessToast t={t} message="Task Deleted Successfully" />
+      ));
+    },
+  });
+  const router = useRouter();
+
   return (
     <div className="flex h-fit w-full flex-col gap-5 pl-16">
       {data?.map((task: Tasks) => {
@@ -20,10 +36,19 @@ function TasksView({ data }: { data: Tasks[] }) {
               </div>
             </div>
             <div className="flex gap-2">
-              <CircularButton>
+              <CircularButton
+                onClick={() => {
+                  void router.push(`/tasks/${task.id}`);
+                }}
+              >
                 <Edit className="text-secondary-content" />
               </CircularButton>
-              <CircularButton>
+              <CircularButton
+                onClick={() => {
+                  mutate({ id: task.id });
+                }}
+                isLoading={isLoading}
+              >
                 <Trash2 className="text-secondary-content" />
               </CircularButton>
             </div>

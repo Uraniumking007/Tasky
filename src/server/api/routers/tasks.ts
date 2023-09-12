@@ -37,6 +37,45 @@ export const TaskRouter = createTRPCRouter({
         error: null,
       };
     }),
+  deleteTask: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().uuid(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const task = await prisma.tasks.findFirst({
+        where: {
+          id: input.id,
+        },
+      });
+
+      if (!task)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Task not found",
+        });
+
+      if (task.UserId !== ctx.session.user.id)
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You are not authorized to delete this task",
+        });
+
+      const data = await prisma.tasks.delete({
+        where: {
+          id: input.id,
+          UserId: ctx.session.user.id,
+        },
+      });
+
+      return {
+        status: "success",
+        message: "Task deleted successfully",
+        code: 200,
+        data,
+      };
+    }),
   getAll: protectedProcedure.query(async ({ ctx }) => {
     const tasks: Tasks[] = await prisma.tasks.findMany({
       where: {
@@ -55,4 +94,14 @@ export const TaskRouter = createTRPCRouter({
 
     return tasks;
   }),
+  getOne: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async (input) => {
+      const task: Tasks | null = await prisma.tasks.findFirst({
+        where: {
+          id: input.id,
+        },
+      });
+      return task;
+    }),
 });
