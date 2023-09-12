@@ -48,7 +48,7 @@ const Navbar = () => {
             </label>
           </div>
           <div className="drawer-side">
-            <label htmlFor="my-drawer" className="drawer-overlay"></label>
+            <label htmlFor="my-drawer" className="drawer-overlay" />
             <div className="menu h-full w-80 justify-between bg-base-200 p-4 text-base-content">
               <ul className="">
                 {/* Sidebar content here */}
