@@ -1,7 +1,10 @@
+import { nextui } from "@nextui-org/react";
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: ["class", '[data-theme="night"]'],
+  darkMode: ["class"],
   content: [
+    "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
     "./pages/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
     "./app/**/*.{ts,tsx}",
@@ -38,9 +41,43 @@ module.exports = {
   plugins: [
     require("tailwindcss-animate"),
     require("@tailwindcss/typography"),
-    require("daisyui"),
+    nextui({
+      themes: {
+        light: {
+          extend: "light",
+          colors: {
+            primary: {
+              50: "#F3F8F8",
+              100: "#E7F2F2",
+              200: "#C4DEDE",
+              300: "#A1CACB",
+              400: "#5AA3A3",
+              500: "#137B7C",
+              600: "#116F70",
+              700: "#0B4A4A",
+              800: "#093738",
+              900: "#062525",
+            },
+            secondary: {
+              50: "#FEFCF3",
+              100: "#FDF8E8",
+              200: "#FBEEC5",
+              300: "#F9E4A1",
+              400: "#F4D05B",
+              500: "#EFBC15",
+              600: "#D7A913",
+              700: "#8F710D",
+              800: "#6C5509",
+              900: "#483806",
+            },
+            success: "#1fb761",
+            warning: "#e1a014",
+            background: "f0ebf4",
+            foreground: "#000000",
+            danger: "#f75964",
+          },
+        },
+      },
+    }),
   ],
-  daisyui: {
-    themes: ["night", "fantasy"],
-  },
 };
