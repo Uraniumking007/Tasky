@@ -8,8 +8,8 @@ import Loading from "@/components/Loading";
 import TasksView from "@/components/TaskView";
 import Layout from "@/components/Layout";
 import toast, { Toaster } from "react-hot-toast";
-import SuccessToast from "@/components/Toast/successToast";
-import ErrorToast from "@/components/Toast/errorToast";
+import SuccessToast from "@/components/Toasts/successToast";
+import ErrorToast from "@/components/Toasts/errorToast";
 import TaskPopUp from "@/components/PopUp/TaskPopUp";
 
 const options: { label: string; value: string }[] = [

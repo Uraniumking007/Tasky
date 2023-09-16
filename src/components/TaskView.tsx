@@ -1,9 +1,9 @@
 import type { Tasks } from "@prisma/client";
 import { Edit, Trash2 } from "lucide-react";
-import CircularButton from "./Button/circularButton";
+import CircularButton from "./Buttons/circularButton";
 import { api } from "@/utils/api";
 import { toast } from "react-hot-toast";
-import SuccessToast from "./Toast/successToast";
+import SuccessToast from "./Toasts/successToast";
 import { useRouter } from "next/router";
 
 function TasksView({ data }: { data: Tasks[] }) {

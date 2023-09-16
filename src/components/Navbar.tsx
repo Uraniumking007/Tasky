@@ -5,10 +5,13 @@ import { signOut, useSession } from "next-auth/react";
 import { Moon, Sun } from "lucide-react";
 import { Button } from "./ui/button";
 import Link from "next/link";
+import { useDisclosure } from "@nextui-org/react";
+import LoginModal from "./Modals/loginModal";
 
 const Navbar = () => {
   const [theme, setTheme] = useAtom(themeAtom);
   const { data: session } = useSession();
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   function handleThemeChange() {
     setTheme(theme === "fantasy" ? "night" : "fantasy");
@@ -195,9 +198,11 @@ const Navbar = () => {
             </ul>
           </div>
         ) : (
-          <Link href={"/login"} className="pr-8">
-            <Button variant={"base-300"}>Login</Button>
-          </Link>
+          <LoginModal
+            isOpen={isOpen}
+            onOpen={onOpen}
+            onOpenChange={onOpenChange}
+          />
         )}
       </div>
     </div>

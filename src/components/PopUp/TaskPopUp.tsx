@@ -16,8 +16,8 @@ import { DatePickerDemo } from "../ui/datePicker";
 import { MantineProvider, MultiSelect } from "@mantine/core";
 import DefaultItem from "@/pages/tasks/components/defaultItem";
 import { toast } from "react-hot-toast";
-import SuccessToast from "../Toast/successToast";
-import ErrorToast from "../Toast/errorToast";
+import SuccessToast from "../Toasts/successToast";
+import ErrorToast from "../Toasts/errorToast";
 import { themeAtom } from "@/utils/atoms";
 import { useAtom } from "jotai";
 

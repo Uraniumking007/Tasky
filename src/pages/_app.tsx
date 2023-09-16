@@ -5,6 +5,7 @@ import { api } from "@/utils/api";
 import "@/styles/globals.css";
 import type { ReactElement, ReactNode } from "react";
 import type { NextPage } from "next";
+import { NextUIProvider } from "@nextui-org/react";
 
 export type NextPageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -21,7 +22,9 @@ const MyApp: AppType<{ session: Session | null }> = ({
 
   return (
     <SessionProvider session={session}>
-      {getLayout(<Component {...pageProps} />)}{" "}
+      <NextUIProvider>
+        {getLayout(<Component {...pageProps} />)}{" "}
+      </NextUIProvider>
     </SessionProvider>
   );
 };
