@@ -11,6 +11,8 @@ import {
   ModalFooter,
   Button,
 } from "@nextui-org/react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/router";
 
 const LoginModal = ({
   isOpen,
@@ -18,9 +20,31 @@ const LoginModal = ({
   onOpenChange,
 }: Partial<ReturnType<typeof useDisclosure>>) => {
   // const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const handleLogin = () => {
-    console.log("login");
+  const [loginData, setLoginData] = useState({
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState("");
+  const router = useRouter();
+
+  const handleLogin = async () => {
+    const data = signIn("credentials", {
+      email: loginData.email,
+      password: loginData.password,
+      callbackUrl: `${window.location.origin}/tasks`,
+      redirect: false,
+    });
+
+    await data.then((res) => {
+      if (res?.status === 401) {
+        setError("Invalid Email or Password");
+      }
+      if (res?.status === 200) {
+        void router.push("/tasks");
+      }
+    });
   };
+
   const [isVisible, setIsVisible] = useState(false);
 
   const toggleVisibility = () => setIsVisible(!isVisible);
@@ -38,12 +62,20 @@ const LoginModal = ({
                   variant={"bordered"}
                   label="Email"
                   placeholder="Enter your email"
+                  defaultValue={loginData.email}
+                  onChange={(e) => {
+                    setLoginData({ ...loginData, email: e.target.value });
+                  }}
                 />
 
                 <Input
                   label="Password"
                   variant="bordered"
                   placeholder="Enter your password"
+                  defaultValue={loginData.password}
+                  onChange={(e) => {
+                    setLoginData({ ...loginData, password: e.target.value });
+                  }}
                   endContent={
                     <button
                       className="focus:outline-none"
@@ -59,12 +91,13 @@ const LoginModal = ({
                   }
                   type={isVisible ? "text" : "password"}
                 />
+                {error && <p className="text-sm text-red-500">{error}</p>}
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>
                   Close
                 </Button>
-                <Button color="primary" onPress={handleLogin}>
+                <Button color="primary" onPress={() => void handleLogin()}>
                   Login
                 </Button>
               </ModalFooter>
