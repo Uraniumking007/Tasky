@@ -8,6 +8,7 @@ import { Player } from "@lottiefiles/react-lottie-player";
 import Layout from "@/components/Layout";
 import type { ReactElement } from "react";
 import Loading from "@/components/Loading";
+import { Button } from "@nextui-org/react";
 
 export default function Home(props) {
   const { data: sessionData, status } = useSession();
@@ -23,22 +24,22 @@ export default function Home(props) {
       <Head>
         <title>Tasky</title>
       </Head>
-      <main className="flex h-full flex-col items-center justify-center overflow-auto bg-gradient-to-b from-base-100 to-base-300">
+      <main className="flex h-full flex-col items-center justify-center overflow-auto bg-background">
         <div className="flex items-center justify-center gap-4">
           <div className="flex flex-col items-center justify-center gap-4 text-center">
-            <h1 className="text-4xl font-bold">Tasky</h1>
-            <p className="w-1/2 text-base sm:text-xl">
+            <h1 className="text-4xl font-bold text-content1">Tasky</h1>
+            <p className="w-1/2 text-content1 sm:text-xl">
               A simple task manager for your everyday tasks be they may perosnal
               or corporate.
             </p>
             {status === "authenticated" ? (
-              <button className="btn rounded-full bg-base-100 px-10 py-3 font-semibold normal-case text-base-content no-underline shadow-sm transition hover:bg-base-200">
+              <Button radius="full">
                 <Link href={"/tasks"}>Get Started</Link>
-              </button>
+              </Button>
             ) : (
-              <button className="btn rounded-full bg-base-100 px-10 py-3 font-semibold normal-case text-base-content no-underline shadow-sm transition hover:bg-base-200">
+              <Button radius="full">
                 <Link href={"/login"}>Get Started</Link>
-              </button>
+              </Button>
             )}
           </div>
           <Player
