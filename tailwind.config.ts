@@ -2,7 +2,7 @@ import { nextui } from "@nextui-org/react";
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: ["class"],
+  darkMode: "class",
   content: [
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
     "./pages/**/*.{ts,tsx}",
@@ -75,6 +75,40 @@ module.exports = {
             background: "f0ebf4",
             foreground: "#000000",
             danger: "#f75964",
+          },
+        },
+        dark: {
+          extend: "dark",
+          colors: {
+            primary: {
+              50: "#F7FFF9",
+              100: "#EFFFF3",
+              200: "#D7FEE1",
+              300: "#BEFECE",
+              400: "#8EFDAA",
+              500: "#5DFC85",
+              600: "#54E378",
+              700: "#389750",
+              800: "#2A713C",
+              900: "#1C4C28",
+            },
+            secondary: {
+              50: "#FBF8F4",
+              100: "#F8F1E9",
+              200: "#EDDCC9",
+              300: "#E1C7A8",
+              400: "#CB9E67",
+              500: "#B57426",
+              600: "#A36822",
+              700: "#6D4617",
+              800: "#513411",
+              900: "#36230B",
+            },
+            success: "#21c090",
+            warning: "#9a5c04",
+            background: "#35353b",
+            foreground: "#8994f9",
+            danger: "#f3496b",
           },
         },
       },
