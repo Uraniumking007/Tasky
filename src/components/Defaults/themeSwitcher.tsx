@@ -33,7 +33,7 @@ export const ThemeSwitcher = () => {
       size="lg"
       color="secondary"
       thumbIcon={({ isSelected }) =>
-        isSelected ? <SunIcon className="text-black" /> : <MoonIcon />
+        isSelected ? <MoonIcon className="text-neutral-900" /> : <SunIcon />
       }
       onClick={handleThemeChange}
     />
