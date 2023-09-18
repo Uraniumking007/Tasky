@@ -96,7 +96,7 @@ export const TaskRouter = createTRPCRouter({
   }),
   getOne: protectedProcedure
     .input(z.object({ id: z.string() }))
-    .query(async (input) => {
+    .query(async ({ input }) => {
       const task: Tasks | null = await prisma.tasks.findFirst({
         where: {
           id: input.id,
