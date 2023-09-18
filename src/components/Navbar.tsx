@@ -1,27 +1,19 @@
-import React, { useState } from "react";
+import React from "react";
 
 import {
   Navbar,
   NavbarBrand,
   NavbarContent,
-  NavbarItem,
-  Link,
   DropdownItem,
   DropdownTrigger,
   Dropdown,
   DropdownMenu,
   Avatar,
-  Button,
   useDisclosure,
-  user,
+  Button,
 } from "@nextui-org/react";
-import { ThemeSwitcher } from "./Defaults/themeSwitcher";
 import { signOut, useSession } from "next-auth/react";
-import LoginModal from "./Modals/loginModal";
-import { User } from "@prisma/client";
-import { AdapterUser } from "next-auth/adapters";
-import { SessionUserTypes } from "@/utils/types";
-// import { AcmeLogo } from "./AcmeLogo.jsx";
+import LoginModal from "./loginModal";
 
 export default function App() {
   const { data, status } = useSession();
@@ -40,7 +32,6 @@ export default function App() {
         <p className="font-bold text-inherit">TASKY</p>
       </NavbarBrand>
       <NavbarContent as="div" justify="end">
-        <ThemeSwitcher />
         {data?.user ? (
           <Dropdown placement="bottom-end">
             <DropdownTrigger>
@@ -73,11 +64,7 @@ export default function App() {
             </DropdownMenu>
           </Dropdown>
         ) : (
-          <LoginModal
-            isOpen={isOpen}
-            onOpen={onOpen}
-            onOpenChange={onOpenChange}
-          />
+          <LoginModal />
         )}
       </NavbarContent>
     </Navbar>
