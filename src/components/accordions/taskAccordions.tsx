@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 
 import { Accordion, AccordionItem, Button } from "@nextui-org/react";
 import type { Tasks } from "@prisma/client";
