@@ -14,6 +14,7 @@ import {
 } from "@nextui-org/react";
 import { signOut, useSession } from "next-auth/react";
 import LoginModal from "./loginModal";
+import ThemeSwitcher from "./themeSwitcher";
 
 export default function App() {
   const { data, status } = useSession();
@@ -32,6 +33,7 @@ export default function App() {
         <p className="font-bold text-inherit">TASKY</p>
       </NavbarBrand>
       <NavbarContent as="div" justify="end">
+        <ThemeSwitcher />
         {data?.user ? (
           <Dropdown placement="bottom-end">
             <DropdownTrigger>
