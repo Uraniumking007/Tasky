@@ -43,7 +43,6 @@ module.exports = {
     require("@tailwindcss/typography"),
     nextui({
       themes: {
-        colors: {},
         light: {
           extend: "light",
           colors: {
@@ -71,11 +70,11 @@ module.exports = {
               800: "#6C5509",
               900: "#483806",
             },
-            content1: "##bdc3c7",
+            content1: "#bdc3c7",
             content2: "#f0ebf4",
             warning: "#e1a014",
             background: "#f0ebf4",
-            foreground: "#bdc3c7",
+            foreground: "#000000",
             danger: "#f75964",
           },
         },
