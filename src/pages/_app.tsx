@@ -7,6 +7,7 @@ import type { ReactElement, ReactNode } from "react";
 import type { NextPage } from "next";
 import { NextUIProvider } from "@nextui-org/react";
 import { ThemeProvider } from "next-themes";
+import { Toaster } from "react-hot-toast";
 
 export type NextPageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -30,6 +31,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
       >
         <SessionProvider session={session}>
           {getLayout(<Component {...pageProps} />)}
+          <Toaster position="bottom-right" reverseOrder={false} />
         </SessionProvider>
       </ThemeProvider>
     </NextUIProvider>
