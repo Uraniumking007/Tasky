@@ -23,7 +23,11 @@ const MyApp: AppType<{ session: Session | null }> = ({
 
   return (
     <NextUIProvider>
-      <ThemeProvider attribute="class" defaultTheme="dark">
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="dark"
+        themes={["light", "dark"]}
+      >
         <SessionProvider session={session}>
           {getLayout(<Component {...pageProps} />)}
         </SessionProvider>
