@@ -1,13 +1,18 @@
-import TasksAccordions from "@/components/Accordions/taskAccordions";
+import TasksAccordions from "@/components/accordions/taskAccordions";
 import Layout from "@/components/Layout";
 import Loading from "@/components/Loading";
 import { api } from "@/utils/api";
+import { Button } from "@nextui-org/react";
+import { Edit2Icon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import type { ReactElement } from "react";
 
 export default function Tasks(props) {
   const { data: sessionData, status } = useSession();
+  const { data, isFetching, error } = api.tasks.getAll.useQuery(undefined, {
+    enabled: !!sessionData?.user,
+  });
   const router = useRouter();
 
   if (status === "loading") {
@@ -18,9 +23,6 @@ export default function Tasks(props) {
     void router.push("/login");
   }
 
-  const { data, isFetching, error } = api.tasks.getAll.useQuery(undefined, {
-    enabled: !!sessionData?.user,
-  });
   console.log(error);
 
   if (isFetching) return <Loading />;

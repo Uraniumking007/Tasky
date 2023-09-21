@@ -27,7 +27,9 @@ export default function Home(props) {
       <main className="flex h-full flex-col items-center justify-center overflow-auto bg-background">
         <div className="flex items-center justify-center gap-4">
           <div className="flex flex-col items-center justify-center gap-4 text-center">
-            <h1 className="text-4xl font-bold text-content1">Tasky</h1>
+            <h1 className="text-4xl font-bold text-black dark:text-white">
+              Tasky
+            </h1>
             <p className="w-1/2 text-black dark:text-white sm:text-xl">
               A simple task manager for your everyday tasks be they may perosnal
               or corporate.
