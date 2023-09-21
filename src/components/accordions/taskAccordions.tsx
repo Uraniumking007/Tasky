@@ -47,7 +47,7 @@ export default function TasksAccordions({ tasks }: { tasks: Tasks[] }) {
                 <div>
                   <PriorityChip title={task.Priority} />
                 </div>
-                <div>
+                <div className="flex gap-1">
                   <Button
                     radius="full"
                     className="w-fit min-w-fit p-0 px-3 py-2"
