@@ -95,8 +95,18 @@ export const TaskRouter = createTRPCRouter({
     return tasks;
   }),
   getOne: protectedProcedure
-    .input(z.object({ id: z.string() }))
+    .input(
+      z.object({
+        id: z.union([z.string().uuid(), z.undefined(), z.string().array()]),
+      })
+    )
     .query(async ({ input, ctx }) => {
+      if (Array.isArray(input.id) || input.id === undefined) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Multiple ids not allowed",
+        });
+      }
       const task: Tasks | null = await prisma.tasks.findFirst({
         where: {
           id: input.id,

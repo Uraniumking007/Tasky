@@ -2,8 +2,6 @@ import TasksAccordions from "@/components/accordions/taskAccordions";
 import Layout from "@/components/Layout";
 import Loading from "@/components/Loading";
 import { api } from "@/utils/api";
-import { Button } from "@nextui-org/react";
-import { Edit2Icon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import type { ReactElement } from "react";
