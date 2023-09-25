@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import React, { useState, type ReactElement } from "react";
 import type { Selection } from "@nextui-org/react";
 
-import { PriorityCategories } from "./data";
+import { PriorityCategories } from "@/utils/data";
 import { DatePicker } from "@/components/ui/datePicker";
 
 const EditTasksPage = (props) => {
