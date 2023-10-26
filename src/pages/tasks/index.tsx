@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import type { ReactElement } from "react";
 
-export default function Tasks(props) {
+export default function Tasks() {
   const { data: sessionData, status } = useSession();
   const { data, isFetching, error } = api.tasks.getAll.useQuery(undefined, {
     enabled: !!sessionData?.user,
