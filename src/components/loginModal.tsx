@@ -77,7 +77,7 @@ export default function LoginModal() {
                       label: "text-small",
                     }}
                   >
-                    <span className="text-content2">Remember me</span>
+                    <span>Remember me</span>
                   </Checkbox>
                   <Link color="primary" href="#" size="sm">
                     Forgot password?
