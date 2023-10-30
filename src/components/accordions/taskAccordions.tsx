@@ -33,43 +33,51 @@ export default function TasksAccordions({ tasks }: { tasks: Tasks[] }) {
   }
 
   return (
-    <Accordion>
-      {tasks.map((task) => {
-        return (
-          <AccordionItem
-            key={task.id}
-            aria-label={`Tasks ${task.id}`}
-            title={task.Title}
-          >
-            <div className="flex w-full flex-col">
-              <p>{task.Description}</p>
-              <div className="flex items-center justify-between">
-                <div>
-                  <PriorityChip title={task.Priority} />
-                </div>
-                <div className="flex gap-1">
-                  <Button
-                    radius="full"
-                    className="w-fit min-w-fit p-0 px-3 py-2"
-                    onClick={() => handleEdit(task)}
-                    disabled={active}
-                  >
-                    <Edit2Icon size={"15px"} />
-                  </Button>
-                  <Button
-                    radius="full"
-                    className="w-fit min-w-fit p-0 px-3 py-2"
-                    onClick={() => handleDelete(task)}
-                    disabled={isLoading}
-                  >
-                    <Trash2Icon size={"15px"} />
-                  </Button>
+    <>
+      <div>
+        <div>task title</div>
+        <div>priority dropdown</div>
+        <div>completion status</div>
+      </div>
+
+      <Accordion>
+        {tasks.map((task) => {
+          return (
+            <AccordionItem
+              key={task.id}
+              aria-label={`Tasks ${task.id}`}
+              title={task.Title}
+            >
+              <div className="flex w-full flex-col">
+                <p className="text-content1">{task.Description}</p>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <PriorityChip title={task.Priority} />
+                  </div>
+                  <div className="flex gap-1">
+                    <Button
+                      radius="full"
+                      className="w-fit min-w-fit p-0 px-3 py-2"
+                      onClick={() => handleEdit(task)}
+                      disabled={active}
+                    >
+                      <Edit2Icon size={"15px"} />
+                    </Button>
+                    <Button
+                      radius="full"
+                      className="w-fit min-w-fit p-0 px-3 py-2"
+                      onClick={() => handleDelete(task)}
+                      disabled={isLoading}
+                    >
+                      <Trash2Icon size={"15px"} />
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          </AccordionItem>
-        );
-      })}
-    </Accordion>
+            </AccordionItem>
+          );
+        })}
+      </Accordion>
+    </>
   );
 }

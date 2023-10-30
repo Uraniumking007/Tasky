@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-
 import {
   Modal,
   ModalContent,
@@ -14,8 +13,6 @@ import {
 } from "@nextui-org/react";
 import { Mail, Lock } from "lucide-react";
 import { signIn } from "next-auth/react";
-// import { MailIcon } from "./MailIcon.jsx";
-// import { LockIcon } from "./LockIcon.jsx";
 
 export default function LoginModal() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
