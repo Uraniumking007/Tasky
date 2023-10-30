@@ -40,7 +40,7 @@ export default function Home(props) {
               </Button>
             ) : (
               <Button radius="full">
-                <Link href={"/login"}>Get Started</Link>
+                <Link href={"/auth/login"}>Get Started</Link>
               </Button>
             )}
           </div>
