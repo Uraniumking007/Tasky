@@ -10,7 +10,7 @@ import type {
 import bcrypt from "bcryptjs";
 import { env } from "@/env.mjs";
 import { prisma } from "@/server/db";
-import Credentials from "next-auth/providers/credentials";
+import CredentialsProvider from "next-auth/providers/credentials";
 import type { JWT } from "next-auth/jwt";
 import type { User } from "@prisma/client";
 import type { AdapterUser } from "next-auth/adapters";
@@ -69,7 +69,7 @@ export const authOptions: NextAuthOptions = {
 
   adapter: PrismaAdapter(prisma),
   providers: [
-    Credentials({
+    CredentialsProvider({
       name: "credentials",
       credentials: {
         email: { label: "E-Mail", placeholder: "user@mail.com", type: "text" },
