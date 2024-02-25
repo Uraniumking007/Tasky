@@ -37,7 +37,7 @@ export default function Home(props) {
               </button>
             ) : (
               <button className="btn rounded-full bg-base-100 px-10 py-3 font-semibold normal-case text-base-content no-underline shadow-sm transition hover:bg-base-200">
-                <Link href={"/login"}>Get Started</Link>
+                <Link href={"/register"}>Get Started</Link>
               </button>
             )}
           </div>

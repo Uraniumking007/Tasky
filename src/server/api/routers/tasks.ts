@@ -99,7 +99,7 @@ export const TaskRouter = createTRPCRouter({
     .query(async (input) => {
       const task: Tasks | null = await prisma.tasks.findFirst({
         where: {
-          id: input.id,
+          id: input.input.id,
         },
       });
       return task;
