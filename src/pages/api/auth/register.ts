@@ -28,20 +28,20 @@ async function post(req: NextApiRequest, res: NextApiResponse) {
     username: string;
     confirmPassword: string;
   };
-  if (password !== confirmPassword) {
-    res.status(400).json("Passwords do not match");
-    return;
-  }
-  if (password.length < 6) {
-    res.status(400).json("Password must be at least 8 characters");
-    return;
-  }
   if (username.length < 3) {
     res.status(400).json("Username must be at least 3 characters");
     return;
   }
   if (email.length < 3) {
     res.status(400).json("Email is Invalid");
+    return;
+  }
+  if (password !== confirmPassword) {
+    res.status(400).json("Passwords do not match");
+    return;
+  }
+  if (password.length < 6) {
+    res.status(400).json("Password must be at least 8 characters");
     return;
   }
 
