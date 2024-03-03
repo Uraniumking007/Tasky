@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { getTasks, postTask } from "./server_actions/tasks";
+import { getTasks, postTask } from "./_server_actions/tasks";
 import { CreateTask } from "@/components/create-post-dialog";
 
 export default async function Home() {
