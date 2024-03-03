@@ -1,0 +1,49 @@
+{
+  "id": "8d40ee19-0368-4524-ac00-72dc948b5892",
+  "prevId": "96ed7430-c200-4983-870b-7a613e4fa3c3",
+  "version": "5",
+  "dialect": "pg",
+  "tables": {
+    "tasks": {
+      "name": "tasks",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "task": {
+          "name": "task",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "due-date": {
+          "name": "due-date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sub-tasks": {
+          "name": "sub-tasks",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
