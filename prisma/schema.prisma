@@ -16,9 +16,12 @@ model Tasks {
   isComplete  Boolean
   Categories  Json[]    @default([])
   UserId      String
+  users       users     @relation(fields: [UserId], references: [id], onDelete: Cascade)
   Priority    String    @default("No Priority")
   CreatedAt   DateTime  @default(now())
   Deadline    DateTime?
+  owner_id    String?
+  Organizations Organizations? @relation(fields: [owner_id], references: [id], onUpdate: Cascade)
 
   @@schema("tasky")
 }
@@ -32,6 +35,7 @@ model Organizations {
   updatedAt   DateTime
   owner_id    String
   users       users    @relation(fields: [owner_id], references: [id], onUpdate: Restrict)
+  Tasks       Tasks[]
 
   @@schema("tasky")
 }
@@ -95,6 +99,7 @@ model users {
   accounts       accounts[]
   sessions       sessions[]
   Organizations  Organizations[]
+  Tasks          Tasks[]
 
   @@schema("public")
 }
