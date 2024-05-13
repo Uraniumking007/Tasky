@@ -47,7 +47,7 @@ async function post(req: NextApiRequest, res: NextApiResponse) {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const existingUser = await prisma.user.findUnique({
+  const existingUser = await prisma.users.findUnique({
     where: {
       email,
       username,
@@ -59,7 +59,7 @@ async function post(req: NextApiRequest, res: NextApiResponse) {
     return;
   }
 
-  const user = await prisma.user.create({
+  const user = await prisma.users.create({
     data: {
       id: crypto.randomUUID(),
       email,

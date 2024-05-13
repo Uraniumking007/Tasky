@@ -3,10 +3,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { themeAtom } from "@/utils/atoms";
-import { User } from "@prisma/client";
 import { useAtom } from "jotai";
 import { signIn } from "next-auth/react";
-import { redirect } from "next/dist/server/api-utils";
 import Link from "next/link";
 import React, { type FormEvent } from "react";
 

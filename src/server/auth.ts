@@ -12,7 +12,7 @@ import { env } from "@/env.mjs";
 import { prisma } from "@/server/db";
 import Credentials from "next-auth/providers/credentials";
 import type { JWT } from "next-auth/jwt";
-import type { User } from "@prisma/client";
+import type { users } from "@prisma/client";
 import type { AdapterUser } from "next-auth/adapters";
 
 declare module "next-auth" {
@@ -24,7 +24,7 @@ declare module "next-auth" {
   }
 }
 declare module "next-auth/adapters" {
-  interface AdapterUser extends User {
+  interface AdapterUser extends users {
     id: string;
     username: string;
   }
@@ -82,7 +82,7 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         const { email, password } = credentials!;
 
-        const user = await prisma.user.findFirst({
+        const user = await prisma.users.findFirst({
           where: {
             email,
           },
