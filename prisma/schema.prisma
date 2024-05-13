@@ -23,6 +23,19 @@ model Tasks {
   @@schema("tasky")
 }
 
+model Organizations {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String
+  description String
+  logo        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+  owner_id    String
+  users       users    @relation(fields: [owner_id], references: [id], onUpdate: Restrict)
+
+  @@schema("tasky")
+}
+
 model Projects {
   id               String    @id
   name             String
@@ -70,16 +83,18 @@ model sessions {
 }
 
 model users {
-  id             String     @id
+  id             String          @id
   name           String?
-  email          String?    @unique
+  email          String?         @unique
   email_verified DateTime?
-  username       String     @unique
+  username       String          @unique
   image          String?
   password       String
-  isAdmin        Boolean    @default(false)
+  isAdmin        Boolean         @default(false)
+  isDemo         Boolean         @default(false)
   accounts       accounts[]
   sessions       sessions[]
+  Organizations  Organizations[]
 
   @@schema("public")
 }
