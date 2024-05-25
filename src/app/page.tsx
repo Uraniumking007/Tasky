@@ -1,82 +1,102 @@
 import Link from "next/link";
 
-import { CreatePost } from "@/app/_components/create-post";
 import { getServerAuthSession } from "@/server/auth";
-import { api } from "@/trpc/server";
+import Navbar from "@/components/navbar";
+import { Button, buttonVariants } from "@/components/ui/button";
 
 export default async function Home() {
-  const hello = await api.post.hello({ text: "from tRPC" });
   const session = await getServerAuthSession();
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-      <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-        <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-          Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
-        </h1>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
+    <main className="flex w-full flex-col">
+      <Navbar />
+      <section className="w-full snap-y snap-mandatory overflow-scroll bg-background">
+        <div className="container mx-auto flex h-screen shrink-0 snap-start snap-always flex-col items-center justify-center gap-4 p-4">
+          <h1 className="w-7/12 text-center text-6xl font-bold text-primary">
+            Organize, Collaborate, and Achieve More with Tasky
+          </h1>
+          <p className="w-7/12 text-center text-xl text-foreground ">
+            Tasky is designed to streamline your team's workflow, ensuring that
+            every project runs smoothly from start to finish. With our intuitive
+            interface and powerful features, managing team tasks has never been
+            easier.
+          </p>
           <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-            href="https://create.t3.gg/en/usage/first-steps"
-            target="_blank"
+            href={session ? "/dashboard" : "/signup"}
+            className={buttonVariants({
+              variant: "default",
+              size: "lg",
+            })}
           >
-            <h3 className="text-2xl font-bold">First Steps →</h3>
-            <div className="text-lg">
-              Just the basics - Everything you need to know to set up your
-              database and authentication.
-            </div>
-          </Link>
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-            href="https://create.t3.gg/en/introduction"
-            target="_blank"
-          >
-            <h3 className="text-2xl font-bold">Documentation →</h3>
-            <div className="text-lg">
-              Learn more about Create T3 App, the libraries it uses, and how to
-              deploy it.
-            </div>
+            Get Started
           </Link>
         </div>
-        <div className="flex flex-col items-center gap-2">
-          <p className="text-2xl text-white">
-            {hello ? hello.greeting : "Loading tRPC query..."}
-          </p>
-
-          <div className="flex flex-col items-center justify-center gap-4">
-            <p className="text-center text-2xl text-white">
-              {session && <span>Logged in as {session.user?.name}</span>}
-            </p>
-            <Link
-              href={session ? "/api/auth/signout" : "/api/auth/signin"}
-              className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
-            >
-              {session ? "Sign out" : "Sign in"}
-            </Link>
+        <div className="container mx-auto flex h-screen shrink-0 snap-center snap-always flex-col items-center justify-center gap-8 p-4">
+          <h1 className="w-7/12 text-center text-6xl font-bold text-primary">
+            Why Choose Tasky?
+          </h1>
+          <div className="grid grid-cols-2 gap-6">
+            <ul className="list-disc">
+              <p className="text-xl font-bold">Effortless Team Collaboration</p>
+              <li>Create and manage teams effortlessly.</li>
+              <li>Collaborate in real-time with your team members.</li>
+            </ul>
+            <ul className="list-disc">
+              <p className="text-xl font-bold">Seamless Task Assignment</p>
+              <li>Assign tasks to team members with just a few clicks.</li>
+              <li>Track progress and stay updated on task statuses.</li>
+            </ul>
+            <ul className="list-disc">
+              <p className="text-xl font-bold">Stay Organized</p>
+              <li>Keep all your tasks in one place.</li>
+              <li>Prioritize, categorize, and manage tasks effectively.</li>
+            </ul>
+            <ul className="list-disc">
+              <p className="text-xl font-bold">Stay Organized</p>
+              <li>
+                Enhance your team's productivity with streamlined task
+                management.
+              </li>
+              <li>
+                Meet deadlines consistently and achieve your goals faster.
+              </li>
+            </ul>
           </div>
         </div>
-
-        <CrudShowcase />
-      </div>
+        <div className="container mx-auto flex h-screen shrink-0 snap-center snap-always flex-col items-center justify-center gap-8 p-4">
+          <h1 className="w-7/12 text-center text-6xl font-bold text-primary">
+            Features
+          </h1>
+          <div className="grid grid-cols-2 gap-6">
+            <ul className="list-disc">
+              <p className="text-xl font-bold">Create Teams and Manage Tasks</p>
+              <li>Easily create teams and add members.</li>
+              <li>Assign tasks to specific team members and set due dates.</li>
+              <li>Track task progress and receive notifications on updates.</li>
+            </ul>
+            <ul className="list-disc">
+              <p className="text-xl font-bold"> Intuitive Dashboard</p>
+              <li>Get an overview of all your tasks and deadlines.</li>
+              <li>Visualize your team&prime;s progress and productivity.</li>
+            </ul>
+            <ul className="list-disc">
+              <p className="text-xl font-bold">Task Prioritization</p>
+              <li>Prioritize tasks to focus on what matters most.</li>
+              <li>Use labels and categories to organize tasks efficiently.</li>
+            </ul>
+            <ul className="list-disc">
+              <p className="text-xl font-bold">Real-Time Collaboration</p>
+              <li>Communicate with your team in real-time.</li>
+              <li>Share files, leave comments, and get instant feedback.</li>
+            </ul>
+            <ul className="list-disc">
+              <p className="text-xl font-bold">Customizable Workflows</p>
+              <li>Adapt Tasky to fit your team's unique workflow.</li>
+              <li>Create custom task statuses and templates.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
     </main>
-  );
-}
-
-async function CrudShowcase() {
-  const session = await getServerAuthSession();
-  if (!session?.user) return null;
-
-  const latestPost = await api.post.getLatest();
-
-  return (
-    <div className="w-full max-w-xs">
-      {latestPost ? (
-        <p className="truncate">Your most recent post: {latestPost.name}</p>
-      ) : (
-        <p>You have no posts yet.</p>
-      )}
-
-      <CreatePost />
-    </div>
   );
 }
