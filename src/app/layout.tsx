@@ -2,6 +2,7 @@ import "@/styles/globals.css";
 import { Nunito } from "next/font/google";
 
 import { TRPCReactProvider } from "@/trpc/react";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata = {
   title: "Create T3 App",
@@ -22,8 +23,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${nunito.className}`}>
-      <body className="flex h-screen w-screen justify-center">
+      <body className="dark flex h-screen w-screen justify-center">
         <TRPCReactProvider>{children}</TRPCReactProvider>
+        <Toaster />
       </body>
     </html>
   );
