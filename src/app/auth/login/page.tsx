@@ -12,14 +12,16 @@ export default function LoginPage() {
 
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const email = e.currentTarget.email.value;
-    const password = e.currentTarget.password.value;
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("username") as string;
+    const password = formData.get("password") as string;
 
     try {
       await signIn("credentials", {
         email,
         password,
-        redirect: false,
+        redirect: true,
+        callbackUrl: "/home",
       });
     } catch (error) {
       setError("Invalid email or password");
@@ -32,19 +34,25 @@ export default function LoginPage() {
       className="flex h-full w-2/4 flex-col items-center justify-center gap-4"
     >
       <div className="flex w-full flex-col">
-        <label htmlFor="email">Email</label>
-        <Input type="email" id="email" placeholder="yourmail@mail.com" />
+        <label htmlFor="username">Username</label>
+        <Input
+          type="username"
+          id="username"
+          name="username"
+          placeholder="username"
+        />
       </div>
       <div className="flex w-full flex-col">
         <label htmlFor="password">Password</label>
         <Input
           type={showPassword ? "text" : "password"}
           id="password"
+          name="password"
           placeholder="********"
         />
         <button
           onClick={() => setShowPassword(!showPassword)}
-          className="-mt-[4.7%] mr-2 self-end"
+          className="-mt-[7.6%] mr-2 self-end md:-mt-[4.7%]"
         >
           {showPassword ? <IconEye size={20} /> : <IconEyeOff size={20} />}
         </button>
@@ -53,7 +61,7 @@ export default function LoginPage() {
       <div className="flex w-full justify-between">
         <Link href={"/auth/register"}>Don't have a account? Create new!</Link>
         <button
-          className="bg-primary text-primary-foreground rounded-md px-4 py-2"
+          className="rounded-md bg-primary px-4 py-2 text-primary-foreground"
           type="submit"
         >
           Login
