@@ -7,6 +7,15 @@ import { Button, buttonVariants } from "@/components/ui/button";
 export default async function Home() {
   const session = await getServerAuthSession();
 
+  if (session?.user) {
+    return {
+      redirect: {
+        destination: "/home",
+        permanent: false,
+      },
+    };
+  }
+
   return (
     <main className="flex w-full flex-col">
       <Navbar />
@@ -22,7 +31,7 @@ export default async function Home() {
             easier.
           </p>
           <Link
-            href={session ? "/dashboard" : "/signup"}
+            href={session?.user ? "/dashboard" : "/auth/register"}
             className={buttonVariants({
               variant: "default",
               size: "lg",
