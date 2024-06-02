@@ -10,10 +10,11 @@ import {
 } from "./ui/navigation-menu";
 import Image from "next/image";
 import { Button } from "./ui/button";
+import Link from "next/link";
 
 export default function Navbar() {
   return (
-    <div className="shadow-nav w-full shadow-current ">
+    <div className="w-full shadow-nav shadow-current ">
       <NavigationMenu>
         <NavigationMenuList>
           <Image src={"/logo.png"} alt="logo" width={64} height={64} />
@@ -29,8 +30,10 @@ export default function Navbar() {
               <NavigationMenuLink>Link</NavigationMenuLink>
             </NavigationMenuContent>
           </NavigationMenuItem>
-          <Button>Get Started</Button>
         </NavigationMenuList>
+        <Link href={"/auth/login"}>
+          <Button>Get Started</Button>
+        </Link>
       </NavigationMenu>
     </div>
   );
