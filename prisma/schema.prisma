@@ -17,7 +17,34 @@ model User {
     password   String
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt
+    active_team String?
+    teams      Team[]
     tasks      Task[]
+}
+
+model Team {
+    id        String   @id @default(cuid())
+    name      String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    ownerId   String
+    users     User  @relation(fields: [ownerId], references: [id])
+    member1   String?
+    member2   String?
+    member3   String?
+    member4   String?
+    member5   String?
+    member6   String?
+    member7   String?
+    member8   String?
+    member1_role String?
+    member2_role String?
+    member3_role String?
+    member4_role String?
+    member5_role String?
+    member6_role String?
+    member7_role String?
+    member8_role String?
 }
 
 model Task {
