@@ -15,11 +15,13 @@ declare module "next-auth" {
   interface User {
     username: string;
     email: string;
+    active_team: string | null;
   }
   interface Session extends DefaultSession {
     user: {
       username: string;
       email: string;
+      active_team: string | null;
     } & DefaultSession["user"];
   }
 }
@@ -34,6 +36,7 @@ export const authOptions: NextAuthOptions = {
         return {
           ...token,
           username: user.username,
+          activeTeam: user.active_team,
         };
       }
       return token;
@@ -43,6 +46,7 @@ export const authOptions: NextAuthOptions = {
       user: {
         ...session.user,
         username: token.username,
+        activeTeam: token.activeTeam,
       },
     }),
   },
@@ -62,7 +66,7 @@ export const authOptions: NextAuthOptions = {
         username: { label: "Username", type: "text" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
         const { username, password } = credentials!;
         const user = await db.user.findFirst({
           where: {
