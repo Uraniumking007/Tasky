@@ -19,6 +19,7 @@ export async function middleware(request: NextRequest) {
   if (token && url.pathname.startsWith("/auth/register")) {
     return NextResponse.redirect(new URL("/home", request.url));
   }
+
 }
 
 // See "Matching Paths" below to learn more
