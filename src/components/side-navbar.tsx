@@ -1,13 +1,5 @@
 "use client";
 import React from "react";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "./ui/navigation-menu";
 import Image from "next/image";
 import { Button } from "./ui/button";
 import Link from "next/link";
@@ -22,11 +14,17 @@ import {
 } from "./ui/accordion";
 import { CalendarCheck, LayoutDashboard } from "lucide-react";
 
-export default function SideNavbar({ user }: { user: User | null }) {
+export default function SideNavbar({
+  user,
+  teamName,
+}: {
+  user: User | null;
+  teamName: string;
+}) {
   return (
     <div className="flex w-48 flex-col justify-between p-2">
       <div className="flex w-full flex-col gap-2">
-        <UserDropdownMenu user={user} />
+        <UserDropdownMenu user={user} teamName={teamName} />
         <Accordion type="multiple">
           <AccordionItem value="item-1">
             <AccordionTrigger className="gap-1">

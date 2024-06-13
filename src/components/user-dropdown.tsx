@@ -32,9 +32,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { User } from "next-auth";
 
-export function UserDropdownMenu({ user }: { user: User | null }) {
-  const teamName = user?.active_team ? user.active_team : user?.username;
-
+export function UserDropdownMenu({
+  user,
+  teamName,
+}: {
+  user: User | null;
+  teamName: string;
+}) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

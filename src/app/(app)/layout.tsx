@@ -1,6 +1,7 @@
 import Navbar from "@/components/navbar";
 import SideNavbar from "@/components/side-navbar";
 import { getServerAuthSession } from "@/server/auth";
+import { db } from "@/server/db";
 import { User } from "next-auth";
 import { ReactNode } from "react";
 
@@ -11,6 +12,11 @@ export default async function HomeLayout({
 }) {
   const session = await getServerAuthSession();
   const user = session?.user as User; // Cast the user object to the User type
+  const team = await db.team.findUnique({
+    where: {
+      id: user.active_team?.toString(),
+    },
+  });
 
   if (!session?.user) {
     return {
@@ -23,7 +29,7 @@ export default async function HomeLayout({
 
   return (
     <div className="flex w-full">
-      <SideNavbar user={user} />
+      <SideNavbar user={user} teamName={team ? team.name : user.username} />
       {children}
     </div>
   );
