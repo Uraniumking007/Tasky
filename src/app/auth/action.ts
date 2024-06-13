@@ -2,8 +2,6 @@
 
 import { db } from "@/server/db";
 import bcrypt from "bcrypt";
-import { signIn } from "next-auth/react";
-import { redirect } from "next/navigation";
 
 export async function registerUser(prevState: any, formData: FormData) {
   const name = formData.get("name") as string;
@@ -18,7 +16,7 @@ export async function registerUser(prevState: any, formData: FormData) {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
-    await db.user.create({
+    const user = await db.user.create({
       data: {
         id: crypto.randomUUID(),
         name,
@@ -27,10 +25,28 @@ export async function registerUser(prevState: any, formData: FormData) {
         password: hashedPassword,
       },
     });
+    const team = await db.team.create({
+      data: {
+        id: crypto.randomUUID(),
+        name: "Personal",
+        ownerId: user.id,
+      },
+    });
+
+    await db.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        active_team: team.id,
+      },
+    });
   } catch (error) {
     console.error(error);
     return {
-      message: (error as Error).message || "Something went wrong!",
+      message: (error as Error).message
+        ? "User already Exists"
+        : "Something went wrong!",
       statusCode: 401,
     };
   }
