@@ -36,7 +36,7 @@ export const authOptions: NextAuthOptions = {
         return {
           ...token,
           username: user.username,
-          activeTeam: user.active_team,
+          active_team: user.active_team,
         };
       }
       return token;
@@ -46,7 +46,7 @@ export const authOptions: NextAuthOptions = {
       user: {
         ...session.user,
         username: token.username,
-        activeTeam: token.activeTeam,
+        active_team: token.active_team,
       },
     }),
   },
