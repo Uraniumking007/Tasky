@@ -28,7 +28,6 @@ model Team {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     ownerId   String
-    users     User  @relation(fields: [ownerId], references: [id])
     member1   String?
     member2   String?
     member3   String?
@@ -45,6 +44,8 @@ model Team {
     member6_role String?
     member7_role String?
     member8_role String?
+    users     User  @relation(fields: [ownerId], references: [id])
+    tasks     Task[]
 }
 
 model Task {
@@ -55,5 +56,7 @@ model Task {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     userId    String
+    teamId    String?
     user      User     @relation(fields: [userId], references: [id])
+    team      Team?     @relation(fields: [teamId], references: [id])
 }
