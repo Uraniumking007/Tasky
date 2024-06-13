@@ -25,9 +25,11 @@ export default function RegistrationForm({
   useEffect(() => {
     if (status?.statusCode === 200) {
       toast({
-        description: "User created successfully",
+        description: "Registration Successful",
       });
       router.push("/auth/login");
+    } else {
+      setError(status?.message);
     }
   }, [status]);
 
