@@ -13,6 +13,9 @@ export async function middleware(request: NextRequest) {
   if (!token && url.pathname.startsWith("/home")) {
     return NextResponse.redirect(new URL("/auth/login", request.url));
   }
+  if (!token && url.pathname.startsWith("/tasks")) {
+    return NextResponse.redirect(new URL("/auth/login", request.url));
+  }
   if (token && url.pathname.startsWith("/auth/login")) {
     return NextResponse.redirect(new URL("/home", request.url));
   }
