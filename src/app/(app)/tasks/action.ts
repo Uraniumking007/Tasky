@@ -2,7 +2,6 @@
 
 import { getServerAuthSession } from "@/server/auth";
 import { db } from "@/server/db";
-import { Task } from "@prisma/client";
 
 export interface TaskData {
   title: string;
