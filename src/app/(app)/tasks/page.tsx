@@ -41,7 +41,7 @@ export default async function TasksPage() {
   );
 }
 
-export async function getAllTasks() {
+async function getAllTasks() {
   const session = await getServerAuthSession();
 
   if (!session) {
@@ -63,6 +63,7 @@ export async function getAllTasks() {
       teamId: user.active_team,
     },
   });
+
   return {
     data,
   };
