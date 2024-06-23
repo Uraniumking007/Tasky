@@ -32,7 +32,9 @@ export default function SideNavbar({
               Dashboard
             </AccordionTrigger>
             <AccordionContent>
-              <Button variant="ghost">Inbox</Button>
+              <Button variant="outline" className="w-full">
+                Inbox
+              </Button>
             </AccordionContent>
           </AccordionItem>
         </Accordion>
@@ -44,10 +46,26 @@ export default function SideNavbar({
             </AccordionTrigger>
             <AccordionContent>
               <div className="flex w-full flex-col gap-2">
-                <Link href={"/tasks"}>All</Link>
-                <Link href={"/tasks/pending"}>Pending</Link>
-                <Link href={"/tasks/ongoing"}>Ongoing</Link>
-                <Link href={"/tasks/completed"}>Completed</Link>
+                <Link href={"/tasks"}>
+                  <Button variant="outline" className="w-full">
+                    All
+                  </Button>
+                </Link>
+                <Link href={"/tasks/pending"}>
+                  <Button variant="outline" className="w-full">
+                    Pending
+                  </Button>
+                </Link>
+                <Link href={"/tasks/ongoing"}>
+                  <Button variant="outline" className="w-full">
+                    Ongoing
+                  </Button>
+                </Link>
+                <Link href={"/tasks/completed"}>
+                  <Button variant="outline" className="w-full">
+                    Completed
+                  </Button>
+                </Link>
               </div>
             </AccordionContent>
           </AccordionItem>
