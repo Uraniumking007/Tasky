@@ -3,7 +3,7 @@
 import { db } from "@/server/db";
 import bcrypt from "bcrypt";
 
-export async function registerUser(prevState: any, formData: FormData) {
+export async function registerUser(formData: FormData) {
   const name = formData.get("name") as string;
   const username = formData.get("username") as string;
   const email = formData.get("email") as string;

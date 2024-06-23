@@ -2,7 +2,6 @@
 
 import { getServerAuthSession } from "@/server/auth";
 import { db } from "@/server/db";
-import { STATUS_CODES } from "http";
 
 export interface TaskData {
   title: string;
