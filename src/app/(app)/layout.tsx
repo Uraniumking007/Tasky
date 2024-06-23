@@ -1,9 +1,8 @@
-import Navbar from "@/components/navbar";
 import SideNavbar from "@/components/side-navbar";
 import { getServerAuthSession } from "@/server/auth";
 import { db } from "@/server/db";
-import { User } from "next-auth";
-import { ReactNode } from "react";
+import type { User } from "next-auth";
+import { type ReactNode } from "react";
 
 export default async function HomeLayout({
   children,
