@@ -13,6 +13,55 @@ export async function registerUser(prevState: any, formData: FormData) {
 
   console.log(name, username, email, password);
 
+  if (!name || !username || !email || !password) {
+    return {
+      message: "Please fill all fields",
+      statusCode: 400,
+    };
+  }
+
+  if (username.length < 3) {
+    return {
+      message: "Username must be at least 3 characters long",
+      statusCode: 400,
+    };
+  }
+
+  if (name.length < 3) {
+    return {
+      message: "Name must be at least 3 characters long",
+      statusCode: 400,
+    };
+  }
+
+  if (password.length < 6) {
+    return {
+      message: "Password must be at least 6 characters long",
+      statusCode: 400,
+    };
+  }
+
+  if (!email.includes("@")) {
+    return {
+      message: "Invalid email",
+      statusCode: 400,
+    };
+  }
+
+  if (await db.user.findUnique({ where: { username } })) {
+    return {
+      message: "User with this username already exists",
+      statusCode: 400,
+    };
+  }
+
+  if (await db.user.findUnique({ where: { email } })) {
+    return {
+      message: "User with this email already exists",
+      statusCode: 400,
+    };
+  }
+
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
@@ -45,7 +94,7 @@ export async function registerUser(prevState: any, formData: FormData) {
     console.error(error);
     return {
       message: (error as Error).message
-        ? "User already Exists"
+        ? "Something went wrong!"
         : "Something went wrong!",
       statusCode: 401,
     };
