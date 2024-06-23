@@ -16,6 +16,11 @@ export default function LoginPage() {
     const email = formData.get("username") as string;
     const password = formData.get("password") as string;
 
+    if (!email || !password) {
+      setError("Please fill all fields");
+      return;
+    }
+
     try {
       await signIn("credentials", {
         email,
@@ -57,7 +62,7 @@ export default function LoginPage() {
           {showPassword ? <IconEye size={20} /> : <IconEyeOff size={20} />}
         </button>
       </div>
-      {error && <p className="text-red-500">{error}</p>}
+      {error && <p className="py-1 text-red-500">{error}</p>}
       <div className="flex w-full justify-between">
         <Link href={"/auth/register"}>Don't have a account? Create new!</Link>
         <button
