@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Task } from "@prisma/client";
+import type { Task } from "@prisma/client";
 import { IconCirclePlus } from "@tabler/icons-react";
 import { useState } from "react";
 import {
@@ -126,6 +126,7 @@ export function CreateTaskDialog() {
               <Input
                 id="subtask"
                 className="col-span-3"
+                defaultValue={subtask.title ?? ""}
                 onChange={(e) => {
                   const newSubTask = [...subTask];
                   newSubTask.map((sub, i) => {
@@ -171,8 +172,8 @@ export function CreateTaskDialog() {
         <DialogFooter>
           <Button
             type="submit"
-            onClick={() => {
-              handleSubmit();
+            onClick={async () => {
+              await handleSubmit();
             }}
           >
             Save changes
