@@ -19,21 +19,21 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
-import { type TaskData, createTask } from "@/app/(app)/tasks/action";
+import { type TaskData } from "@/app/(app)/tasks/action";
 import { useToast } from "../ui/use-toast";
+import { Pencil } from "lucide-react";
 
-export function EditTaskModal() {
-  const [task, setTask] = useState<TaskData>({
-    title: "",
-    content: "",
-    createdAt: new Date(),
-    status: "pending",
+export function EditTaskModal({ task }: { task: Task }) {
+  const [editedTask, setEditedTask] = useState<TaskData>({
+    ...task,
+    content: task.content ?? "",
   });
-  const [subTask, setSubTask] = useState<Partial<Task>[]>([]);
+  const [editedSubTask, editedSetSubTask] = useState<Partial<Task>[]>([]);
   const [subTaskCount, setSubTaskCount] = useState("0");
   const { toast } = useToast();
+
   async function handleSubmit() {
-    if (task.title === "") {
+    if (editedTask.title === "") {
       toast({
         variant: "destructive",
         title: "Error",
@@ -43,10 +43,9 @@ export function EditTaskModal() {
     }
     const newTask = {
       ...task,
-      content: JSON.stringify(subTask),
+      content: JSON.stringify(editedSubTask),
     };
     try {
-      await createTask({ taskData: newTask });
       toast({
         variant: "default",
         title: "Success",
@@ -67,10 +66,11 @@ export function EditTaskModal() {
     <Dialog>
       <DialogTrigger asChild>
         <Button
-          variant="secondary"
-          className="fixed bottom-10 right-10 h-16 w-16 rounded-full"
+          variant={"secondary"}
+          size={"icon"}
+          className="rounded-full p-2"
         >
-          <IconCirclePlus size={258} className="h-full w-full" />
+          <Pencil size={32} />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
@@ -85,8 +85,10 @@ export function EditTaskModal() {
             </Label>
             <Input
               id="task"
-              defaultValue=""
-              onChange={(e) => setTask({ ...task, title: e.target.value })}
+              defaultValue={editedTask.title ?? ""}
+              onChange={(e) =>
+                setEditedTask({ ...editedTask, title: e.target.value })
+              }
               className="col-span-3"
             />
             {subTaskCount === "0" && (
@@ -99,8 +101,8 @@ export function EditTaskModal() {
                         setSubTaskCount(
                           (parseInt(subTaskCount) + 1).toString(),
                         );
-                        setSubTask([
-                          ...subTask,
+                        editedSetSubTask([
+                          ...editedSubTask,
                           {
                             id: "0",
                             title: "",
@@ -118,7 +120,7 @@ export function EditTaskModal() {
               </TooltipProvider>
             )}
           </div>
-          {subTask.map((subtask, index) => (
+          {editedSubTask.map((subtask, index) => (
             <div className="grid grid-cols-5 items-center gap-2" key={index}>
               <Label htmlFor="username" className="text-right">
                 {`SubTask ${index + 1}`}
@@ -128,17 +130,17 @@ export function EditTaskModal() {
                 className="col-span-3"
                 defaultValue={subtask.title ?? ""}
                 onChange={(e) => {
-                  const newSubTask = [...subTask];
+                  const newSubTask = [...editedSubTask];
                   newSubTask.map((sub, i) => {
                     if (i === index) {
                       sub.title = e.target.value;
                     }
                   });
-                  setSubTask(newSubTask);
+                  editedSetSubTask(newSubTask);
                 }}
               />
               {subTaskCount === (index + 1).toString() &&
-                (subTask ?? []).length > 0 && (
+                (editedSubTask ?? []).length > 0 && (
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
@@ -148,10 +150,10 @@ export function EditTaskModal() {
                             setSubTaskCount(
                               (parseInt(subTaskCount) + 1).toString(),
                             );
-                            setSubTask([
-                              ...subTask,
+                            editedSetSubTask([
+                              ...editedSubTask,
                               {
-                                id: "0",
+                                id: subTaskCount.toString(),
                                 title: "",
                                 createdAt: new Date(),
                                 status: "pending",
