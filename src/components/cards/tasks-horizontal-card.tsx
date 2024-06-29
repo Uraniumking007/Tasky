@@ -6,7 +6,7 @@ import { Card, CardHeader, CardTitle, CardDescription } from "../ui/card";
 import { Checkbox } from "../ui/checkbox";
 import type { Task } from "@prisma/client";
 import { useToast } from "../ui/use-toast";
-import { Icon, Pencil, Trash2Icon } from "lucide-react";
+import { Pencil, Trash2Icon } from "lucide-react";
 import { Button } from "../ui/button";
 
 export default function TasksHorizontalCard({ tasks }: { tasks: Task[] }) {
