@@ -2,8 +2,11 @@
 
 import { getServerAuthSession } from "@/server/auth";
 import { db } from "@/server/db";
+import { Task } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 
-export interface TaskData {
+export interface TaskData extends Task {
+  id: string;
   title: string;
   content: string;
   createdAt: Date;
@@ -22,13 +25,16 @@ export async function createTask({ taskData }: { taskData: TaskData }) {
 
     if (!user) throw new Error("User not found");
 
+    const { id, ...taskDataWithoutId } = taskData;
+
     const task = await db.task.create({
       data: {
-        ...taskData,
+        ...taskDataWithoutId,
         userId: user.id,
         teamId: user.active_team,
       },
     });
+    revalidatePath("/app/tasks");
     return task;
   } catch (error) {
     console.error(error);
