@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import React from "react";
 import { Card, CardHeader, CardTitle, CardDescription } from "../ui/card";
 import { Checkbox } from "../ui/checkbox";
-import { Task } from "@prisma/client";
+import type { Task } from "@prisma/client";
 import { useToast } from "../ui/use-toast";
 
 export default function TasksHorizontalCard({ tasks }: { tasks: Task[] }) {
@@ -12,7 +12,7 @@ export default function TasksHorizontalCard({ tasks }: { tasks: Task[] }) {
   return (
     <div className="flex w-full flex-col gap-4">
       {tasks.map((task, key) => {
-        const subtasks = JSON.parse(task.content!);
+        const subtasks = JSON.parse(task.content!) as object[];
         const numberOfSubtasks = subtasks.length;
 
         async function changeTaskStatusClient({ status }: { status: string }) {
@@ -33,8 +33,8 @@ export default function TasksHorizontalCard({ tasks }: { tasks: Task[] }) {
           <Card className={cn("flex w-full items-center px-4")} key={key}>
             <Checkbox
               defaultChecked={task.status === "completed"}
-              onCheckedChange={(e) => {
-                changeTaskStatusClient({
+              onCheckedChange={async (e) => {
+                await changeTaskStatusClient({
                   status: e ? "completed" : "incomplete",
                 });
               }}
