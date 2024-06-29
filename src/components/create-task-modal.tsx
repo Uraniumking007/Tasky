@@ -19,7 +19,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip";
-import { TaskData, createTask } from "@/app/(app)/tasks/action";
+import { type TaskData, createTask } from "@/app/(app)/tasks/action";
 import { useToast } from "./ui/use-toast";
 
 export function CreateTaskDialog() {
