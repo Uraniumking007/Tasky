@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -12,8 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Task } from "@prisma/client";
-import { IconCirclePlus, IconEyePlus } from "@tabler/icons-react";
-import { Icon } from "lucide-react";
+import { IconCirclePlus } from "@tabler/icons-react";
 import { useState } from "react";
 import {
   Tooltip,
@@ -22,7 +20,6 @@ import {
   TooltipTrigger,
 } from "./ui/tooltip";
 import { TaskData, createTask } from "@/app/(app)/tasks/action";
-import { TRPCClientError } from "@trpc/client";
 import { useToast } from "./ui/use-toast";
 
 export function CreateTaskDialog() {
