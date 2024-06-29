@@ -11,7 +11,10 @@ import { useRouter } from "next/navigation";
 export default function RegistrationForm({
   registerUser,
 }: {
-  registerUser: any;
+  registerUser: (
+    prevState: object,
+    formData: FormData,
+  ) => Promise<{ message: string; statusCode: number }>;
 }) {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -31,7 +34,7 @@ export default function RegistrationForm({
     } else {
       setError(status?.message);
     }
-  }, [status]);
+  }, [status, router, toast]);
 
   return (
     <form
