@@ -64,7 +64,9 @@ export default function LoginPage() {
       </div>
       {error && <p className="py-1 text-red-500">{error}</p>}
       <div className="flex w-full justify-between">
-        <Link href={"/auth/register"}>Don't have a account? Create new!</Link>
+        <Link href={"/auth/register"}>
+          Don&apos;t have a account? Create new!
+        </Link>
         <button
           className="rounded-md bg-primary px-4 py-2 text-primary-foreground"
           type="submit"
