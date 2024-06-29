@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { getServerAuthSession } from "@/server/auth";
 import Navbar from "@/components/navbar";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 
 export default async function Home() {
   const session = await getServerAuthSession();
@@ -25,10 +25,10 @@ export default async function Home() {
             Organize, Collaborate, and Achieve More with Tasky
           </h1>
           <p className="w-7/12 text-center text-xl text-foreground ">
-            Tasky is designed to streamline your team's workflow, ensuring that
-            every project runs smoothly from start to finish. With our intuitive
-            interface and powerful features, managing team tasks has never been
-            easier.
+            Tasky is designed to streamline your team&apos;s workflow, ensuring
+            that every project runs smoothly from start to finish. With our
+            intuitive interface and powerful features, managing team tasks has
+            never been easier.
           </p>
           <Link
             href={session?.user ? "/dashboard" : "/auth/register"}
@@ -63,7 +63,7 @@ export default async function Home() {
             <ul className="list-disc">
               <p className="text-xl font-bold">Stay Organized</p>
               <li>
-                Enhance your team's productivity with streamlined task
+                Enhance your team&apos;s productivity with streamlined task
                 management.
               </li>
               <li>
@@ -100,7 +100,7 @@ export default async function Home() {
             </ul>
             <ul className="list-disc">
               <p className="text-xl font-bold">Customizable Workflows</p>
-              <li>Adapt Tasky to fit your team's unique workflow.</li>
+              <li>Adapt Tasky to fit your team&apos;s unique workflow.</li>
               <li>Create custom task statuses and templates.</li>
             </ul>
           </div>
