@@ -72,8 +72,8 @@ export default function SideNavbar({
       </div>
       {user ? (
         <Button
-          onClick={() => {
-            signOut({ callbackUrl: "/" });
+          onClick={async () => {
+            await signOut({ callbackUrl: "/" });
           }}
         >
           Logout
