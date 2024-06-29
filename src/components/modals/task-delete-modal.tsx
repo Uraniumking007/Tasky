@@ -58,14 +58,17 @@ export function DeleteTaskModal({ id }: { id: string }) {
           <Trash2Icon size={32} />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="flex flex-col sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Delete Task</DialogTitle>
+          <DialogTitle className="flex justify-center">Delete Task</DialogTitle>
         </DialogHeader>
-
-        <DialogFooter>
+        <div className="flex w-full justify-evenly gap-2">
+          <Button type="reset" variant={"secondary"}>
+            <DialogClose ref={ref}>Cancel </DialogClose>
+          </Button>
           <Button
             type="submit"
+            variant={"destructive"}
             onClick={async () => {
               await handleSubmit();
               ref.current?.click();
@@ -73,8 +76,7 @@ export function DeleteTaskModal({ id }: { id: string }) {
           >
             Delete Task
           </Button>
-          <DialogClose ref={ref} />
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );
