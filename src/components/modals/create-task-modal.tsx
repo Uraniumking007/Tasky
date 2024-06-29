@@ -18,9 +18,9 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "./ui/tooltip";
+} from "../ui/tooltip";
 import { type TaskData, createTask } from "@/app/(app)/tasks/action";
-import { useToast } from "./ui/use-toast";
+import { useToast } from "../ui/use-toast";
 
 export function CreateTaskDialog() {
   const [task, setTask] = useState<TaskData>({
