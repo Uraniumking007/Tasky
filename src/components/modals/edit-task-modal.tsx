@@ -30,7 +30,7 @@ export function EditTaskModal({ task }: { task: Task }) {
     content: task.content ?? "",
   });
   const [editedSubTask, editedSetSubTask] = useState<Partial<Task>[]>(
-    JSON.parse(task.content ?? ""),
+    JSON.parse(task.content ?? "") as Partial<Task>[],
   );
   const [subTaskCount, setSubTaskCount] = useState(
     editedSubTask.length.toString(),
