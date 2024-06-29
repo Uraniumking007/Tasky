@@ -1,9 +1,8 @@
 "use client";
 import React from "react";
-import Image from "next/image";
 import { Button } from "./ui/button";
 import Link from "next/link";
-import { User } from "next-auth";
+import type { User } from "next-auth";
 import { signOut } from "next-auth/react";
 import { UserDropdownMenu } from "./user-dropdown";
 import {
