@@ -12,25 +12,31 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { Task } from "@prisma/client";
 import { IconCirclePlus } from "@tabler/icons-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
-import { type TaskData } from "@/app/(app)/tasks/action";
+import { updateTask, type TaskData } from "@/app/(app)/tasks/action";
 import { useToast } from "../ui/use-toast";
 import { Pencil } from "lucide-react";
+import { DialogClose } from "@radix-ui/react-dialog";
 
 export function EditTaskModal({ task }: { task: Task }) {
   const [editedTask, setEditedTask] = useState<TaskData>({
     ...task,
     content: task.content ?? "",
   });
-  const [editedSubTask, editedSetSubTask] = useState<Partial<Task>[]>([]);
-  const [subTaskCount, setSubTaskCount] = useState("0");
+  const [editedSubTask, editedSetSubTask] = useState<Partial<Task>[]>(
+    JSON.parse(task.content ?? ""),
+  );
+  const [subTaskCount, setSubTaskCount] = useState(
+    editedSubTask.length.toString(),
+  );
   const { toast } = useToast();
+  const ref = useRef<HTMLButtonElement>(null);
 
   async function handleSubmit() {
     if (editedTask.title === "") {
@@ -42,14 +48,15 @@ export function EditTaskModal({ task }: { task: Task }) {
       return;
     }
     const newTask = {
-      ...task,
+      ...editedTask,
       content: JSON.stringify(editedSubTask),
     };
     try {
+      await updateTask({ id: task.id, taskData: newTask });
       toast({
         variant: "default",
         title: "Success",
-        description: "Task created successfully",
+        description: "Task Edited successfully",
       });
     } catch (error) {
       if (error) {
@@ -75,7 +82,7 @@ export function EditTaskModal({ task }: { task: Task }) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>New Task</DialogTitle>
+          <DialogTitle>Edit Task</DialogTitle>
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
@@ -176,10 +183,12 @@ export function EditTaskModal({ task }: { task: Task }) {
             type="submit"
             onClick={async () => {
               await handleSubmit();
+              ref.current?.click();
             }}
           >
             Save changes
           </Button>
+          <DialogClose ref={ref} />
         </DialogFooter>
       </DialogContent>
     </Dialog>
