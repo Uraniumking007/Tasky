@@ -22,7 +22,7 @@ import {
 import { type TaskData, createTask } from "@/app/(app)/tasks/action";
 import { useToast } from "../ui/use-toast";
 
-export function TaskCreationModal() {
+export function EditTaskModal() {
   const [task, setTask] = useState<TaskData>({
     title: "",
     content: "",

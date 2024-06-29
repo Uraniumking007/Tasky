@@ -1,4 +1,4 @@
-import { CreateTaskDialog } from "@/components/modals/create-task-modal";
+import { TaskCreationModal } from "@/components/modals/create-task-modal";
 import React from "react";
 import { getAllTasks } from "./action";
 import TasksHorizontalCard from "@/components/cards/tasks-horizontal-card";
@@ -11,7 +11,7 @@ export default async function TasksPage() {
 
       <TasksHorizontalCard tasks={tasks.data} />
 
-      <CreateTaskDialog />
+      <TaskCreationModal />
     </div>
   );
 }
