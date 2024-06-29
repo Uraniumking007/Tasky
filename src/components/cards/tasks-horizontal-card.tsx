@@ -6,8 +6,9 @@ import { Card, CardHeader, CardTitle, CardDescription } from "../ui/card";
 import { Checkbox } from "../ui/checkbox";
 import type { Task } from "@prisma/client";
 import { useToast } from "../ui/use-toast";
-import { Pencil, Trash2Icon } from "lucide-react";
+import { Edit, Pencil, Trash2Icon } from "lucide-react";
 import { Button } from "../ui/button";
+import { EditTaskModal } from "../modals/edit-task-modal";
 
 export default function TasksHorizontalCard({ tasks }: { tasks: Task[] }) {
   const { toast } = useToast();
@@ -50,13 +51,7 @@ export default function TasksHorizontalCard({ tasks }: { tasks: Task[] }) {
               </CardHeader>
             </div>
             <div className="flex gap-2">
-              <Button
-                variant={"secondary"}
-                size={"icon"}
-                className="rounded-full p-2"
-              >
-                <Pencil size={32} />
-              </Button>
+              <EditTaskModal task={task} />
               <Button
                 variant={"destructive"}
                 size={"icon"}
