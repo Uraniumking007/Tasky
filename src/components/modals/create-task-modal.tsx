@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
@@ -12,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { Task } from "@prisma/client";
 import { IconCirclePlus } from "@tabler/icons-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Tooltip,
   TooltipContent,
@@ -24,14 +25,20 @@ import { useToast } from "../ui/use-toast";
 
 export function TaskCreationModal() {
   const [task, setTask] = useState<TaskData>({
+    id: "",
     title: "",
     content: "",
     createdAt: new Date(),
+    updatedAt: new Date(),
+    userId: "",
+    teamId: "",
     status: "pending",
   });
   const [subTask, setSubTask] = useState<Partial<Task>[]>([]);
   const [subTaskCount, setSubTaskCount] = useState("0");
   const { toast } = useToast();
+  const ref = useRef<HTMLButtonElement>(null);
+
   async function handleSubmit() {
     if (task.title === "") {
       toast({
@@ -174,10 +181,12 @@ export function TaskCreationModal() {
             type="submit"
             onClick={async () => {
               await handleSubmit();
+              ref.current?.click();
             }}
           >
             Save changes
           </Button>
+          <DialogClose ref={ref} />
         </DialogFooter>
       </DialogContent>
     </Dialog>
