@@ -9,6 +9,7 @@ import { useToast } from "../ui/use-toast";
 import { Edit, Pencil, Trash2Icon } from "lucide-react";
 import { Button } from "../ui/button";
 import { EditTaskModal } from "../modals/edit-task-modal";
+import { DeleteTaskModal } from "../modals/task-delete-modal";
 
 export default function TasksHorizontalCard({ tasks }: { tasks: Task[] }) {
   const { toast } = useToast();
@@ -52,13 +53,7 @@ export default function TasksHorizontalCard({ tasks }: { tasks: Task[] }) {
             </div>
             <div className="flex gap-2">
               <EditTaskModal task={task} />
-              <Button
-                variant={"destructive"}
-                size={"icon"}
-                className="rounded-full p-2"
-              >
-                <Trash2Icon size={32} />
-              </Button>
+              <DeleteTaskModal id={task.id} />
             </div>
           </Card>
         );
