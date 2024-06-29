@@ -109,27 +109,32 @@ export async function updateTask({
     throw new Error("No session found");
   }
 
-  const user = await db.user.findUnique({
-    where: {
-      username: session.user.username,
-    },
-  });
+  try {
+    const user = await db.user.findUnique({
+      where: {
+        username: session.user.username,
+      },
+    });
 
-  if (!user) {
-    throw new Error("User not found");
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const task = await db.task.update({
+      where: {
+        id,
+        userId: user.id,
+      },
+      data: {
+        ...taskData,
+      },
+    });
+    revalidatePath("/app/tasks");
+    return task;
+  } catch (error) {
+    console.error(error);
+    return JSON.stringify(error);
   }
-
-  const task = await db.task.update({
-    where: {
-      id,
-      userId: user.id,
-    },
-    data: {
-      ...taskData,
-    },
-  });
-
-  return task;
 }
 
 export async function deleteTask({ id }: { id: string }) {
