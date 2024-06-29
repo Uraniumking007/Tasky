@@ -3,17 +3,13 @@ import Link from "next/link";
 import { getServerAuthSession } from "@/server/auth";
 import Navbar from "@/components/navbar";
 import { buttonVariants } from "@/components/ui/button";
+import { redirect } from "next/navigation";
 
 export default async function Home() {
   const session = await getServerAuthSession();
 
-  if (session?.user) {
-    return {
-      redirect: {
-        destination: "/home",
-        permanent: false,
-      },
-    };
+  if (session?.user.username) {
+    redirect("/home");
   }
 
   return (
