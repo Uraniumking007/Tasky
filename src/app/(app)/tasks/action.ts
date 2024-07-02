@@ -13,7 +13,13 @@ export interface TaskData extends Task {
   status: string;
 }
 
-export async function createTask({ taskData }: { taskData: TaskData }) {
+export async function createTask({
+  taskData,
+  subtasks,
+}: {
+  taskData: TaskData;
+  subtasks: Partial<Task>[];
+}) {
   const session = await getServerAuthSession();
   try {
     if (!session) throw new Error("No session found");
@@ -27,12 +33,29 @@ export async function createTask({ taskData }: { taskData: TaskData }) {
 
     const { id, ...taskDataWithoutId } = taskData;
 
+    if (!taskDataWithoutId.title || taskDataWithoutId.title == "") {
+      throw new Error("Task title cannot be empty");
+    }
+
     const task = await db.task.create({
       data: {
         ...taskDataWithoutId,
         userId: user.id,
         teamId: user.active_team,
       },
+    });
+    subtasks.forEach(async (subtask) => {
+      if (!subtask.title || subtask.title == "") {
+        throw new Error("Subtask title cannot be empty");
+      }
+      await db.subTask.create({
+        data: {
+          title: subtask.title,
+          content: subtask.content,
+          status: subtask.status,
+          taskId: task.id,
+        },
+      });
     });
     revalidatePath("/app/tasks");
     return task;
