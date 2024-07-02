@@ -29,12 +29,12 @@ export function EditTaskModal({ task }: { task: Task }) {
     ...task,
     content: task.content ?? "",
   });
-  const [editedSubTask, editedSetSubTask] = useState<Partial<Task>[]>(
-    JSON.parse(task.content ?? "") as Partial<Task>[],
-  );
-  const [subTaskCount, setSubTaskCount] = useState(
-    editedSubTask.length.toString(),
-  );
+  // const [editedSubTask, editedSetSubTask] = useState<Partial<Task>[]>(
+  //   JSON.parse(task.content ?? "") as Partial<Task>[],
+  // );
+  // const [subTaskCount, setSubTaskCount] = useState(
+  //   editedSubTask.length.toString(),
+  // );
   const { toast } = useToast();
   const ref = useRef<HTMLButtonElement>(null);
 
@@ -49,7 +49,7 @@ export function EditTaskModal({ task }: { task: Task }) {
     }
     const newTask = {
       ...editedTask,
-      content: JSON.stringify(editedSubTask),
+      // content: JSON.stringify(editedSubTask),
     };
     try {
       await updateTask({ id: task.id, taskData: newTask });
@@ -98,7 +98,7 @@ export function EditTaskModal({ task }: { task: Task }) {
               }
               className="col-span-3"
             />
-            {subTaskCount === "0" && (
+            {/* {subTaskCount === "0" && (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger>
@@ -125,9 +125,9 @@ export function EditTaskModal({ task }: { task: Task }) {
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-            )}
+            )} */}
           </div>
-          {editedSubTask.map((subtask, index) => (
+          {/* {editedSubTask.map((subtask, index) => (
             <div className="grid grid-cols-5 items-center gap-2" key={index}>
               <Label htmlFor="username" className="text-right">
                 {`SubTask ${index + 1}`}
@@ -176,7 +176,7 @@ export function EditTaskModal({ task }: { task: Task }) {
                   </TooltipProvider>
                 )}
             </div>
-          ))}
+          ))} */}
         </div>
         <DialogFooter>
           <Button

@@ -34,7 +34,7 @@ export function TaskCreationModal() {
     teamId: "",
     status: "pending",
   });
-  const [subTask, setSubTask] = useState<Partial<Task>[]>([]);
+  const [subTasks, setSubTasks] = useState<Partial<Task>[]>([]);
   const [subTaskCount, setSubTaskCount] = useState("0");
   const { toast } = useToast();
   const ref = useRef<HTMLButtonElement>(null);
@@ -50,21 +50,28 @@ export function TaskCreationModal() {
     }
     const newTask = {
       ...task,
-      content: JSON.stringify(subTask),
     };
     try {
-      await createTask({ taskData: newTask });
+      subTasks.forEach((subtask) => {
+        if (!subtask.title || subtask.title == "") {
+          throw new Error("Subtask title cannot be empty");
+        }
+      });
+      await createTask({ taskData: newTask, subtasks: subTasks });
       toast({
         variant: "default",
         title: "Success",
         description: "Task created successfully",
       });
     } catch (error) {
+      const typedError = error as Error;
       if (error) {
         toast({
           variant: "destructive",
           title: "Error",
-          description: JSON.stringify(error),
+          description: typedError.message
+            ? typedError.message
+            : JSON.stringify(error),
         });
       }
     }
@@ -106,8 +113,8 @@ export function TaskCreationModal() {
                         setSubTaskCount(
                           (parseInt(subTaskCount) + 1).toString(),
                         );
-                        setSubTask([
-                          ...subTask,
+                        setSubTasks([
+                          ...subTasks,
                           {
                             id: "0",
                             title: "",
@@ -125,7 +132,7 @@ export function TaskCreationModal() {
               </TooltipProvider>
             )}
           </div>
-          {subTask.map((subtask, index) => (
+          {subTasks.map((subtask, index) => (
             <div className="grid grid-cols-5 items-center gap-2" key={index}>
               <Label htmlFor="username" className="text-right">
                 {`SubTask ${index + 1}`}
@@ -135,17 +142,17 @@ export function TaskCreationModal() {
                 className="col-span-3"
                 defaultValue={subtask.title ?? ""}
                 onChange={(e) => {
-                  const newSubTask = [...subTask];
+                  const newSubTask = [...subTasks];
                   newSubTask.map((sub, i) => {
                     if (i === index) {
                       sub.title = e.target.value;
                     }
                   });
-                  setSubTask(newSubTask);
+                  setSubTasks(newSubTask);
                 }}
               />
               {subTaskCount === (index + 1).toString() &&
-                (subTask ?? []).length > 0 && (
+                (subTasks ?? []).length > 0 && (
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
@@ -155,8 +162,8 @@ export function TaskCreationModal() {
                             setSubTaskCount(
                               (parseInt(subTaskCount) + 1).toString(),
                             );
-                            setSubTask([
-                              ...subTask,
+                            setSubTasks([
+                              ...subTasks,
                               {
                                 id: "0",
                                 title: "",
