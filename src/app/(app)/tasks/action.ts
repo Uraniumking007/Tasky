@@ -85,9 +85,11 @@ export async function addSubtask({
       throw new Error("Subtask title cannot be empty");
     }
 
+    const { id, taskId, ...subtaskWithoutIds } = subtask;
+
     const newSubtask = await db.subTask.create({
       data: {
-        ...subtask,
+        ...subtaskWithoutIds,
         taskId,
         user_id: user.id,
       },
@@ -204,6 +206,39 @@ export async function updateTask({
   }
 }
 
+export async function updateSubtask({
+  id,
+  subtask,
+}: {
+  id: string;
+  subtask: SubTask;
+}) {
+  const session = await getServerAuthSession();
+
+  if (!session) {
+    throw new Error("No session found");
+  }
+
+  try {
+    const user = await getUser(session);
+
+    const subTask = await db.subTask.update({
+      where: {
+        id,
+        user_id: user.id,
+      },
+      data: {
+        ...subtask,
+      },
+    });
+    revalidatePath("/app/tasks");
+    return subTask;
+  } catch (error) {
+    console.error(error);
+    return JSON.stringify(error);
+  }
+}
+
 export async function deleteTask({ id }: { id: string }) {
   const session = await getServerAuthSession();
 
@@ -224,6 +259,32 @@ export async function deleteTask({ id }: { id: string }) {
     revalidatePath("/app/tasks");
 
     return task;
+  } catch (error) {
+    console.error(error);
+    return JSON.stringify(error);
+  }
+}
+
+export async function deleteSubtask({ id }: { id: string }) {
+  const session = await getServerAuthSession();
+
+  if (!session) {
+    throw new Error("No session found");
+  }
+
+  try {
+    const user = await getUser(session);
+
+    const subtask = await db.subTask.delete({
+      where: {
+        id,
+        user_id: user.id,
+      },
+    });
+
+    revalidatePath("/app/tasks");
+
+    return subtask;
   } catch (error) {
     console.error(error);
     return JSON.stringify(error);
