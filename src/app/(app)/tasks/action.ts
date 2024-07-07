@@ -2,7 +2,8 @@
 
 import { getServerAuthSession } from "@/server/auth";
 import { db } from "@/server/db";
-import { SubTask, Task } from "@prisma/client";
+import type { SubTask, Task } from "@prisma/client";
+import type { Session } from "next-auth";
 import { revalidatePath } from "next/cache";
 
 export interface TaskData extends Task {
@@ -13,7 +14,7 @@ export interface TaskData extends Task {
   status: string;
 }
 
-async function getUser(session: any) {
+async function getUser(session: Session | null) {
   if (!session) throw new Error("No session found");
   const user = await db.user.findUnique({
     where: {
@@ -47,7 +48,7 @@ export async function createNewTask({
         teamId: user.active_team,
       },
     });
-    subtasks.forEach(async (subtask) => {
+    for (const subtask of subtasks) {
       if (!subtask.title || subtask.title == "") {
         throw new Error("Subtask title cannot be empty");
       }
@@ -60,7 +61,7 @@ export async function createNewTask({
           user_id: user.id,
         },
       });
-    });
+    }
     revalidatePath("/app/tasks");
     return task;
   } catch (error) {
