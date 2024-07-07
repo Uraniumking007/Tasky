@@ -20,7 +20,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
-import { type TaskData, createTask } from "@/app/(app)/tasks/action";
+import { type TaskData, createNewTask } from "@/app/(app)/tasks/action";
 import { useToast } from "../ui/use-toast";
 
 export function TaskCreationModal() {
@@ -57,7 +57,7 @@ export function TaskCreationModal() {
           throw new Error("Subtask title cannot be empty");
         }
       });
-      await createTask({ taskData: newTask, subtasks: subTasks });
+      await createNewTask({ taskData: newTask, subtasks: subTasks });
       toast({
         variant: "default",
         title: "Success",

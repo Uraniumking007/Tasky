@@ -24,7 +24,7 @@ async function getUser(session: any) {
   return user;
 }
 
-export async function createTask({
+export async function createNewTask({
   taskData,
   subtasks,
 }: {
@@ -89,6 +89,7 @@ export async function createSubtask({
       data: {
         ...subtask,
         taskId,
+        user_id: user.id,
       },
     });
     revalidatePath("/app/tasks");
