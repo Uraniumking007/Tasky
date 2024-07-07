@@ -103,7 +103,7 @@ export default function TasksHorizontalCard({
                         <ul className="list-inside list-disc">
                           {filteredSubTasks.map((subtask, key) => {
                             return (
-                              <div className="flex gap-4 py-2">
+                              <div className="flex gap-4 py-2" key={key}>
                                 <Checkbox
                                   defaultChecked={
                                     subtask.status === "completed"
