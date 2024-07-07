@@ -87,7 +87,7 @@ export async function addSubtask({
 
     const { id, taskId, ...subtaskWithoutIds } = subtask;
 
-    const newSubtask = await db.subTask.create({
+    await db.subTask.create({
       data: {
         ...subtaskWithoutIds,
         taskId,
