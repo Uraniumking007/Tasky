@@ -69,7 +69,7 @@ export async function createNewTask({
   }
 }
 
-export async function createSubtask({
+export async function addSubtask({
   subtask,
   taskId,
 }: {
