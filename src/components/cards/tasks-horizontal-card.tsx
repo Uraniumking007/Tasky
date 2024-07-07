@@ -1,10 +1,14 @@
 "use client";
-import { changeTaskStatus, updateTask } from "@/app/(app)/tasks/action";
+import {
+  updateSubtaskStatus,
+  updateTaskStatus,
+  updateTask,
+} from "@/app/(app)/tasks/action";
 import { cn } from "@/lib/utils";
 import React from "react";
 import { Card, CardHeader, CardTitle, CardDescription } from "../ui/card";
 import { Checkbox } from "../ui/checkbox";
-import type { Task } from "@prisma/client";
+import type { SubTask, Task } from "@prisma/client";
 import { useToast } from "../ui/use-toast";
 import { EditTaskModal } from "../modals/edit-task-modal";
 import { DeleteTaskModal } from "../modals/task-delete-modal";
@@ -15,19 +19,24 @@ import {
   AccordionTrigger,
 } from "../ui/accordion";
 
-export default function TasksHorizontalCard({ tasks }: { tasks: Task[] }) {
+export default function TasksHorizontalCard({
+  tasks,
+  subTasks,
+}: {
+  tasks: Task[];
+  subTasks: SubTask[];
+}) {
   const { toast } = useToast();
   return (
     <div className="flex w-full flex-col gap-4">
       {tasks.map((task, key) => {
-        // const subtasks = JSON.parse(task.content!) as {
-        //   title: string;
-        //   status: string;
-        // }[];
-        // const numberOfSubtasks = subtasks.length;
+        const filteredSubTasks = subTasks.filter(
+          (subtask) => subtask.taskId === task.id,
+        );
+        const numberOfSubtasks = filteredSubTasks.length;
 
         async function changeTaskStatusClient({ status }: { status: string }) {
-          const result = await changeTaskStatus({ id: task.id, status });
+          const result = await updateTaskStatus({ id: task.id, status });
           if (result.statusCode === 200) {
             toast({
               variant: "default",
@@ -40,6 +49,31 @@ export default function TasksHorizontalCard({ tasks }: { tasks: Task[] }) {
             });
           }
         }
+
+        async function changeSubtaskStatusClient({
+          subTaskId,
+          status,
+        }: {
+          subTaskId: string;
+          status: string;
+        }) {
+          const result = await updateSubtaskStatus({
+            id: subTaskId,
+            status,
+          });
+          if (result.statusCode === 200) {
+            toast({
+              variant: "default",
+              description: "Subtask status updated",
+            });
+          } else {
+            toast({
+              variant: "destructive",
+              description: "Failed to update subtask status",
+            });
+          }
+        }
+
         return (
           <Card className={cn("flex w-full items-center px-4")} key={key}>
             <div className="flex w-full items-center">
@@ -55,7 +89,7 @@ export default function TasksHorizontalCard({ tasks }: { tasks: Task[] }) {
                   />
                   <CardTitle>{task.title}</CardTitle>
                 </div>
-                {/* {numberOfSubtasks === 0 ? (
+                {numberOfSubtasks === 0 ? (
                   ""
                 ) : (
                   <Accordion type="single" collapsible className="ml-8">
@@ -67,7 +101,7 @@ export default function TasksHorizontalCard({ tasks }: { tasks: Task[] }) {
                       </AccordionTrigger>
                       <AccordionContent>
                         <ul className="list-inside list-disc">
-                          {subtasks.map((subtask, key) => {
+                          {filteredSubTasks.map((subtask, key) => {
                             return (
                               <div className="flex gap-4 py-2">
                                 <Checkbox
@@ -79,16 +113,18 @@ export default function TasksHorizontalCard({ tasks }: { tasks: Task[] }) {
                                       ? "completed"
                                       : "incomplete";
 
-                                    await updateTask({
-                                      id: task.id,
-                                      taskData: {
-                                        ...task,
-                                        content: task.content as string,
-                                      },
+                                    await changeSubtaskStatusClient({
+                                      subTaskId: subtask.id,
+                                      status: subtask.status,
                                     });
                                   }}
+                                  id={`subtask${key}`}
                                 />
-                                <CardTitle>{subtask.title}</CardTitle>
+                                <CardTitle>
+                                  <label htmlFor={`subtask${key}`}>
+                                    {subtask.title}
+                                  </label>
+                                </CardTitle>
                               </div>
                             );
                           })}
@@ -96,11 +132,11 @@ export default function TasksHorizontalCard({ tasks }: { tasks: Task[] }) {
                       </AccordionContent>
                     </AccordionItem>
                   </Accordion>
-                )} */}
+                )}
               </CardHeader>
             </div>
             <div className="flex gap-2">
-              <EditTaskModal task={task} />
+              <EditTaskModal task={task} subtasks={filteredSubTasks} />
               <DeleteTaskModal id={task.id} />
             </div>
           </Card>

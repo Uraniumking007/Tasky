@@ -230,7 +230,7 @@ export async function deleteTask({ id }: { id: string }) {
   }
 }
 
-export async function changeTaskStatus({
+export async function updateTaskStatus({
   id,
   status,
 }: {
@@ -262,7 +262,7 @@ export async function changeTaskStatus({
   };
 }
 
-export async function changeSubtaskStatus({
+export async function updateSubtaskStatus({
   id,
   status,
 }: {
