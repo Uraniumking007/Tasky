@@ -2,7 +2,6 @@
 import {
   updateSubtaskStatus,
   updateTaskStatus,
-  updateTask,
 } from "@/app/(app)/tasks/action";
 import { cn } from "@/lib/utils";
 import React from "react";

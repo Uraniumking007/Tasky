@@ -15,8 +15,6 @@ import {
   IconCirclePlus,
   IconDeviceFloppy,
   IconTrash,
-  IconTrashFilled,
-  IconTrashX,
 } from "@tabler/icons-react";
 import { useRef, useState } from "react";
 import {
@@ -25,7 +23,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
-import getSubtasksById, {
+import {
   addSubtask,
   deleteSubtask,
   updateTask,

@@ -3,12 +3,10 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import type { Task } from "@prisma/client";
 import { useRef } from "react";
 import { deleteTask } from "@/app/(app)/tasks/action";
 import { useToast } from "../ui/use-toast";
