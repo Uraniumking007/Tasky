@@ -2,7 +2,7 @@
 
 import { getServerAuthSession } from "@/server/auth";
 import { db } from "@/server/db";
-import { Task } from "@prisma/client";
+import { SubTask, Task } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 export interface TaskData extends Task {
@@ -11,6 +11,17 @@ export interface TaskData extends Task {
   content: string;
   createdAt: Date;
   status: string;
+}
+
+async function getUser(session: any) {
+  if (!session) throw new Error("No session found");
+  const user = await db.user.findUnique({
+    where: {
+      username: session.user.username,
+    },
+  });
+  if (!user) throw new Error("User not found");
+  return user;
 }
 
 export async function createTask({
@@ -22,15 +33,7 @@ export async function createTask({
 }) {
   const session = await getServerAuthSession();
   try {
-    if (!session) throw new Error("No session found");
-    const user = await db.user.findUnique({
-      where: {
-        username: session.user.username,
-      },
-    });
-
-    if (!user) throw new Error("User not found");
-
+    const user = await getUser(session);
     const { id, ...taskDataWithoutId } = taskData;
 
     if (!taskDataWithoutId.title || taskDataWithoutId.title == "") {
@@ -54,11 +57,41 @@ export async function createTask({
           content: subtask.content,
           status: subtask.status,
           taskId: task.id,
+          user_id: user.id,
         },
       });
     });
     revalidatePath("/app/tasks");
     return task;
+  } catch (error) {
+    console.error(error);
+    return JSON.stringify(error);
+  }
+}
+
+export async function createSubtask({
+  subtask,
+  taskId,
+}: {
+  subtask: SubTask;
+  taskId: string;
+}) {
+  const session = await getServerAuthSession();
+
+  try {
+    const user = await getUser(session);
+
+    if (!subtask.title || subtask.title == "") {
+      throw new Error("Subtask title cannot be empty");
+    }
+
+    const newSubtask = await db.subTask.create({
+      data: {
+        ...subtask,
+        taskId,
+      },
+    });
+    revalidatePath("/app/tasks");
   } catch (error) {
     console.error(error);
     return JSON.stringify(error);
@@ -72,21 +105,32 @@ export async function getAllTasks() {
     throw new Error("No session found");
   }
 
-  const user = await db.user.findUnique({
-    where: {
-      username: session.user.username,
-    },
-  });
-
-  if (!user) {
-    throw new Error("User not found");
-  }
+  const user = await getUser(session);
 
   const data = await db.task.findMany({
     where: {
       teamId: user.active_team,
     },
   });
+  return {
+    data,
+  };
+}
+
+export async function getAllSubTasks() {
+  const session = await getServerAuthSession();
+
+  if (!session) {
+    throw new Error("No session found");
+  }
+  const user = await getUser(session);
+
+  const data = await db.subTask.findMany({
+    where: {
+      user_id: user.id,
+    },
+  });
+
   return {
     data,
   };
@@ -99,24 +143,31 @@ export async function getTaskById({ id }: { id: string }) {
     throw new Error("No session found");
   }
 
-  const user = await db.user.findUnique({
-    where: {
-      username: session.user.username,
-    },
-  });
+  const user = await getUser(session);
 
-  if (!user) {
-    throw new Error("User not found");
-  }
-
-  const task = await db.task.findUnique({
+  return await db.task.findUnique({
     where: {
       id,
       userId: user.id,
     },
   });
+}
 
-  return task;
+export default async function getSubtasksById({ id }: { id: string }) {
+  const session = await getServerAuthSession();
+
+  if (!session) {
+    throw new Error("No session found");
+  }
+
+  const user = await getUser(session);
+
+  return await db.subTask.findMany({
+    where: {
+      taskId: id,
+      user_id: user.id,
+    },
+  });
 }
 
 export async function updateTask({
@@ -133,15 +184,7 @@ export async function updateTask({
   }
 
   try {
-    const user = await db.user.findUnique({
-      where: {
-        username: session.user.username,
-      },
-    });
-
-    if (!user) {
-      throw new Error("User not found");
-    }
+    const user = await getUser(session);
 
     const task = await db.task.update({
       where: {
@@ -168,15 +211,7 @@ export async function deleteTask({ id }: { id: string }) {
   }
 
   try {
-    const user = await db.user.findUnique({
-      where: {
-        username: session.user.username,
-      },
-    });
-
-    if (!user) {
-      throw new Error("User not found");
-    }
+    const user = await getUser(session);
 
     const task = await db.task.delete({
       where: {
@@ -207,15 +242,7 @@ export async function changeTaskStatus({
     throw new Error("No session found");
   }
 
-  const user = await db.user.findUnique({
-    where: {
-      username: session.user.username,
-    },
-  });
-
-  if (!user) {
-    throw new Error("User not found");
-  }
+  const user = await getUser(session);
 
   const task = await db.task.update({
     where: {
@@ -230,6 +257,38 @@ export async function changeTaskStatus({
   return {
     statusCode: 200,
     data: task,
+    message: "Task Updated",
+  };
+}
+
+export async function changeSubtaskStatus({
+  id,
+  status,
+}: {
+  id: string;
+  status: string;
+}) {
+  const session = await getServerAuthSession();
+
+  if (!session) {
+    throw new Error("No session found");
+  }
+
+  const user = await getUser(session);
+
+  const subTask = await db.subTask.update({
+    where: {
+      id,
+      user_id: user.id,
+    },
+    data: {
+      status,
+    },
+  });
+
+  return {
+    statusCode: 200,
+    data: subTask,
     message: "Task Updated",
   };
 }
