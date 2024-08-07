@@ -1,29 +1,42 @@
-# Create T3 App
+# [Tasky](http://tasky.bhaveshp.dev "Tasky")
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+Tasky is a web-based task manager and note-taking application that allows users to organize their tasks and notes in a single, easy-to-use interface. With Tasky, users can create and manage tasks, set priorities, and add unlimited subtasks for each task.
 
-## What's next? How do I make an app with this?
+To get started with Tasky, simply create an account and log in. From there, you can create new tasks and notes, set priorities, and add subtasks as needed. Tasky&apos;s intuitive interface makes it easy to manage your tasks and notes, so you can stay organized and on top of your work.
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+## Some of the key features of Tasky include:
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+- Task creation and management: Users can create new tasks, set due dates, and mark them as completed.
+- Note-taking: Users can create and edit notes, as well as organize them into folders for easy access.
+- Subtask creation: Users can add unlimited subtasks for each task, allowing them to break down larger projects into smaller, more manageable tasks.
+- Priority setting: Users can set priorities for each task, allowing them to focus on the most important tasks first.
+- Task tracking: Users can track the progress of their tasks and notes, making it easy to see what needs to be done and when.
+
+## Getting Started
+To get started with Tasky, simply sign up for an account on our website. Once you&apos;re logged in, you can start creating tasks and notes.
 
 - [Next.js](https://nextjs.org)
 - [NextAuth.js](https://next-auth.js.org)
 - [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
 - [Tailwind CSS](https://tailwindcss.com)
 - [tRPC](https://trpc.io)
+- [shadcn/ui](https://ui.shadcn.com/)
 
-## Learn More
+## Getting Started
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+To get started with [Tasky](http://tasky.bhaveshp.dev), simply sign up for an account on our [website](http://tasky.bhaveshp.dev). Once you&apos;re logged in, you can start creating tasks and notes.
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+## Usage
 
-## How do I deploy this?
+Tasky is designed to be user-friendly, so you can start using it right away. Here are some basic steps to get you started:
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+1. Create a new task or note.
+2. Set the priority of the task or note.
+3. Add any subtasks or notes as needed.
+4. Save the task or note.
+5. View and edit your tasks and notes at any time.
+
+## Conclusion
+
+Tasky is the perfect tool for managing your tasks and notes. With its easy-to-use interface and powerful features, you can stay organized and focused on your work. Sign up for an account today and start using Tasky to take control of your workflow.
