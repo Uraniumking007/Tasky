@@ -3,10 +3,8 @@
 import { getServerAuthSession } from "@/server/auth";
 import { db } from "@/server/db";
 import type { SubTask, Task } from "@prisma/client";
-import { STATUS_CODES } from "http";
 import type { Session } from "next-auth";
 import { revalidatePath } from "next/cache";
-import { NextResponse } from "next/server";
 
 export interface TaskData extends Task {
   id: string;
@@ -14,6 +12,7 @@ export interface TaskData extends Task {
   content: string;
   createdAt: Date;
   status: string;
+  priority: string;
 }
 
 async function getUser(session: Session | null) {
@@ -66,6 +65,7 @@ export async function createNewTask({
       });
     }
     revalidatePath("/app/tasks");
+    revalidatePath("/app/home");
     return task;
   } catch (error) {
     console.error(error);
@@ -73,13 +73,7 @@ export async function createNewTask({
   }
 }
 
-export async function addSubtask({
-  subtask,
-  taskId,
-}: {
-  subtask: SubTask;
-  taskId: string;
-}) {
+export async function addSubtask({ subtask }: { subtask: SubTask }) {
   const session = await getServerAuthSession();
 
   try {
@@ -99,6 +93,7 @@ export async function addSubtask({
       },
     });
     revalidatePath("/app/tasks");
+    revalidatePath("/app/home");
   } catch (error) {
     console.error(error);
     return JSON.stringify(error);
@@ -114,13 +109,17 @@ export async function getAllTasks() {
 
   const user = await getUser(session);
 
-  const data = await db.task.findMany({
+  const taskData = await db.task.findMany({
     where: {
       teamId: user.active_team,
     },
   });
+
+  revalidatePath("/app/tasks");
+  revalidatePath("/app/home");
+
   return {
-    data,
+    data: taskData,
   };
 }
 
@@ -132,14 +131,17 @@ export async function getAllSubTasks() {
   }
   const user = await getUser(session);
 
-  const data = await db.subTask.findMany({
+  const subTaskData = await db.subTask.findMany({
     where: {
       user_id: user.id,
     },
   });
 
+  revalidatePath("/app/tasks");
+  revalidatePath("/app/home");
+
   return {
-    data,
+    data: subTaskData,
   };
 }
 
@@ -152,12 +154,17 @@ export async function getTaskById({ id }: { id: string }) {
 
   const user = await getUser(session);
 
-  return await db.task.findUnique({
+  const taskData = await db.task.findUnique({
     where: {
       id,
       userId: user.id,
     },
   });
+
+  revalidatePath("/app/tasks");
+  revalidatePath("/app/home");
+
+  return taskData;
 }
 
 export default async function getSubtasksById({ id }: { id: string }) {
@@ -169,12 +176,17 @@ export default async function getSubtasksById({ id }: { id: string }) {
 
   const user = await getUser(session);
 
-  return await db.subTask.findMany({
+  const taskSubData = await db.subTask.findMany({
     where: {
       taskId: id,
       user_id: user.id,
     },
   });
+
+  revalidatePath("/app/tasks");
+  revalidatePath("/app/home");
+
+  return taskSubData;
 }
 
 export async function updateTask({
@@ -202,7 +214,10 @@ export async function updateTask({
         ...taskData,
       },
     });
+
     revalidatePath("/app/tasks");
+    revalidatePath("/app/home");
+
     return task;
   } catch (error) {
     console.error(error);
@@ -235,7 +250,10 @@ export async function updateSubtask({
         ...subtask,
       },
     });
+
     revalidatePath("/app/tasks");
+    revalidatePath("/app/home");
+
     return subTask;
   } catch (error) {
     console.error(error);
@@ -261,6 +279,7 @@ export async function deleteTask({ id }: { id: string }) {
     });
 
     revalidatePath("/app/tasks");
+    revalidatePath("/app/home");
 
     return task;
   } catch (error) {
@@ -287,6 +306,7 @@ export async function deleteSubtask({ id }: { id: string }) {
     });
 
     revalidatePath("/app/tasks");
+    revalidatePath("/app/home");
 
     return subtask;
   } catch (error) {
@@ -320,6 +340,9 @@ export async function updateTaskStatus({
     },
   });
 
+  revalidatePath("/app/tasks");
+  revalidatePath("/app/home");
+
   return {
     statusCode: 200,
     data: task,
@@ -351,6 +374,9 @@ export async function updateSubtaskStatus({
       status,
     },
   });
+
+  revalidatePath("/app/tasks");
+  revalidatePath("/app/home");
 
   return {
     statusCode: 200,
