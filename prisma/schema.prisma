@@ -54,6 +54,7 @@ model Task {
     title     String
     content   String?
     status    String    @default("pending")
+    priority  String    @default("low")
     createdAt DateTime  @default(now())
     updatedAt DateTime  @updatedAt
     userId    String

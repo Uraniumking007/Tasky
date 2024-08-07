@@ -3,8 +3,10 @@
 import { getServerAuthSession } from "@/server/auth";
 import { db } from "@/server/db";
 import type { SubTask, Task } from "@prisma/client";
+import { STATUS_CODES } from "http";
 import type { Session } from "next-auth";
 import { revalidatePath } from "next/cache";
+import { NextResponse } from "next/server";
 
 export interface TaskData extends Task {
   id: string;
@@ -22,6 +24,7 @@ async function getUser(session: Session | null) {
     },
   });
   if (!user) throw new Error("User not found");
+
   return user;
 }
 
