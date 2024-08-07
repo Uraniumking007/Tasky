@@ -1,3 +1,4 @@
+import { TaskCreationModal } from "@/components/modals/create-task-modal";
 import SideNavbar from "@/components/side-navbar";
 import { getServerAuthSession } from "@/server/auth";
 import { db } from "@/server/db";
@@ -30,6 +31,7 @@ export default async function HomeLayout({
     <div className="flex w-full">
       <SideNavbar user={user} teamName={team ? team.name : user.username} />
       {children}
+      <TaskCreationModal />
     </div>
   );
 }
