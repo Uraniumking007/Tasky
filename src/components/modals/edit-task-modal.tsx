@@ -32,6 +32,15 @@ import {
 import { useToast } from "../ui/use-toast";
 import { Pencil } from "lucide-react";
 import { DialogClose } from "@radix-ui/react-dialog";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 interface EditSubtaskType {
   id: string;
@@ -112,7 +121,6 @@ export function EditTaskModal({
               createdAt: new Date(),
               updatedAt: new Date(),
             },
-            taskId: task.id,
           });
           toast({
             variant: "default",
@@ -261,6 +269,26 @@ export function EditTaskModal({
               </div>
             );
           })}
+          <Select
+            defaultValue={editedTask.priority}
+            onValueChange={(event) => {
+              setEditedTask({ ...editedTask, priority: event });
+            }}
+          >
+            <SelectTrigger className="mx-auto w-4/5">
+              <SelectValue placeholder="Select priority" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Priority</SelectLabel>
+                <SelectItem value="very-high">Very High</SelectItem>
+                <SelectItem value="high">High</SelectItem>
+                <SelectItem value="middle">Middle</SelectItem>
+                <SelectItem value="low">low</SelectItem>
+                <SelectItem value="lowest">Lowest</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
         <DialogFooter>
           <Button

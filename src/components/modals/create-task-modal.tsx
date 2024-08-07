@@ -193,6 +193,7 @@ export function TaskCreationModal() {
             </div>
           ))}
           <Select
+            defaultValue={task.priority}
             onValueChange={(event) => {
               setTask({ ...task, priority: event });
             }}
