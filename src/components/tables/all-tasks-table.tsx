@@ -36,7 +36,7 @@ export default function AllTasksListTable({
             <TableRow key={task.id}>
               <TableCell className="font-medium">{task.title}</TableCell>
               <TableCell>
-                {subtaskCount !== 0 ? `+${subtaskCount}` : "-"}
+                {subtaskCount === 0 ? "-" : `+${subtaskCount}`}
               </TableCell>
               <TableCell className="capitalize">{task.status}</TableCell>
               <TableCell>{task.status}</TableCell>
