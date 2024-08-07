@@ -22,6 +22,15 @@ import {
 } from "../ui/tooltip";
 import { type TaskData, createNewTask } from "@/app/(app)/tasks/action";
 import { useToast } from "../ui/use-toast";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 export function TaskCreationModal() {
   const [task, setTask] = useState<TaskData>({
@@ -33,6 +42,7 @@ export function TaskCreationModal() {
     userId: "",
     teamId: "",
     status: "pending",
+    priority: "low",
   });
   const [subTasks, setSubTasks] = useState<Partial<Task>[]>([]);
   const [subTaskCount, setSubTaskCount] = useState("0");
@@ -182,6 +192,25 @@ export function TaskCreationModal() {
                 )}
             </div>
           ))}
+          <Select
+            onValueChange={(event) => {
+              setTask({ ...task, priority: event });
+            }}
+          >
+            <SelectTrigger className="mx-auto w-4/5">
+              <SelectValue placeholder="Select priority" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Priority</SelectLabel>
+                <SelectItem value="very-high">Very High</SelectItem>
+                <SelectItem value="high">High</SelectItem>
+                <SelectItem value="middle">Middle</SelectItem>
+                <SelectItem value="low">low</SelectItem>
+                <SelectItem value="lowest">Lowest</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
         <DialogFooter>
           <Button
