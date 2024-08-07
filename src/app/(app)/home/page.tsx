@@ -16,7 +16,7 @@ export default async function HomePage() {
   return (
     <div className="m-2 flex w-full flex-col justify-center rounded-sm p-4">
       <h1 className="text-3xl font-black">Welcome Back</h1>
-      <p className="font-normal">Here's List of All Your Tasks.</p>
+      <p className="font-normal">Here&apos;s List of All Your Tasks.</p>
       {tasks.data.length === 0 ? (
         <div className="flex h-full w-full flex-col items-center justify-center">
           <iframe
