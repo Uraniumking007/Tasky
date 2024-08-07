@@ -12,7 +12,7 @@ To get started with Tasky, simply create an account and log in. From there, you 
 - Priority setting: Users can set priorities for each task, allowing them to focus on the most important tasks first.
 - Task tracking: Users can track the progress of their tasks and notes, making it easy to see what needs to be done and when.
 
-## Getting Started
+## Tech Stack
 To get started with Tasky, simply sign up for an account on our website. Once you&apos;re logged in, you can start creating tasks and notes.
 
 - [Next.js](https://nextjs.org)
