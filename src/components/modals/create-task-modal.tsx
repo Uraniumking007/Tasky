@@ -2,8 +2,8 @@
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -11,30 +11,44 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Task } from "@prisma/client";
-import { IconCirclePlus, IconEyePlus } from "@tabler/icons-react";
-import { Icon } from "lucide-react";
-import { useState } from "react";
+import type { Task } from "@prisma/client";
+import { IconCirclePlus } from "@tabler/icons-react";
+import { useRef, useState } from "react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "./ui/tooltip";
-import { TaskData, createTask } from "@/app/(app)/tasks/action";
-import { TRPCClientError } from "@trpc/client";
-import { useToast } from "./ui/use-toast";
+} from "../ui/tooltip";
+import { type TaskData, createNewTask } from "@/app/(app)/tasks/action";
+import { useToast } from "../ui/use-toast";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
-export function CreateTaskDialog() {
+export function TaskCreationModal() {
   const [task, setTask] = useState<TaskData>({
+    id: "",
     title: "",
     content: "",
     createdAt: new Date(),
+    updatedAt: new Date(),
+    userId: "",
+    teamId: "",
     status: "pending",
+    priority: "low",
   });
-  const [subTask, setSubTask] = useState<Partial<Task>[]>([]);
+  const [subTasks, setSubTasks] = useState<Partial<Task>[]>([]);
   const [subTaskCount, setSubTaskCount] = useState("0");
   const { toast } = useToast();
+  const ref = useRef<HTMLButtonElement>(null);
+
   async function handleSubmit() {
     if (task.title === "") {
       toast({
@@ -46,21 +60,28 @@ export function CreateTaskDialog() {
     }
     const newTask = {
       ...task,
-      content: JSON.stringify(subTask),
     };
     try {
-      await createTask({ taskData: newTask });
+      subTasks.forEach((subtask) => {
+        if (!subtask.title || subtask.title == "") {
+          throw new Error("Subtask title cannot be empty");
+        }
+      });
+      await createNewTask({ taskData: newTask, subtasks: subTasks });
       toast({
         variant: "default",
         title: "Success",
         description: "Task created successfully",
       });
     } catch (error) {
+      const typedError = error as Error;
       if (error) {
         toast({
           variant: "destructive",
           title: "Error",
-          description: JSON.stringify(error),
+          description: typedError.message
+            ? typedError.message
+            : JSON.stringify(error),
         });
       }
     }
@@ -102,8 +123,8 @@ export function CreateTaskDialog() {
                         setSubTaskCount(
                           (parseInt(subTaskCount) + 1).toString(),
                         );
-                        setSubTask([
-                          ...subTask,
+                        setSubTasks([
+                          ...subTasks,
                           {
                             id: "0",
                             title: "",
@@ -121,7 +142,7 @@ export function CreateTaskDialog() {
               </TooltipProvider>
             )}
           </div>
-          {subTask.map((subtask, index) => (
+          {subTasks.map((subtask, index) => (
             <div className="grid grid-cols-5 items-center gap-2" key={index}>
               <Label htmlFor="username" className="text-right">
                 {`SubTask ${index + 1}`}
@@ -129,18 +150,19 @@ export function CreateTaskDialog() {
               <Input
                 id="subtask"
                 className="col-span-3"
+                defaultValue={subtask.title ?? ""}
                 onChange={(e) => {
-                  const newSubTask = [...subTask];
+                  const newSubTask = [...subTasks];
                   newSubTask.map((sub, i) => {
                     if (i === index) {
                       sub.title = e.target.value;
                     }
                   });
-                  setSubTask(newSubTask);
+                  setSubTasks(newSubTask);
                 }}
               />
               {subTaskCount === (index + 1).toString() &&
-                (subTask ?? []).length > 0 && (
+                (subTasks ?? []).length > 0 && (
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
@@ -150,8 +172,8 @@ export function CreateTaskDialog() {
                             setSubTaskCount(
                               (parseInt(subTaskCount) + 1).toString(),
                             );
-                            setSubTask([
-                              ...subTask,
+                            setSubTasks([
+                              ...subTasks,
                               {
                                 id: "0",
                                 title: "",
@@ -170,16 +192,38 @@ export function CreateTaskDialog() {
                 )}
             </div>
           ))}
+          <Select
+            defaultValue={task.priority}
+            onValueChange={(event) => {
+              setTask({ ...task, priority: event });
+            }}
+          >
+            <SelectTrigger className="mx-auto w-4/5">
+              <SelectValue placeholder="Select priority" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Priority</SelectLabel>
+                <SelectItem value="very-high">Very High</SelectItem>
+                <SelectItem value="high">High</SelectItem>
+                <SelectItem value="middle">Middle</SelectItem>
+                <SelectItem value="low">low</SelectItem>
+                <SelectItem value="lowest">Lowest</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
         <DialogFooter>
           <Button
             type="submit"
-            onClick={() => {
-              handleSubmit();
+            onClick={async () => {
+              await handleSubmit();
+              ref.current?.click();
             }}
           >
             Save changes
           </Button>
+          <DialogClose ref={ref} />
         </DialogFooter>
       </DialogContent>
     </Dialog>

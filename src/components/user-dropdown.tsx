@@ -30,7 +30,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User } from "next-auth";
+import type { User } from "next-auth";
 
 export function UserDropdownMenu({
   user,

@@ -11,7 +11,10 @@ import { useRouter } from "next/navigation";
 export default function RegistrationForm({
   registerUser,
 }: {
-  registerUser: any;
+  registerUser: (
+    prevState: object,
+    formData: FormData,
+  ) => Promise<{ message: string; statusCode: number }>;
 }) {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -31,7 +34,7 @@ export default function RegistrationForm({
     } else {
       setError(status?.message);
     }
-  }, [status]);
+  }, [status, router, toast]);
 
   return (
     <form
@@ -76,7 +79,7 @@ export default function RegistrationForm({
           {showPassword ? <IconEye size={20} /> : <IconEyeOff size={20} />}
         </button>
       </div>
-      <div>{error && <p className="text-red-500">{error}</p>}</div>
+      <div>{error && <p className="py-2 text-red-500">{error}</p>}</div>
       <div className="flex w-full justify-between">
         <Link className="text-foreground" href={"/auth/login"}>
           Already have a account? Sign in

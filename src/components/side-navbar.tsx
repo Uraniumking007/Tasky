@@ -1,9 +1,8 @@
 "use client";
 import React from "react";
-import Image from "next/image";
 import { Button } from "./ui/button";
 import Link from "next/link";
-import { User } from "next-auth";
+import type { User } from "next-auth";
 import { signOut } from "next-auth/react";
 import { UserDropdownMenu } from "./user-dropdown";
 import {
@@ -32,7 +31,9 @@ export default function SideNavbar({
               Dashboard
             </AccordionTrigger>
             <AccordionContent>
-              <Button variant="ghost">Inbox</Button>
+              <Button variant="outline" className="w-full">
+                Inbox
+              </Button>
             </AccordionContent>
           </AccordionItem>
         </Accordion>
@@ -44,10 +45,26 @@ export default function SideNavbar({
             </AccordionTrigger>
             <AccordionContent>
               <div className="flex w-full flex-col gap-2">
-                <Link href={"/tasks"}>All</Link>
-                <Link href={"/tasks/pending"}>Pending</Link>
-                <Link href={"/tasks/ongoing"}>Ongoing</Link>
-                <Link href={"/tasks/completed"}>Completed</Link>
+                <Link href={"/tasks"}>
+                  <Button variant="outline" className="w-full">
+                    All
+                  </Button>
+                </Link>
+                <Link href={"/tasks/pending"}>
+                  <Button variant="outline" className="w-full">
+                    Pending
+                  </Button>
+                </Link>
+                <Link href={"/tasks/ongoing"}>
+                  <Button variant="outline" className="w-full">
+                    Ongoing
+                  </Button>
+                </Link>
+                <Link href={"/tasks/completed"}>
+                  <Button variant="outline" className="w-full">
+                    Completed
+                  </Button>
+                </Link>
               </div>
             </AccordionContent>
           </AccordionItem>
@@ -55,8 +72,8 @@ export default function SideNavbar({
       </div>
       {user ? (
         <Button
-          onClick={() => {
-            signOut({ callbackUrl: "/" });
+          onClick={async () => {
+            await signOut({ callbackUrl: "/" });
           }}
         >
           Logout

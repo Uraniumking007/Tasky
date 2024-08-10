@@ -9,33 +9,34 @@ datasource db {
 }
 
 model User {
-    id         String   @id @default(cuid())
-    email      String   @unique
-    name       String?
-    avatar_url String?
-    username   String   @unique
-    password   String
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @updatedAt
+    id          String    @id @default(cuid())
+    email       String    @unique
+    name        String?
+    avatar_url  String?
+    username    String    @unique
+    password    String
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
     active_team String?
-    teams      Team[]
-    tasks      Task[]
+    teams       Team[]
+    tasks       Task[]
+    subTasks    SubTask[]
 }
 
 model Team {
-    id        String   @id @default(cuid())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    ownerId   String
-    member1   String?
-    member2   String?
-    member3   String?
-    member4   String?
-    member5   String?
-    member6   String?
-    member7   String?
-    member8   String?
+    id           String   @id @default(cuid())
+    name         String
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+    ownerId      String
+    member1      String?
+    member2      String?
+    member3      String?
+    member4      String?
+    member5      String?
+    member6      String?
+    member7      String?
+    member8      String?
     member1_role String?
     member2_role String?
     member3_role String?
@@ -44,19 +45,34 @@ model Team {
     member6_role String?
     member7_role String?
     member8_role String?
-    users     User  @relation(fields: [ownerId], references: [id])
-    tasks     Task[]
+    users        User     @relation(fields: [ownerId], references: [id])
+    tasks        Task[]
 }
 
 model Task {
+    id        String    @id @default(cuid())
+    title     String
+    content   String?
+    status    String    @default("pending")
+    priority  String    @default("low")
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    userId    String
+    teamId    String?
+    user      User      @relation(fields: [userId], references: [id])
+    team      Team?     @relation(fields: [teamId], references: [id])
+    subTasks  SubTask[]
+}
+
+model SubTask {
     id        String   @id @default(cuid())
     title     String
     content   String?
     status    String   @default("pending")
+    taskId    String
+    user_id   String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    userId    String
-    teamId    String?
-    user      User     @relation(fields: [userId], references: [id])
-    team      Team?     @relation(fields: [teamId], references: [id])
+    task      Task     @relation(fields: [taskId], references: [id])
+    user      User     @relation(fields: [user_id], references: [id])
 }
