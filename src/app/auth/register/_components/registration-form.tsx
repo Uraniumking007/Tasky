@@ -1,12 +1,19 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { IconEye, IconEyeOff } from "@tabler/icons-react";
+import {
+  IconBrandDiscord,
+  IconBrandGithub,
+  IconBrandGoogle,
+  IconEye,
+  IconEyeOff,
+} from "@tabler/icons-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useFormState } from "react-dom";
 import { useRouter } from "next/navigation";
+import { oAuth } from "../../action";
 
 export default function RegistrationForm({
   registerUser,
@@ -54,7 +61,6 @@ export default function RegistrationForm({
           placeholder="username"
         />
       </div>
-
       <div className="flex w-full flex-col">
         <label htmlFor="email">Email</label>
         <Input
@@ -89,6 +95,38 @@ export default function RegistrationForm({
           type="submit"
         >
           Register
+        </button>
+      </div>
+      <div className="flex w-full justify-evenly">
+        <button
+          type="button"
+          onClick={async () => {
+            await oAuth("github");
+          }}
+          className="flex w-fit gap-1 rounded-md bg-primary px-4 py-2 text-primary-foreground"
+        >
+          <IconBrandGithub />
+          Github
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            oAuth("google");
+          }}
+          className="flex w-fit gap-1 rounded-md bg-primary px-4 py-2 text-primary-foreground"
+        >
+          <IconBrandGoogle />
+          Google
+        </button>
+        <button
+          type={"button"}
+          onClick={() => {
+            oAuth("discord");
+          }}
+          className="flex w-fit gap-1 rounded-md bg-primary px-4 py-2 text-primary-foreground"
+        >
+          <IconBrandDiscord />
+          Discord
         </button>
       </div>
     </form>

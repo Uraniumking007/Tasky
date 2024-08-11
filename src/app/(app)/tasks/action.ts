@@ -1,6 +1,6 @@
 "use server";
 
-import { getServerAuthSession } from "@/server/auth";
+import { auth } from "@/server/auth";
 import { db } from "@/server/db";
 import type { SubTask, Task } from "@prisma/client";
 import type { Session } from "next-auth";
@@ -34,7 +34,7 @@ export async function createNewTask({
   taskData: TaskData;
   subtasks: Partial<Task>[];
 }) {
-  const session = await getServerAuthSession();
+  const session = await auth();
   try {
     const user = await getUser(session);
     const { id, ...taskDataWithoutId } = taskData;
@@ -74,7 +74,7 @@ export async function createNewTask({
 }
 
 export async function addSubtask({ subtask }: { subtask: SubTask }) {
-  const session = await getServerAuthSession();
+  const session = await auth();
 
   try {
     const user = await getUser(session);
@@ -101,7 +101,7 @@ export async function addSubtask({ subtask }: { subtask: SubTask }) {
 }
 
 export async function getAllTasks() {
-  const session = await getServerAuthSession();
+  const session = await auth();
 
   if (!session) {
     throw new Error("No session found");
@@ -124,7 +124,7 @@ export async function getAllTasks() {
 }
 
 export async function getAllSubTasks() {
-  const session = await getServerAuthSession();
+  const session = await auth();
 
   if (!session) {
     throw new Error("No session found");
@@ -146,7 +146,7 @@ export async function getAllSubTasks() {
 }
 
 export async function getTaskById({ id }: { id: string }) {
-  const session = await getServerAuthSession();
+  const session = await auth();
 
   if (!session) {
     throw new Error("No session found");
@@ -168,7 +168,7 @@ export async function getTaskById({ id }: { id: string }) {
 }
 
 export default async function getSubtasksById({ id }: { id: string }) {
-  const session = await getServerAuthSession();
+  const session = await auth();
 
   if (!session) {
     throw new Error("No session found");
@@ -196,7 +196,7 @@ export async function updateTask({
   id: string;
   taskData: TaskData;
 }) {
-  const session = await getServerAuthSession();
+  const session = await auth();
 
   if (!session) {
     throw new Error("No session found");
@@ -232,7 +232,7 @@ export async function updateSubtask({
   id: string;
   subtask: SubTask;
 }) {
-  const session = await getServerAuthSession();
+  const session = await auth();
 
   if (!session) {
     throw new Error("No session found");
@@ -262,7 +262,7 @@ export async function updateSubtask({
 }
 
 export async function deleteTask({ id }: { id: string }) {
-  const session = await getServerAuthSession();
+  const session = await auth();
 
   if (!session) {
     throw new Error("No session found");
@@ -289,7 +289,7 @@ export async function deleteTask({ id }: { id: string }) {
 }
 
 export async function deleteSubtask({ id }: { id: string }) {
-  const session = await getServerAuthSession();
+  const session = await auth();
 
   if (!session) {
     throw new Error("No session found");
@@ -322,7 +322,7 @@ export async function updateTaskStatus({
   id: string;
   status: string;
 }) {
-  const session = await getServerAuthSession();
+  const session = await auth();
 
   if (!session) {
     throw new Error("No session found");
@@ -357,7 +357,7 @@ export async function updateSubtaskStatus({
   id: string;
   status: string;
 }) {
-  const session = await getServerAuthSession();
+  const session = await auth();
 
   if (!session) {
     throw new Error("No session found");

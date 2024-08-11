@@ -1,7 +1,5 @@
 import "@/styles/globals.css";
 import { Nunito } from "next/font/google";
-
-import { TRPCReactProvider } from "@/trpc/react";
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata = {
@@ -25,7 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${nunito.className}`}>
       <body className="dark flex h-screen w-screen justify-center">
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+        {children}
         <Toaster />
       </body>
     </html>

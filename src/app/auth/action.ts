@@ -1,17 +1,14 @@
 "use server";
 
+import { signIn } from "@/server/auth";
 import { db } from "@/server/db";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 export async function registerUser(prevState: object, formData: FormData) {
   const name = formData.get("name") as string;
   const username = formData.get("username") as string;
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
-
-  console.log(formData);
-
-  console.log(name, username, email, password);
 
   if (!name || !username || !email || !password) {
     return {
@@ -103,4 +100,16 @@ export async function registerUser(prevState: object, formData: FormData) {
     message: "User created successfully",
     statusCode: 200,
   };
+}
+
+export async function oAuth(method: "github" | "google" | "discord") {
+  if (method === "github") {
+    await signIn("github");
+  }
+  if (method === "discord") {
+    await signIn("discord");
+  }
+  if (method === "google") {
+    await signIn("google");
+  }
 }
