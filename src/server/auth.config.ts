@@ -52,4 +52,5 @@ export const authOptions: Partial<NextAuthConfig> = {
     signOut: "/auth/logout",
     error: "/auth/error",
   },
+  debug: true,
 };

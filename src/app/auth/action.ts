@@ -102,7 +102,12 @@ export async function registerUser(prevState: object, formData: FormData) {
   };
 }
 
-export async function oAuth(method: "github" | "google" | "discord") {
+export async function oAuth(
+  method: "github" | "google" | "discord" | "custom-github",
+) {
+  if (method === "custom-github") {
+    await signIn("custom-github");
+  }
   if (method === "github") {
     await signIn("github");
   }

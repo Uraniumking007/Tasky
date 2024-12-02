@@ -101,7 +101,7 @@ export default function RegistrationForm({
         <button
           type="button"
           onClick={async () => {
-            await oAuth("github");
+            await oAuth("custom-github");
           }}
           className="flex w-fit gap-1 rounded-md bg-primary px-4 py-2 text-primary-foreground"
         >
