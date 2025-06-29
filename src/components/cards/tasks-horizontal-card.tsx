@@ -1,8 +1,5 @@
 "use client";
-import {
-  updateSubtaskStatus,
-  updateTaskStatus,
-} from "@/app/(app)/tasks/action";
+import { api } from "@/trpc/react";
 import { cn } from "@/lib/utils";
 import React from "react";
 import { Card, CardHeader, CardTitle, CardDescription } from "../ui/card";
@@ -26,6 +23,44 @@ export default function TasksHorizontalCard({
   subTasks: SubTask[];
 }) {
   const { toast } = useToast();
+  const utils = api.useUtils();
+
+  const updateTaskStatusMutation = api.tasks.updateTaskStatus.useMutation({
+    onSuccess: (data) => {
+      toast({
+        variant: "default",
+        description: data.message,
+      });
+      // Invalidate and refetch tasks
+      utils.tasks.getAllTasks.invalidate();
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        description: error.message || "Failed to update task status",
+      });
+    },
+  });
+
+  const updateSubtaskStatusMutation = api.tasks.updateSubtaskStatus.useMutation(
+    {
+      onSuccess: (data) => {
+        toast({
+          variant: "default",
+          description: data.message,
+        });
+        // Invalidate and refetch subtasks
+        utils.tasks.getAllSubTasks.invalidate();
+      },
+      onError: (error) => {
+        toast({
+          variant: "destructive",
+          description: error.message || "Failed to update subtask status",
+        });
+      },
+    },
+  );
+
   return (
     <div className="flex w-full flex-col gap-4">
       {tasks.map((task, key) => {
@@ -34,43 +69,21 @@ export default function TasksHorizontalCard({
         );
         const numberOfSubtasks = filteredSubTasks.length;
 
-        async function changeTaskStatusClient({ status }: { status: string }) {
-          const result = await updateTaskStatus({ id: task.id, status });
-          if (result.statusCode === 200) {
-            toast({
-              variant: "default",
-              description: "Task status updated",
-            });
-          } else {
-            toast({
-              variant: "destructive",
-              description: "Failed to update task status",
-            });
-          }
+        function changeTaskStatusClient({ status }: { status: string }) {
+          updateTaskStatusMutation.mutate({ id: task.id, status });
         }
 
-        async function changeSubtaskStatusClient({
+        function changeSubtaskStatusClient({
           subTaskId,
           status,
         }: {
           subTaskId: string;
           status: string;
         }) {
-          const result = await updateSubtaskStatus({
+          updateSubtaskStatusMutation.mutate({
             id: subTaskId,
             status,
           });
-          if (result.statusCode === 200) {
-            toast({
-              variant: "default",
-              description: "Subtask status updated",
-            });
-          } else {
-            toast({
-              variant: "destructive",
-              description: "Failed to update subtask status",
-            });
-          }
         }
 
         return (
@@ -80,8 +93,8 @@ export default function TasksHorizontalCard({
                 <div className="flex gap-4">
                   <Checkbox
                     defaultChecked={task.status === "completed"}
-                    onCheckedChange={async (e) => {
-                      await changeTaskStatusClient({
+                    onCheckedChange={(e) => {
+                      changeTaskStatusClient({
                         status: e ? "completed" : "incomplete",
                       });
                     }}
@@ -107,14 +120,14 @@ export default function TasksHorizontalCard({
                                   defaultChecked={
                                     subtask.status === "completed"
                                   }
-                                  onCheckedChange={async (e) => {
-                                    subtask.status = e
+                                  onCheckedChange={(e) => {
+                                    const newStatus = e
                                       ? "completed"
                                       : "incomplete";
 
-                                    await changeSubtaskStatusClient({
+                                    changeSubtaskStatusClient({
                                       subTaskId: subtask.id,
-                                      status: subtask.status,
+                                      status: newStatus,
                                     });
                                   }}
                                   id={`subtask${key}`}

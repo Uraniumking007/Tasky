@@ -23,12 +23,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
-import {
-  addSubtask,
-  deleteSubtask,
-  updateTask,
-  type TaskData,
-} from "@/app/(app)/tasks/action";
+import { api } from "@/trpc/react";
+
+type TaskData = {
+  title: string;
+  content: string;
+  status: string;
+  priority: string;
+};
 import { useToast } from "../ui/use-toast";
 import { Pencil } from "lucide-react";
 import { DialogClose } from "@radix-ui/react-dialog";
@@ -66,8 +68,63 @@ export function EditTaskModal({
 
   const { toast } = useToast();
   const ref = useRef<HTMLButtonElement>(null);
+  const utils = api.useUtils();
 
-  async function handleSubmit() {
+  const updateTaskMutation = api.tasks.updateTask.useMutation({
+    onSuccess: (data) => {
+      toast({
+        variant: "default",
+        title: "Success",
+        description: data.message,
+      });
+      utils.tasks.getAllTasks.invalidate();
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
+    },
+  });
+
+  const addSubtaskMutation = api.tasks.addSubtask.useMutation({
+    onSuccess: (data) => {
+      toast({
+        variant: "default",
+        title: "Success",
+        description: data.message,
+      });
+      utils.tasks.getAllSubTasks.invalidate();
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
+    },
+  });
+
+  const deleteSubtaskMutation = api.tasks.deleteSubtask.useMutation({
+    onSuccess: (data) => {
+      toast({
+        variant: "default",
+        title: "Success",
+        description: data.message,
+      });
+      utils.tasks.getAllSubTasks.invalidate();
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
+    },
+  });
+
+  function handleSubmit() {
     if (editedTask.title === "") {
       toast({
         variant: "destructive",
@@ -76,20 +133,14 @@ export function EditTaskModal({
       });
       return;
     }
-    try {
-      await updateTask({ id: task.id, taskData: editedTask });
-      toast({
-        variant: "default",
-        title: "Success",
-        description: "Task Edited successfully",
-      });
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: JSON.stringify(error),
-      });
-    }
+
+    updateTaskMutation.mutate({
+      id: task.id,
+      title: editedTask.title,
+      content: editedTask.content,
+      status: editedTask.status,
+      priority: editedTask.priority,
+    });
   }
 
   const handleSubTaskChange = (index: number, title: string) => {
@@ -109,31 +160,12 @@ export function EditTaskModal({
         throw new Error("Subtask title cannot be empty");
       }
       if (!editedSubTask.isSaved) {
-        try {
-          await addSubtask({
-            subtask: {
-              title: editedSubTask.title,
-              taskId: task.id,
-              id: editedSubTask.id,
-              content: null,
-              status: "incomplete",
-              user_id: "",
-              createdAt: new Date(),
-              updatedAt: new Date(),
-            },
-          });
-          toast({
-            variant: "default",
-            title: "Success",
-            description: "SubTask created successfully",
-          });
-        } catch (error) {
-          toast({
-            variant: "destructive",
-            title: "Error",
-            description: JSON.stringify(error),
-          });
-        }
+        addSubtaskMutation.mutate({
+          taskId: task.id,
+          title: editedSubTask.title,
+          content: "",
+          status: "incomplete",
+        });
       }
     }
 
@@ -148,25 +180,12 @@ export function EditTaskModal({
     setSubTaskCount(subTaskCount + 1);
   };
 
-  async function deleteSubTask(id: string) {
+  function deleteSubTask(id: string) {
     const newSubTasks = editedSubTasks.filter(
       (subtask, index) => subtask.id !== id,
     );
     setSubTaskCount(subTaskCount - 1);
-    try {
-      await deleteSubtask({ id });
-      toast({
-        variant: "default",
-        title: "Success",
-        description: "SubTask deleted successfully",
-      });
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: JSON.stringify(error),
-      });
-    }
+    deleteSubtaskMutation.mutate({ id });
     setEditedSubTasks(newSubTasks);
   }
 

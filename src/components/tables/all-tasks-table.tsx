@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/table";
 import { SubTask, Task } from "@prisma/client";
 import { Checkbox } from "../ui/checkbox";
-import { updateTaskStatus } from "@/app/(app)/tasks/action";
+import { api } from "@/trpc/react";
 import { useToast } from "../ui/use-toast";
 
 export default function AllTasksListTable({
@@ -21,6 +21,24 @@ export default function AllTasksListTable({
   subtasks: SubTask[];
 }) {
   const { toast } = useToast();
+  const utils = api.useUtils();
+
+  const updateTaskStatusMutation = api.tasks.updateTaskStatus.useMutation({
+    onSuccess: (data) => {
+      toast({
+        variant: "default",
+        description: data.message,
+      });
+      // Invalidate and refetch tasks
+      utils.tasks.getAllTasks.invalidate();
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        description: error.message || "Failed to update task status",
+      });
+    },
+  });
 
   async function changeTaskStatusClient({
     id,
@@ -29,21 +47,10 @@ export default function AllTasksListTable({
     id: string;
     status: string;
   }) {
-    const result = await updateTaskStatus({
+    updateTaskStatusMutation.mutate({
       id,
       status,
     });
-    if (result.statusCode === 200) {
-      toast({
-        variant: "default",
-        description: "Task status updated",
-      });
-    } else {
-      toast({
-        variant: "destructive",
-        description: "Failed to update task status",
-      });
-    }
   }
 
   return (

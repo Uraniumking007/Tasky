@@ -1,0 +1,12 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Next.js
+Shadcn ui
+tanstack query
+postgres database
+prisma orm
+DO NOT USE API ROUTES FROM NEXTJS AND USE SERVER ACTIONS or TANSTACK-ROUTER
+Priotirize tanstack-router more when comparing with SERVER ACTIONS

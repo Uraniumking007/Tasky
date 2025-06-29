@@ -21,11 +21,93 @@ To get started with Tasky, simply sign up for an account on our website. Once yo
 - [Tailwind CSS](https://tailwindcss.com)
 - [tRPC](https://trpc.io)
 - [shadcn/ui](https://ui.shadcn.com/)
+- [Nodemailer](https://nodemailer.com/) (Email functionality)
 
 ## Getting Started
 
 To get started with [Tasky](http://tasky.bhaveshp.dev), simply sign up for an account on our [website](http://tasky.bhaveshp.dev). Once you&apos;re logged in, you can start creating tasks and notes.
 
+## Development
+
+### Prerequisites
+
+- Node.js 18+
+- pnpm (recommended package manager)
+
+### Installation
+
+```bash
+pnpm install
+```
+
+### Environment Variables
+
+Create a `.env` file in the root directory with the following variables:
+
+```env
+# Database
+DATABASE_URL="your-database-url"
+
+# NextAuth
+NEXTAUTH_SECRET="your-nextauth-secret"
+NEXTAUTH_URL="http://localhost:3000"
+
+# Email Configuration (Nodemailer)
+SMTP_HOST="smtp.gmail.com"
+SMTP_PORT="587"
+SMTP_SECURE="false"
+SMTP_USER="your-email@gmail.com"
+SMTP_PASS="your-app-password"
+SMTP_FROM="Tasky <noreply@tasky.com>"
+```
+
+#### Email Setup
+
+For Gmail, you'll need to:
+
+1. Enable 2-factor authentication
+2. Generate an App Password
+3. Use the App Password as `SMTP_PASS`
+
+For other email providers, check their SMTP settings and adjust the configuration accordingly.
+
+### Database Setup
+
+```bash
+pnpm db:push
+```
+
+### Running the Development Server
+
+#### Standard Development (Webpack)
+
+```bash
+pnpm dev
+```
+
+#### Fast Development with Turbopack ⚡
+
+```bash
+pnpm dev:turbo
+```
+
+**Turbopack Benefits:**
+
+- Up to 700x faster updates than Webpack
+- Incremental compilation
+- Faster hot module replacement
+- Better memory usage
+
+> **Note:** Turbopack is still in beta. If you encounter any issues, fall back to the standard `pnpm dev` command.
+
+### Other Commands
+
+```bash
+pnpm build          # Build for production
+pnpm start          # Start production server
+pnpm lint           # Run ESLint
+pnpm db:studio      # Open Prisma Studio
+```
 
 ## Usage
 

@@ -1,78 +1,179 @@
 generator client {
-    provider        = "prisma-client-js"
-    previewFeatures = ["multiSchema"]
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
-    provider = "cockroachdb"
-    url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
-model User {
-    id          String    @id @default(cuid())
-    email       String    @unique
-    name        String?
-    avatar_url  String?
-    username    String    @unique
-    password    String
-    createdAt   DateTime  @default(now())
-    updatedAt   DateTime  @updatedAt
-    active_team String?
-    teams       Team[]
-    tasks       Task[]
-    subTasks    SubTask[]
+model Organization {
+  id        String               @id @default(cuid())
+  name      String
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+  ownerId   String
+  owner     users                @relation("OrganizationOwner", fields: [ownerId], references: [id])
+  members   OrganizationMember[]
+  teams     Team[]
+  invites   OrganizationInvite[]
+}
+
+model OrganizationMember {
+  id             String       @id @default(cuid())
+  organizationId String
+  userId         String
+  role           MemberRole   @default(MEMBER)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           users        @relation("OrganizationMembers", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
 }
 
 model Team {
-    id           String   @id @default(cuid())
-    name         String
-    createdAt    DateTime @default(now())
-    updatedAt    DateTime @updatedAt
-    ownerId      String
-    member1      String?
-    member2      String?
-    member3      String?
-    member4      String?
-    member5      String?
-    member6      String?
-    member7      String?
-    member8      String?
-    member1_role String?
-    member2_role String?
-    member3_role String?
-    member4_role String?
-    member5_role String?
-    member6_role String?
-    member7_role String?
-    member8_role String?
-    users        User     @relation(fields: [ownerId], references: [id])
-    tasks        Task[]
+  id             String        @id @default(cuid())
+  name           String
+  isPrivate      Boolean       @default(false)
+  allowAutoJoin  Boolean       @default(true)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  ownerId        String
+  organizationId String?
+  tasks          Task[]
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  owner          users         @relation("TeamOwner", fields: [ownerId], references: [id])
+  invites        TeamInvite[]
+  members        TeamMember[]
+}
+
+model TeamMember {
+  id        String     @id @default(cuid())
+  teamId    String
+  userId    String
+  role      MemberRole @default(MEMBER)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  team      Team       @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user      users      @relation("TeamMembers", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, userId])
 }
 
 model Task {
-    id        String    @id @default(cuid())
-    title     String
-    content   String?
-    status    String    @default("pending")
-    priority  String    @default("low")
-    createdAt DateTime  @default(now())
-    updatedAt DateTime  @updatedAt
-    userId    String
-    teamId    String?
-    user      User      @relation(fields: [userId], references: [id])
-    team      Team?     @relation(fields: [teamId], references: [id])
-    subTasks  SubTask[]
+  id        String    @id @default(cuid())
+  title     String
+  content   String?
+  status    String    @default("pending")
+  priority  String    @default("low")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  userId    String
+  teamId    String?
+  subTasks  SubTask[]
+  team      Team?     @relation(fields: [teamId], references: [id])
+  user      users     @relation(fields: [userId], references: [id])
 }
 
 model SubTask {
-    id        String   @id @default(cuid())
-    title     String
-    content   String?
-    status    String   @default("pending")
-    taskId    String
-    user_id   String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    task      Task     @relation(fields: [taskId], references: [id])
-    user      User     @relation(fields: [user_id], references: [id])
+  id        String   @id @default(cuid())
+  title     String
+  content   String?
+  status    String   @default("pending")
+  taskId    String
+  user_id   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  task      Task     @relation(fields: [taskId], references: [id])
+  user      users    @relation(fields: [user_id], references: [id])
+}
+
+model accounts {
+  id                  String  @id
+  user_id             String
+  type                String
+  provider            String
+  provider_account_id String
+  refresh_token       String?
+  access_token        String?
+  expires_at          Int?
+  token_type          String?
+  scope               String?
+  id_token            String?
+  session_state       String?
+  users               users   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([provider, provider_account_id])
+}
+
+model sessions {
+  id            String   @id
+  session_token String   @unique
+  user_id       String
+  expires       DateTime
+  users         users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model users {
+  id                      String               @id
+  name                    String?
+  email                   String?              @unique
+  email_verified          DateTime?
+  image                   String?
+  avatar_url              String?
+  username                String?              @unique
+  password                String?
+  createdAt               DateTime             @default(now())
+  updatedAt               DateTime
+  active_team             String?
+  ownedOrganizations      Organization[]       @relation("OrganizationOwner")
+  organizationMemberships OrganizationMember[] @relation("OrganizationMembers")
+  subTasks                SubTask[]
+  tasks                   Task[]
+  ownedTeams              Team[]               @relation("TeamOwner")
+  teamInvites             TeamInvite[]         @relation("TeamInviteInviter")
+  organizationInvites     OrganizationInvite[] @relation("OrganizationInviteInviter")
+  teamMemberships         TeamMember[]         @relation("TeamMembers")
+  accounts                accounts[]
+  sessions                sessions[]
+}
+
+model verificationtokens {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model TeamInvite {
+  id        String   @id @default(cuid())
+  email     String
+  teamId    String
+  invitedBy String
+  status    String   @default("pending")
+  createdAt DateTime @default(now())
+  expiry    DateTime
+  inviter   users    @relation("TeamInviteInviter", fields: [invitedBy], references: [id])
+  team      Team     @relation(fields: [teamId], references: [id])
+}
+
+model OrganizationInvite {
+  id             String       @id @default(cuid())
+  email          String
+  organizationId String
+  invitedBy      String
+  status         String       @default("pending")
+  createdAt      DateTime     @default(now())
+  expiry         DateTime
+  inviter        users        @relation("OrganizationInviteInviter", fields: [invitedBy], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id])
+}
+
+enum MemberRole {
+  OWNER
+  MANAGER
+  MEMBER
 }

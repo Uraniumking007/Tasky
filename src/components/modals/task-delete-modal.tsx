@@ -8,7 +8,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useRef } from "react";
-import { deleteTask } from "@/app/(app)/tasks/action";
+import { api } from "@/trpc/react";
 import { useToast } from "../ui/use-toast";
 import { Trash2Icon } from "lucide-react";
 import { DialogClose } from "@radix-ui/react-dialog";
@@ -16,8 +16,29 @@ import { DialogClose } from "@radix-ui/react-dialog";
 export function DeleteTaskModal({ id }: { id: string }) {
   const { toast } = useToast();
   const ref = useRef<HTMLButtonElement>(null);
+  const utils = api.useUtils();
 
-  async function handleSubmit() {
+  const deleteTaskMutation = api.tasks.deleteTask.useMutation({
+    onSuccess: (data) => {
+      toast({
+        variant: "default",
+        title: "Success",
+        description: data.message,
+      });
+      // Invalidate and refetch tasks
+      utils.tasks.getAllTasks.invalidate();
+      utils.tasks.getAllSubTasks.invalidate();
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
+    },
+  });
+
+  function handleSubmit() {
     if (id === "") {
       toast({
         variant: "destructive",
@@ -27,22 +48,7 @@ export function DeleteTaskModal({ id }: { id: string }) {
       return;
     }
 
-    try {
-      await deleteTask({ id });
-      toast({
-        variant: "default",
-        title: "Success",
-        description: "Task Edited successfully",
-      });
-    } catch (error) {
-      if (error) {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: JSON.stringify(error),
-        });
-      }
-    }
+    deleteTaskMutation.mutate({ id });
   }
 
   return (
@@ -67,12 +73,15 @@ export function DeleteTaskModal({ id }: { id: string }) {
           <Button
             type="submit"
             variant={"destructive"}
-            onClick={async () => {
-              await handleSubmit();
-              ref.current?.click();
+            onClick={() => {
+              handleSubmit();
+              if (!deleteTaskMutation.isPending) {
+                ref.current?.click();
+              }
             }}
+            disabled={deleteTaskMutation.isPending}
           >
-            Delete Task
+            {deleteTaskMutation.isPending ? "Deleting..." : "Delete Task"}
           </Button>
         </div>
       </DialogContent>

@@ -20,7 +20,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
-import { type TaskData, createNewTask } from "@/app/(app)/tasks/action";
+import { api } from "@/trpc/react";
 import { useToast } from "../ui/use-toast";
 import {
   Select,
@@ -31,6 +31,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+
+interface TaskData {
+  id: string;
+  title: string;
+  content: string;
+  createdAt: Date;
+  updatedAt: Date;
+  userId: string;
+  teamId: string;
+  status: string;
+  priority: string;
+}
 
 export function TaskCreationModal() {
   const [task, setTask] = useState<TaskData>({
@@ -48,6 +60,41 @@ export function TaskCreationModal() {
   const [subTaskCount, setSubTaskCount] = useState("0");
   const { toast } = useToast();
   const ref = useRef<HTMLButtonElement>(null);
+  const utils = api.useUtils();
+
+  const createTaskMutation = api.tasks.createTask.useMutation({
+    onSuccess: (data) => {
+      toast({
+        variant: "default",
+        title: "Success",
+        description: data.message,
+      });
+      // Reset form
+      setTask({
+        id: "",
+        title: "",
+        content: "",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        userId: "",
+        teamId: "",
+        status: "pending",
+        priority: "low",
+      });
+      setSubTasks([]);
+      setSubTaskCount("0");
+      // Invalidate and refetch tasks
+      utils.tasks.getAllTasks.invalidate();
+      utils.tasks.getAllSubTasks.invalidate();
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
+    },
+  });
 
   async function handleSubmit() {
     if (task.title === "") {
@@ -58,33 +105,31 @@ export function TaskCreationModal() {
       });
       return;
     }
-    const newTask = {
-      ...task,
-    };
-    try {
-      subTasks.forEach((subtask) => {
-        if (!subtask.title || subtask.title == "") {
-          throw new Error("Subtask title cannot be empty");
-        }
-      });
-      await createNewTask({ taskData: newTask, subtasks: subTasks });
+
+    // Validate subtasks
+    const invalidSubtask = subTasks.find(
+      (subtask) => !subtask.title || subtask.title.trim() === "",
+    );
+    if (invalidSubtask) {
       toast({
-        variant: "default",
-        title: "Success",
-        description: "Task created successfully",
+        variant: "destructive",
+        title: "Error",
+        description: "Subtask title cannot be empty",
       });
-    } catch (error) {
-      const typedError = error as Error;
-      if (error) {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: typedError.message
-            ? typedError.message
-            : JSON.stringify(error),
-        });
-      }
+      return;
     }
+
+    createTaskMutation.mutate({
+      title: task.title,
+      content: task.content,
+      status: task.status,
+      priority: task.priority,
+      subtasks: subTasks.map((subtask) => ({
+        title: subtask.title || "",
+        content: subtask.content || "",
+        status: subtask.status || "pending",
+      })),
+    });
   }
 
   return (
@@ -218,10 +263,13 @@ export function TaskCreationModal() {
             type="submit"
             onClick={async () => {
               await handleSubmit();
-              ref.current?.click();
+              if (!createTaskMutation.isPending) {
+                ref.current?.click();
+              }
             }}
+            disabled={createTaskMutation.isPending}
           >
-            Save changes
+            {createTaskMutation.isPending ? "Creating..." : "Save changes"}
           </Button>
           <DialogClose ref={ref} />
         </DialogFooter>

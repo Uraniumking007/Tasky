@@ -48,14 +48,16 @@ export async function registerUser(prevState: object, formData: FormData) {
     };
   }
 
-  if (await db.user.findUnique({ where: { username } })) {
+  if (
+    await db.users.findFirst({ where: { username: username.toLowerCase() } })
+  ) {
     return {
       message: "User with this username already exists",
       statusCode: 400,
     };
   }
 
-  if (await db.user.findUnique({ where: { email } })) {
+  if (await db.users.findUnique({ where: { email } })) {
     return {
       message: "User with this email already exists",
       statusCode: 400,
@@ -65,13 +67,14 @@ export async function registerUser(prevState: object, formData: FormData) {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
-    const user = await db.user.create({
+    const user = await db.users.create({
       data: {
         id: crypto.randomUUID(),
         name,
-        username,
-        email,
+        username: username.toLowerCase(),
+        email: email.toLowerCase(),
         password: hashedPassword,
+        updatedAt: new Date(),
       },
     });
     const team = await db.team.create({
@@ -82,7 +85,7 @@ export async function registerUser(prevState: object, formData: FormData) {
       },
     });
 
-    await db.user.update({
+    await db.users.update({
       where: {
         id: user.id,
       },
