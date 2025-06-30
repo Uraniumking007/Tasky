@@ -6,13 +6,37 @@ import OrganizationCard from "./OrganizationCard";
 import { Button } from "@/components/ui/button";
 import { IconPlus, IconBuilding } from "@tabler/icons-react";
 
+// Type definitions  
+interface User {
+  id: string;
+  name?: string | null;
+  email: string;
+  username?: string | null;
+}
+
+interface Organization {
+  id: string;
+  name: string;
+  userRole: "OWNER" | "MANAGER" | "MEMBER";
+  teams: any[];
+  members: any[];
+}
+
+interface Team {
+  id: string;
+  name: string;
+  organizationId: string | null;
+}
+
+interface ManageWorkspaceClientProps {
+  organizations: Organization[];
+  user: User;
+}
+
 export default function ManageWorkspaceClient({
   organizations,
   user,
-}: {
-  organizations: any[];
-  user: any;
-}) {
+}: ManageWorkspaceClientProps) {
   const { toast } = useToast();
   const orgDialogRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const [editOrgId, setEditOrgId] = useState<string | null>(null);
@@ -145,13 +169,13 @@ export default function ManageWorkspaceClient({
   const handlers = {
     onCreateOrg: handleCreateOrg,
     onCreateTeam: handleCreateTeam,
-    onEditOrg: (org: any) => {
+    onEditOrg: (org: Organization) => {
       setEditOrgId(org.id);
       setEditOrgName(org.name);
     },
     onEditOrgSubmit: handleEditOrg,
     onDeleteOrg: handleDeleteOrg,
-    onEditTeam: (team: any, orgId: string) => {
+    onEditTeam: (team: Team, orgId: string) => {
       setEditTeamId(team.id);
       setEditTeamName(team.name);
       setEditTeamOrgId(orgId);
