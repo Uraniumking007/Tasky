@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -10,29 +11,47 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
+interface Organization {
+  id: string;
+  name: string;
+  userRole: "OWNER" | "MANAGER" | "MEMBER";
+}
+
+interface EditOrganizationModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  org: Organization;
+  onSubmit: (orgId: string, newName: string) => void;
+}
+
 export default function EditOrganizationModal({
+  isOpen,
+  onClose,
   org,
-  handlers,
-}: {
-  org: any;
-  handlers: any;
-}) {
-  const open = handlers.editOrgId === org.id;
+  onSubmit,
+}: EditOrganizationModalProps) {
+  const [orgName, setOrgName] = useState(org.name);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    onSubmit(org.id, orgName);
+  };
+
   return (
     <Dialog
-      open={open}
+      open={isOpen}
       onOpenChange={(open) => {
-        if (!open) handlers.onCloseEditOrg();
+        if (!open) onClose();
       }}
     >
       <DialogContent>
         <ModalHeader>
           <ModalTitle>Edit Organization</ModalTitle>
         </ModalHeader>
-        <form onSubmit={handlers.onEditOrgSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <Input
-            value={handlers.editOrgName}
-            onChange={(e) => handlers.setEditOrgName(e.target.value)}
+            value={orgName}
+            onChange={(e) => setOrgName(e.target.value)}
             required
           />
           <DialogFooter>
