@@ -219,7 +219,7 @@ export default async function HomePage() {
               </CardTitle>
               <CardDescription className="text-sm lg:text-base">
                 {totalTasks === 0
-                  ? "You don't have any tasks yet. Create your first task to get started!"
+                  ? "You don&apos;t have any tasks yet. Create your first task to get started!"
                   : `You have ${totalTasks} task${totalTasks !== 1 ? "s" : ""} in total`}
               </CardDescription>
             </CardHeader>
@@ -234,8 +234,8 @@ export default async function HomePage() {
                   </h3>
                   <p className="mb-4 max-w-md text-sm text-muted-foreground lg:max-w-lg lg:text-base">
                     Start organizing your work by creating your first task.
-                    You'll be able to track progress, set priorities, and manage
-                    your workflow.
+                    You&apos;ll be able to track progress, set priorities, and
+                    manage your workflow.
                   </p>
                   <Button
                     asChild
