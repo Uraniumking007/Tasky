@@ -73,7 +73,8 @@ export function TeamPageClient({ teamId }: TeamPageClientProps) {
             Access Denied
           </h1>
           <p className="mb-4 text-muted-foreground">
-            {error.message || "You don't have permission to view this team."}
+            {error.message ||
+              "You don&apos;t have permission to view this team."}
           </p>
           <Button asChild>
             <Link href="/home">Go to Dashboard</Link>
