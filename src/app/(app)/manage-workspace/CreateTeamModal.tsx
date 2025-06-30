@@ -39,7 +39,14 @@ export default function CreateTeamModal({
           </ModalTitle>
         </ModalHeader>
         <form
-          onSubmit={(e) => handlers.onCreateTeam(e, orgId)}
+          onSubmit={(e) => {
+            e.preventDefault();
+            const form = e.target as HTMLFormElement;
+            const teamName = (form.teamName as HTMLInputElement).value.trim();
+            if (teamName) {
+              handlers.onCreateTeam(orgId, teamName);
+            }
+          }}
           className="mt-4 space-y-6"
         >
           <div className="relative">
