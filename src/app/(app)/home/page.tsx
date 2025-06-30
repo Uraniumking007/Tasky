@@ -59,7 +59,7 @@ export default async function HomePage() {
             Welcome back, {user.user.username}! 👋
           </h1>
           <p className="max-w-4xl text-lg text-muted-foreground lg:text-xl xl:text-2xl">
-            Here's an overview of your tasks and progress
+            Here&apos;s an overview of your tasks and progress
           </p>
         </div>
 
