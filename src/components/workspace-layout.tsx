@@ -18,6 +18,8 @@ interface Team {
   id: string;
   name: string;
   organizationId?: string | null;
+  isPrivate?: boolean | null;
+  allowAutoJoin?: boolean | null;
   members: any[];
 }
 

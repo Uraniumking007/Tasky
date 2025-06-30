@@ -34,8 +34,15 @@ export const workspaceRouter = createTRPCRouter({
       include: {
         members: { include: { user: true } },
         teams: {
-          include: {
-            members: { include: { user: true } },
+          select: {
+            id: true,
+            name: true,
+            organizationId: true,
+            isPrivate: true,
+            allowAutoJoin: true,
+            members: {
+              include: { user: true },
+            },
           },
         },
       },
@@ -52,8 +59,15 @@ export const workspaceRouter = createTRPCRouter({
           include: {
             members: { include: { user: true } },
             teams: {
-              include: {
-                members: { include: { user: true } },
+              select: {
+                id: true,
+                name: true,
+                organizationId: true,
+                isPrivate: true,
+                allowAutoJoin: true,
+                members: {
+                  include: { user: true },
+                },
               },
             },
           },
@@ -80,6 +94,8 @@ export const workspaceRouter = createTRPCRouter({
           id: team.id,
           name: team.name,
           organizationId: team.organizationId,
+          isPrivate: team.isPrivate,
+          allowAutoJoin: team.allowAutoJoin,
           members: team.members,
         })),
         members: org.members,
@@ -107,6 +123,8 @@ export const workspaceRouter = createTRPCRouter({
             id: team.id,
             name: team.name,
             organizationId: team.organizationId,
+            isPrivate: team.isPrivate,
+            allowAutoJoin: team.allowAutoJoin,
             members: team.members,
           })),
           members: membership.organization.members,

@@ -21,6 +21,8 @@ import {
   IconChevronDown,
   IconChevronUp,
   IconDots,
+  IconLock,
+  IconUserPlus,
 } from "@tabler/icons-react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -46,6 +48,8 @@ interface Team {
   id: string;
   name: string;
   organizationId?: string | null;
+  isPrivate?: boolean | null;
+  allowAutoJoin?: boolean | null;
   members: any[];
 }
 
@@ -289,13 +293,30 @@ export default function SideNavbar({
                                     variant="ghost"
                                     className="h-8 w-full justify-start gap-2 px-2 hover:bg-muted/60"
                                   >
-                                    <IconUsers className="h-3.5 w-3.5 flex-shrink-0 text-green-500" />
+                                    <div className="flex items-center gap-1.5">
+                                      <IconUsers className="h-3.5 w-3.5 flex-shrink-0 text-green-500" />
+                                      {team.isPrivate && (
+                                        <IconLock
+                                          className="h-3 w-3 flex-shrink-0 text-amber-500"
+                                          title="Private Team"
+                                        />
+                                      )}
+                                      {team.allowAutoJoin &&
+                                        !team.isPrivate && (
+                                          <IconUserPlus
+                                            className="h-3 w-3 flex-shrink-0 text-blue-500"
+                                            title="Auto-join Enabled"
+                                          />
+                                        )}
+                                    </div>
                                     <span className="truncate text-sm">
                                       {team.name}
                                     </span>
-                                    <span className="ml-auto text-xs text-muted-foreground">
-                                      {team.members.length}
-                                    </span>
+                                    <div className="ml-auto flex items-center gap-1">
+                                      <span className="text-xs text-muted-foreground">
+                                        {team.members.length}
+                                      </span>
+                                    </div>
                                   </Button>
                                 </Link>
                               </div>
