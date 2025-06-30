@@ -10,7 +10,7 @@ import { IconPlus, IconBuilding } from "@tabler/icons-react";
 interface User {
   id: string;
   name?: string | null;
-  email: string;
+  email: string | null;
   username?: string | null;
 }
 
@@ -167,21 +167,44 @@ export default function ManageWorkspaceClient({
 
   // Handler object to pass down
   const handlers = {
+    // For CreateOrganizationModal
     onCreateOrg: handleCreateOrg,
-    onCreateTeam: handleCreateTeam,
+
+    // For OrganizationCard interface
     onEditOrg: (org: Organization) => {
       setEditOrgId(org.id);
       setEditOrgName(org.name);
     },
-    onEditOrgSubmit: handleEditOrg,
     onDeleteOrg: handleDeleteOrg,
+    onCreateTeam: async (orgId: string, teamName: string) => {
+      if (!user) return;
+      const result = await (
+        await import("./actions")
+      ).createTeam(teamName, user.id, orgId);
+      if (result && result.success) {
+        toast({ title: "Team created!", description: teamName });
+        window.location.reload();
+      } else {
+        toast({
+          title: "Error",
+          description: result?.message || "Unknown error",
+          variant: "destructive",
+        });
+      }
+    },
+    onDeleteTeam: handleDeleteTeam,
+
+    // For CreateTeamModal (legacy form-based handler)
+    onCreateTeamForm: handleCreateTeam,
+
+    // For EditOrganizationModal and EditTeamModal (if needed)
+    onEditOrgSubmit: handleEditOrg,
     onEditTeam: (team: Team, orgId: string) => {
       setEditTeamId(team.id);
       setEditTeamName(team.name);
       setEditTeamOrgId(orgId);
     },
     onEditTeamSubmit: handleEditTeam,
-    onDeleteTeam: handleDeleteTeam,
     onCloseEditOrg: () => {
       setEditOrgId(null);
       setEditOrgName("");
