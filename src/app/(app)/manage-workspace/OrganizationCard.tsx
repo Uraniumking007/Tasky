@@ -12,49 +12,100 @@ import {
 } from "@/components/modals/shared-organization-modals";
 import { Users, Edit, Trash2, UserPlus, UserMinus } from "lucide-react";
 import TeamDetailModal from "@/components/modals/team-detail-modal";
+import { toast } from "@/components/ui/use-toast";
+import Link from "next/link";
+
+// Type definitions
+interface User {
+  id: string;
+  name?: string | null;
+  email: string;
+  username?: string | null;
+}
+
+interface OrganizationMember {
+  id: string;
+  userId: string;
+  role: "OWNER" | "MANAGER" | "MEMBER";
+  user: User;
+}
+
+interface TeamMember {
+  id: string;
+  userId: string;
+  role: "OWNER" | "MANAGER" | "MEMBER";
+  user: User;
+}
+
+interface Team {
+  id: string;
+  name: string;
+  organizationId: string | null;
+  isPrivate?: boolean | null;
+  allowAutoJoin?: boolean | null;
+  members: TeamMember[];
+}
+
+interface Organization {
+  id: string;
+  name: string;
+  userRole: "OWNER" | "MANAGER" | "MEMBER";
+  teams: Team[];
+  members: OrganizationMember[];
+}
+
+interface OrganizationCardHandlers {
+  onEditOrg: (org: Organization) => void;
+  onDeleteOrg: (orgId: string) => void;
+  onCreateTeam: (orgId: string, teamName: string) => void;
+  onDeleteTeam: (teamId: string) => void;
+}
+
+interface OrganizationCardProps {
+  org: Organization;
+  user: User;
+  handlers: OrganizationCardHandlers;
+}
 
 export default function OrganizationCard({
   org,
   user,
   handlers,
-}: {
-  org: any;
-  user: any;
-  handlers: any;
-}) {
+}: OrganizationCardProps) {
   const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
   const [isRemoveMemberModalOpen, setIsRemoveMemberModalOpen] = useState(false);
-  const [selectedMember, setSelectedMember] = useState<any>(null);
-  const [selectedTeam, setSelectedTeam] = useState<any>(null);
+  const [selectedMember, setSelectedMember] =
+    useState<OrganizationMember | null>(null);
+  const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
   const [isTeamDetailModalOpen, setIsTeamDetailModalOpen] = useState(false);
 
   // Check if current user is the organization owner
-  const isOwner = org.ownerId === user.id;
+  const isOwner = org.userRole === "OWNER";
   const userRole = org.userRole || (isOwner ? "OWNER" : "MEMBER");
 
   const handleInviteSent = () => {
-    // Refresh the page or update the data
-    window.location.reload();
+    setIsAddMemberModalOpen(false);
+    toast({ title: "Invitation sent!" });
   };
 
-  const handleRemoveMember = (member: any) => {
+  const handleRemoveMember = (member: OrganizationMember) => {
     setSelectedMember(member);
     setIsRemoveMemberModalOpen(true);
   };
 
   const handleMemberRemoved = () => {
-    // Refresh the page or update the data
-    window.location.reload();
+    setSelectedMember(null);
+    toast({ title: "Member removed!" });
   };
 
-  const handleTeamClick = (team: any) => {
+  const handleTeamClick = (team: Team) => {
     setSelectedTeam(team);
     setIsTeamDetailModalOpen(true);
   };
 
-  const handleEditTeam = (e: React.MouseEvent, team: any) => {
+  const handleEditTeam = (e: React.MouseEvent, team: Team) => {
     e.stopPropagation();
-    handlers.onEditTeam(team, org.id);
+    // TODO: Implement edit team modal
   };
 
   const handleDeleteTeam = (e: React.MouseEvent, teamId: string) => {
@@ -119,7 +170,7 @@ export default function OrganizationCard({
                 Organization Members
               </h3>
               <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
-                {org.members.map((member: any) => (
+                {org.members.map((member: OrganizationMember) => (
                   <div
                     key={member.id}
                     className="flex items-center justify-between rounded-lg border bg-muted/30 p-3"
@@ -191,7 +242,7 @@ export default function OrganizationCard({
             </Card>
           ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {org.teams.map((team: any) => (
+              {org.teams.map((team: Team) => (
                 <Card
                   key={team.id}
                   className="group cursor-pointer rounded-2xl bg-white/80 p-6 shadow-xl transition-all hover:scale-105 hover:shadow-2xl dark:bg-background/80"
@@ -242,7 +293,7 @@ export default function OrganizationCard({
                       </p>
                     ) : (
                       <div className="space-y-1">
-                        {team.members.slice(0, 3).map((member: any) => (
+                        {team.members.slice(0, 3).map((member: TeamMember) => (
                           <div
                             key={member.id}
                             className="flex items-center justify-between rounded bg-muted/50 px-2 py-1"
