@@ -19,7 +19,7 @@ import Link from "next/link";
 interface User {
   id: string;
   name?: string | null;
-  email: string;
+  email: string | null;
   username?: string | null;
 }
 
@@ -78,6 +78,7 @@ export default function OrganizationCard({
     useState<OrganizationMember | null>(null);
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
   const [isTeamDetailModalOpen, setIsTeamDetailModalOpen] = useState(false);
+  const [isEditOrgModalOpen, setIsEditOrgModalOpen] = useState(false);
 
   // Check if current user is the organization owner
   const isOwner = org.userRole === "OWNER";
@@ -115,6 +116,16 @@ export default function OrganizationCard({
     }
   };
 
+  const handleEditOrg = () => {
+    setIsEditOrgModalOpen(true);
+  };
+
+  const handleEditOrgSubmit = (orgId: string, newName: string) => {
+    handlers.onEditOrg({ ...org, name: newName });
+    setIsEditOrgModalOpen(false);
+    toast({ title: "Organization updated!" });
+  };
+
   return (
     <>
       <div className="mx-auto w-full max-w-7xl px-4 py-8">
@@ -143,11 +154,7 @@ export default function OrganizationCard({
                 </Badge>
                 {userRole === "OWNER" && (
                   <>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handlers.onEditOrg(org)}
-                    >
+                    <Button variant="outline" size="sm" onClick={handleEditOrg}>
                       <Edit className="mr-2 h-4 w-4" />
                       Edit Organization
                     </Button>
@@ -344,8 +351,12 @@ export default function OrganizationCard({
           onClose={() => setIsRemoveMemberModalOpen(false)}
           organizationId={org.id}
           organizationName={org.name}
-          memberName={selectedMember.user.username || selectedMember.user.email}
-          memberEmail={selectedMember.user.email}
+          memberName={
+            selectedMember.user.username ||
+            selectedMember.user.email ||
+            "Unknown User"
+          }
+          memberEmail={selectedMember.user.email || ""}
           memberId={selectedMember.userId}
           onMemberRemoved={handleMemberRemoved}
         />
@@ -360,8 +371,12 @@ export default function OrganizationCard({
         />
       )}
 
-      <EditOrganizationModal org={org} handlers={handlers} />
-      <EditTeamModal handlers={handlers} />
+      <EditOrganizationModal
+        isOpen={isEditOrgModalOpen}
+        onClose={() => setIsEditOrgModalOpen(false)}
+        org={org}
+        onSubmit={handleEditOrgSubmit}
+      />
     </>
   );
 }
