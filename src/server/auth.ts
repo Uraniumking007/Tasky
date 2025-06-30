@@ -66,31 +66,31 @@ export const authOptions: NextAuthOptions = {
         username: { label: "Username", type: "text" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials, _req) {
         const { username, password } = credentials!;
-            const user = await db.users.findFirst({
-              where: {
-                username: username.toLowerCase(),
-              },
-            });
+        const user = await db.users.findFirst({
+          where: {
+            username: username.toLowerCase(),
+          },
+        });
 
-            if (!user || !user.username || !user.email || !user.password) {
-              throw new Error("No user found");
-            }
+        if (!user?.username || !user.email || !user.password) {
+          throw new Error("No user found");
+        }
 
-            const isValid = await bcrypt.compare(password, user.password);
+        const isValid = await bcrypt.compare(password, user.password);
 
-            if (!isValid) {
-              throw new Error("Invalid password");
-            }
+        if (!isValid) {
+          throw new Error("Invalid password");
+        }
 
-            return {
-              id: user.id,
-              name: user.name || user.username,
-              email: user.email,
-              username: user.username,
-              active_team: user.active_team,
-            };
+        return {
+          id: user.id,
+          name: user.name ?? user.username,
+          email: user.email,
+          username: user.username,
+          active_team: user.active_team,
+        };
       },
     }),
   ],
