@@ -1,8 +1,7 @@
-import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 
 // Helper function to get user from session
-async function getUserFromSession(ctx: any) {
+async function getUserFromSession(ctx: { session: any; db: any }) {
   const session = ctx.session;
   if (!session?.user?.email && !session?.user?.username) {
     throw new Error("No user session found");
