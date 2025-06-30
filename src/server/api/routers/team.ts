@@ -3,7 +3,7 @@ import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { canUserManageTeam } from "@/lib/permissions";
 
 // Helper function to get user from session
-async function getUserFromSession(ctx: any) {
+async function getUserFromSession(ctx: { session: any; db: any }) {
   const user = await ctx.db.users.findFirst({
     where: {
       OR: [
@@ -137,7 +137,11 @@ export const teamRouter = createTRPCRouter({
       }
 
       // Build update data object with only provided fields
-      const updateData: any = {};
+      const updateData: {
+        name?: string;
+        isPrivate?: boolean;
+        allowAutoJoin?: boolean;
+      } = {};
       if (name !== undefined) updateData.name = name;
       if (isPrivate !== undefined) updateData.isPrivate = isPrivate;
       if (allowAutoJoin !== undefined) updateData.allowAutoJoin = allowAutoJoin;
