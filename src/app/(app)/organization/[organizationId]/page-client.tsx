@@ -78,7 +78,7 @@ export function OrganizationPageClient({
           </h1>
           <p className="mb-4 text-muted-foreground">
             {error.message ||
-              "You don't have permission to view this organization."}
+              "You don&apos;t have permission to view this organization."}
           </p>
           <Button asChild>
             <Link href="/home">Go to Dashboard</Link>
