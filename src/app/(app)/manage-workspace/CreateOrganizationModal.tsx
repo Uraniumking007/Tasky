@@ -13,11 +13,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Sparkles, Building2 } from "lucide-react";
 
+interface CreateOrganizationModalProps {
+  handlers: {
+    onCreateOrg: (e: React.FormEvent<HTMLFormElement>) => void;
+  };
+}
+
 export default function CreateOrganizationModal({
   handlers,
-}: {
-  handlers: any;
-}) {
+}: CreateOrganizationModalProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>

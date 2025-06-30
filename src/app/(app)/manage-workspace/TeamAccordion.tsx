@@ -20,10 +20,12 @@ import ViewTeamInvitesModal from "@/components/modals/view-team-invites-modal";
 
 export default function TeamAccordion({
   teams,
-  handlers,
+  user,
+  _handlers,
 }: {
   teams: any[];
-  handlers: any;
+  user: any;
+  _handlers: any;
 }) {
   const [selectedTeam, setSelectedTeam] = useState<{
     id: string;

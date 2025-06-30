@@ -1,5 +1,7 @@
 "use client";
 
+import { useSession } from "next-auth/react";
+import { api } from "@/trpc/react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,7 +22,6 @@ import {
   Loader2,
   AlertTriangle,
 } from "lucide-react";
-import { api } from "@/trpc/react";
 
 interface ViewTeamInvitesModalProps {
   isOpen: boolean;

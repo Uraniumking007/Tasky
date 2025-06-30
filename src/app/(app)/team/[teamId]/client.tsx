@@ -44,10 +44,10 @@ export function EditTeamModal({
   const utils = api.useUtils();
 
   const editTeamMutation = api.team.editTeam.useMutation({
-    onSuccess: (data) => {
+    onSuccess: (_data) => {
       toast({
-        title: "Team updated",
-        description: "Team name has been updated successfully",
+        title: "Success",
+        description: "Team updated successfully",
       });
       onClose();
       // Invalidate and refetch team data
@@ -154,7 +154,7 @@ export function DeleteTeamModal({
   const router = useRouter();
 
   const deleteTeamMutation = api.team.deleteTeam.useMutation({
-    onSuccess: (data) => {
+    onSuccess: (_data) => {
       toast({
         title: "Team deleted",
         description: "Team has been deleted successfully",
@@ -530,7 +530,7 @@ export function ManageTeamSettingsModal({
   }, [isOpen, teamData]);
 
   const updateSettingsMutation = api.team.editTeam.useMutation({
-    onSuccess: (data) => {
+    onSuccess: (_data) => {
       toast({
         title: "Settings updated",
         description: "Team settings have been updated successfully",

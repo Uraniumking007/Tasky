@@ -3,17 +3,13 @@ import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import CreateTeamModal from "./CreateTeamModal";
-import EditOrganizationModal from "./EditOrganizationModal";
-import EditTeamModal from "./EditTeamModal";
-import {
-  AddOrganizationMemberModal,
-  RemoveOrganizationMemberModal,
-} from "@/components/modals/shared-organization-modals";
 import { Users, Edit, Trash2, UserPlus, UserMinus } from "lucide-react";
+import CreateTeamModal from "./CreateTeamModal";
 import TeamDetailModal from "@/components/modals/team-detail-modal";
 import { toast } from "@/components/ui/use-toast";
-import Link from "next/link";
+import { AddOrganizationMemberModal } from "@/components/modals/shared-organization-modals";
+import { RemoveOrganizationMemberModal } from "@/components/modals/shared-organization-modals";
+import EditOrganizationModal from "./EditOrganizationModal";
 
 // Type definitions
 interface User {
@@ -104,7 +100,7 @@ export default function OrganizationCard({
     setIsTeamDetailModalOpen(true);
   };
 
-  const handleEditTeam = (e: React.MouseEvent, team: Team) => {
+  const handleEditTeam = (e: React.MouseEvent, _team: Team) => {
     e.stopPropagation();
     // TODO: Implement edit team modal
   };

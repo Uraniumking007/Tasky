@@ -731,7 +731,6 @@ export function ViewInvitesModal({
   canManageInvites,
 }: ViewInvitesModalProps) {
   const { toast } = useToast();
-  const utils = api.useUtils();
 
   // Fetch invites when modal is open
   const {

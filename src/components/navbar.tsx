@@ -10,6 +10,9 @@ import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import type { User } from "next-auth";
 import { getUserPermissions } from "@/lib/permissions";
+import { usePathname } from "next/navigation";
+import { NavigationMenu } from "./ui/navigation-menu";
+import { Bell, PlusCircle, Search } from "lucide-react";
 
 export default function Navbar() {
   const { data: session, status } = useSession();

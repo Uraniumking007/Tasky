@@ -13,13 +13,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Sparkles, Users } from "lucide-react";
 
+interface CreateTeamModalProps {
+  orgId: string;
+  handlers: {
+    onCreateTeam: (orgId: string, teamName: string) => void;
+  };
+}
+
 export default function CreateTeamModal({
   orgId,
   handlers,
-}: {
-  orgId: string;
-  handlers: any;
-}) {
+}: CreateTeamModalProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>

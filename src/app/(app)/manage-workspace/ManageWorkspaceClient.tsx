@@ -1,10 +1,10 @@
 "use client";
-import { useToast } from "@/components/ui/use-toast";
-import { useRef, FormEvent, useState } from "react";
-import CreateOrganizationModal from "./CreateOrganizationModal";
+import { FormEvent, useRef, useState } from "react";
+import { useSession } from "next-auth/react";
 import OrganizationCard from "./OrganizationCard";
-import { Button } from "@/components/ui/button";
-import { IconPlus, IconBuilding } from "@tabler/icons-react";
+import CreateOrganizationModal from "./CreateOrganizationModal";
+import { useToast } from "@/components/ui/use-toast";
+import { IconBuilding } from "@tabler/icons-react";
 
 // Type definitions  
 interface User {
