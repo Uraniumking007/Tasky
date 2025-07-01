@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { api } from "@/trpc/react";
 import {
   Loader2,
@@ -8,6 +9,7 @@ import {
   Shield,
   User,
   Calendar,
+  Eye,
 } from "lucide-react";
 import {
   Card,
@@ -27,9 +29,11 @@ import {
   ViewInvitesButton,
   EditOrganizationModal,
   EditTeamButton,
+  PromoteMemberButton,
 } from "./client";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
+import { MemberDetailsModal } from "@/components/modals/member-details-modal";
 
 interface OrganizationPageClientProps {
   organizationId: string;
@@ -39,6 +43,11 @@ export function OrganizationPageClient({
   organizationId,
 }: OrganizationPageClientProps) {
   const { data: session } = useSession();
+  const [selectedMember, setSelectedMember] = useState<{
+    id: string;
+    name: string;
+    email: string;
+  } | null>(null);
 
   if (!session?.user) {
     redirect("/auth/login");
@@ -202,54 +211,101 @@ export function OrganizationPageClient({
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {organization.members.map((member) => (
-                    <div
-                      key={member.id}
-                      className="flex items-center justify-between rounded-lg border p-3"
-                    >
-                      <div className="flex items-center gap-3">
-                        <User className="h-4 w-4 text-muted-foreground" />
-                        <div>
-                          <p className="font-medium">
-                            {member.user.name ||
+                  {organization.members.map((member) => {
+                    const isCurrentUser =
+                      member.user.email === session?.user?.email;
+                    const canViewMemberDetails =
+                      !isCurrentUser &&
+                      (userRole === "OWNER" ||
+                        userRole === "MANAGER" ||
+                        userRole === "TEAM_LEAD");
+
+                    return (
+                      <div
+                        key={member.id}
+                        className="flex items-center justify-between rounded-lg border p-3"
+                      >
+                        <div className="flex items-center gap-3">
+                          <User className="h-4 w-4 text-muted-foreground" />
+                          <div>
+                            <p className="font-medium">
+                              {member.user.name ||
+                                member.user.username ||
+                                "Unknown User"}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              {member.user.email}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge
+                            variant={
+                              member.role === "OWNER"
+                                ? "default"
+                                : member.role === "MANAGER"
+                                  ? "secondary"
+                                  : "outline"
+                            }
+                          >
+                            {member.role}
+                          </Badge>
+                          {canViewMemberDetails && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() =>
+                                setSelectedMember({
+                                  id: member.userId,
+                                  name:
+                                    member.user.name ||
+                                    member.user.username ||
+                                    "Unknown User",
+                                  email: member.user.email || "",
+                                })
+                              }
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          )}
+                          <PromoteMemberButton
+                            organizationId={organizationId}
+                            memberUserId={member.userId}
+                            memberName={
+                              member.user.name ||
                               member.user.username ||
-                              "Unknown User"}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            {member.user.email}
-                          </p>
+                              member.user.email ||
+                              "Unknown User"
+                            }
+                            currentRole={member.role}
+                            userRole={userRole}
+                            canPromote={
+                              (userRole === "OWNER" ||
+                                userRole === "MANAGER") &&
+                              member.userId !== organization.ownerId &&
+                              member.role !== "OWNER" &&
+                              !isCurrentUser
+                            }
+                          />
+                          <RemoveMemberButton
+                            organizationId={organizationId}
+                            memberUserId={member.userId}
+                            memberName={
+                              member.user.name ||
+                              member.user.username ||
+                              member.user.email ||
+                              "Unknown User"
+                            }
+                            canRemove={
+                              permissions.canRemoveOrganizationMembers &&
+                              member.userId !== organization.ownerId &&
+                              member.role !== "OWNER"
+                            }
+                          />
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Badge
-                          variant={
-                            member.role === "OWNER"
-                              ? "default"
-                              : member.role === "MANAGER"
-                                ? "secondary"
-                                : "outline"
-                          }
-                        >
-                          {member.role}
-                        </Badge>
-                        <RemoveMemberButton
-                          organizationId={organizationId}
-                          memberUserId={member.userId}
-                          memberName={
-                            member.user.name ||
-                            member.user.username ||
-                            member.user.email ||
-                            "Unknown User"
-                          }
-                          canRemove={
-                            permissions.canRemoveOrganizationMembers &&
-                            member.userId !== organization.ownerId &&
-                            member.role !== "OWNER"
-                          }
-                        />
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -345,27 +401,22 @@ export function OrganizationPageClient({
         </Card>
       </div>
 
-      {/* Notes Section - Placeholder for future implementation */}
-      {permissions.canViewOwnNotes && (
-        <Card className="mt-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5" />
-              Notes
-            </CardTitle>
-            <CardDescription>
-              {permissions.canViewTeamNotes
-                ? "View and manage team notes"
-                : "View your personal notes"}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="py-8 text-center text-muted-foreground">
-              <Shield className="mx-auto mb-4 h-12 w-12 opacity-50" />
-              <p>Notes feature coming soon</p>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Member Details Modal */}
+      {selectedMember && (
+        <MemberDetailsModal
+          isOpen={!!selectedMember}
+          onClose={() => setSelectedMember(null)}
+          memberId={selectedMember.id}
+          memberName={selectedMember.name}
+          memberEmail={selectedMember.email}
+          organizationId={organizationId}
+          currentUserRole={userRole}
+          canManageNotes={
+            userRole === "OWNER" ||
+            userRole === "MANAGER" ||
+            userRole === "TEAM_LEAD"
+          }
+        />
       )}
     </div>
   );
