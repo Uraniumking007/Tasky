@@ -2,10 +2,9 @@ import { TaskCreationModal } from "@/components/modals/create-task-modal";
 import WorkspaceLayout from "@/components/workspace-layout";
 import { getServerAuthSession } from "@/server/auth";
 import { db } from "@/server/db";
+import { Toaster } from "@/components/ui/toaster";
 import type { User } from "next-auth";
 import { type ReactNode } from "react";
-import { Toaster } from "@/components/ui/toaster";
-import { getUserPermissions } from "@/lib/permissions";
 
 export default async function HomeLayout({
   children,
@@ -23,7 +22,7 @@ export default async function HomeLayout({
     };
   }
 
-  const user = session?.user as User; // Cast the user object to the User type
+  const user = session?.user as User;
 
   // Get user from database
   const dbUser = await db.users.findFirst({
@@ -41,20 +40,14 @@ export default async function HomeLayout({
     };
   }
 
-  const team = await db.team.findUnique({
-    where: {
-      id: user.active_team?.toString(),
-    },
-  });
-
-  // Get user permissions
-  const permissions = await getUserPermissions(dbUser.id);
-
   return (
     <WorkspaceLayout
-      user={user}
-      teamName={team ? team.name : user.username}
-      permissions={permissions}
+      user={{
+        name: session.user.name || "",
+        email: session.user.email || "",
+        username: session.user.username || "",
+      }}
+      organizations={[]}
     >
       {children}
       <TaskCreationModal />

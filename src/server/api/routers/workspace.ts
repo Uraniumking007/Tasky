@@ -1,7 +1,9 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import type { Session } from "next-auth";
+import type { PrismaClient } from "@prisma/client";
 
 // Helper function to get user from session
-async function getUserFromSession(ctx: { session: any; db: any }) {
+async function getUserFromSession(ctx: { session: Session; db: PrismaClient }) {
   const session = ctx.session;
   if (!session?.user?.email && !session?.user?.username) {
     throw new Error("No user session found");

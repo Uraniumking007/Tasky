@@ -229,19 +229,19 @@ export function EditTaskModal({
               </TooltipProvider>
             )}
           </div>
-          {editedSubTasks.map((subtask, index) => {
+          {editedSubTasks.map((subtask, _index) => {
             return (
               <div className="flex items-center gap-2" key={subtask.id}>
                 <Label htmlFor="subtask" className="text-nowrap text-right">
-                  {`SubTask ${index + 1}`}
+                  {`SubTask ${_index + 1}`}
                 </Label>
                 <Input
                   id="subtask"
                   className="col-span-3"
                   defaultValue={subtask.title ?? ""}
-                  onChange={(e) => handleSubTaskChange(index, e.target.value)}
+                  onChange={(e) => handleSubTaskChange(_index, e.target.value)}
                 />
-                {editedSubTasks.length === index + 1 && (
+                {editedSubTasks.length === _index + 1 && (
                   <TooltipProvider>
                     {subtask.isSaved ? (
                       <Tooltip>
@@ -260,7 +260,7 @@ export function EditTaskModal({
                         <TooltipTrigger asChild>
                           <IconDeviceFloppy
                             className="h-6 w-6"
-                            onClick={() => handleSaveSubTask(index)}
+                            onClick={() => handleSaveSubTask(_index)}
                           />
                         </TooltipTrigger>
                         <TooltipContent>

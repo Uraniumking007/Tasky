@@ -192,7 +192,7 @@ export function DeleteTeamModal({
           </DialogTitle>
           <DialogDescription>
             This action cannot be undone. This will permanently delete the team
-            "{teamName}" and remove all associated data.
+            &quot;{teamName}&quot; and remove all associated data.
           </DialogDescription>
         </DialogHeader>
 
@@ -301,7 +301,7 @@ export function AddTeamMemberModal({
             Add Team Member
           </DialogTitle>
           <DialogDescription>
-            Invite someone to join "{teamName}" team.
+            Invite someone to join &quot;{teamName}&quot; team.
           </DialogDescription>
         </DialogHeader>
 
@@ -470,8 +470,8 @@ export function RemoveMemberButton({
           <DialogHeader>
             <DialogTitle>Remove Team Member</DialogTitle>
             <DialogDescription>
-              Are you sure you want to remove {memberName} from this team? This
-              action cannot be undone.
+              Are you sure you want to remove &quot;{memberName}&quot; from this
+              team? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -584,7 +584,7 @@ export function ManageTeamSettingsModal({
             Manage Team Settings
           </DialogTitle>
           <DialogDescription>
-            Configure team settings and preferences for "{teamName}".
+            Configure team settings and preferences for &quot;{teamName}&quot;.
           </DialogDescription>
         </DialogHeader>
 

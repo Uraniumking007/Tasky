@@ -84,7 +84,7 @@ export function AddTeamMemberModal({
             Add Team Member
           </DialogTitle>
           <DialogDescription>
-            Invite someone to join "{teamName}" team.
+            Invite someone to join &quot;{teamName}&quot; team.
           </DialogDescription>
         </DialogHeader>
 

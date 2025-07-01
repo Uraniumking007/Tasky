@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import SideNavbar from "@/components/side-navbar";
+import SideNavbar from "./side-navbar";
+import Navbar from "./navbar";
 import { api } from "@/trpc/react";
 import type { User } from "next-auth";
 import { Loader2 } from "lucide-react";
@@ -9,35 +10,34 @@ import { Loader2 } from "lucide-react";
 interface Organization {
   id: string;
   name: string;
-  userRole: "OWNER" | "MANAGER" | "MEMBER";
-  teams: Team[];
-  members: any[];
-}
-
-interface Team {
-  id: string;
-  name: string;
-  organizationId?: string | null;
-  isPrivate?: boolean | null;
-  allowAutoJoin?: boolean | null;
-  members: any[];
+  userRole: string;
+  teams: Array<{
+    id: string;
+    name: string;
+    isPrivate?: boolean;
+    allowAutoJoin?: boolean;
+    members: Array<{
+      user: { name?: string; email: string | null; username?: string };
+    }>;
+  }>;
+  members: Array<{
+    user: { name?: string; email: string | null; username?: string };
+  }>;
 }
 
 interface WorkspaceLayoutProps {
-  user: User;
-  teamName: string;
-  permissions?: import("@/lib/permissions").UserPermissions;
   children: React.ReactNode;
+  organizations: Organization[];
+  user: { name?: string; email: string | null; username?: string };
 }
 
 export default function WorkspaceLayout({
-  user,
-  teamName,
-  permissions,
   children,
+  organizations,
+  user,
 }: WorkspaceLayoutProps) {
   const {
-    data: organizations = [],
+    data: organizationsData = [],
     isLoading,
     error,
   } = api.workspace.getWorkspaceData.useQuery(undefined, {
@@ -76,9 +76,9 @@ export default function WorkspaceLayout({
     <div className="flex min-h-screen w-full">
       <SideNavbar
         user={user}
-        teamName={teamName}
-        permissions={permissions}
-        organizations={organizations as Organization[]}
+        teamName={user.name || ""}
+        permissions={undefined}
+        organizations={organizationsData as Organization[]}
       />
       <div className="w-full flex-1">{children}</div>
     </div>

@@ -31,6 +31,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { User } from "next-auth";
 import { cn } from "@/lib/utils";
+import { useSession } from "next-auth/react";
+import { useState } from "react";
 
 export function UserDropdownMenu({
   user,
@@ -153,4 +155,12 @@ export function UserDropdownMenu({
       </DropdownMenuContent>
     </DropdownMenu>
   );
+}
+
+export default function UserDropdown() {
+  const { data: session } = useSession();
+  const [isLoading, setIsLoading] = useState(false);
+  const _user = session?.user;
+
+  // ... existing code ...
 }

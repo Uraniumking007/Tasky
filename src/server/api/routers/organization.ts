@@ -7,9 +7,11 @@ import {
   getRolePermissions,
   canUserManageTeam,
 } from "@/lib/permissions";
+import type { Session } from "next-auth";
+import type { PrismaClient } from "@prisma/client";
 
 // Helper function to get user from session
-async function getUserFromSession(ctx: { session: any; db: any }) {
+async function getUserFromSession(ctx: { session: Session; db: PrismaClient }) {
   const user = await ctx.db.users.findFirst({
     where: {
       OR: [
@@ -245,7 +247,12 @@ export const organizationRouter = createTRPCRouter({
 
   // Invite organization member
   inviteMember: protectedProcedure
-    .input(z.object({ organizationId: z.string(), email: z.string() }))
+    .input(
+      z.object({
+        organizationId: z.string(),
+        email: z.string().email("Invalid email format"),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const { organizationId, email } = input;
 
@@ -312,18 +319,15 @@ export const organizationRouter = createTRPCRouter({
 
   // Remove organization member
   removeMember: protectedProcedure
-    .input(z.object({ organizationId: z.string(), memberUserId: z.string() }))
+    .input(z.object({ organizationId: z.string(), userId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const { organizationId, memberUserId } = input;
+      const { organizationId, userId } = input;
 
       // Import and use the server action
       const { removeOrganizationMember } = await import(
         "@/app/(app)/organization/[organizationId]/actions"
       );
-      const result = await removeOrganizationMember(
-        organizationId,
-        memberUserId,
-      );
+      const result = await removeOrganizationMember(organizationId, userId);
 
       if (!result.success) {
         throw new Error(result.message);
@@ -334,15 +338,20 @@ export const organizationRouter = createTRPCRouter({
 
   // Create team in organization
   createTeam: protectedProcedure
-    .input(z.object({ organizationId: z.string(), teamName: z.string() }))
+    .input(
+      z.object({
+        organizationId: z.string(),
+        name: z.string().min(1, "Team name is required"),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
-      const { organizationId, teamName } = input;
+      const { organizationId, name } = input;
 
       // Import and use the server action
       const { createTeamInOrganization } = await import(
         "@/app/(app)/organization/[organizationId]/actions"
       );
-      const result = await createTeamInOrganization(organizationId, teamName);
+      const result = await createTeamInOrganization(organizationId, name);
 
       if (!result.success) {
         throw new Error(result.message);
@@ -391,7 +400,12 @@ export const organizationRouter = createTRPCRouter({
 
   // Edit organization
   editOrganization: protectedProcedure
-    .input(z.object({ organizationId: z.string(), name: z.string() }))
+    .input(
+      z.object({
+        organizationId: z.string(),
+        name: z.string().min(1, "Organization name is required"),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const { organizationId, name } = input;
       const user = await getUserFromSession(ctx);
@@ -407,5 +421,23 @@ export const organizationRouter = createTRPCRouter({
       }
 
       return result;
+    }),
+
+  // Create organization
+  createOrganization: protectedProcedure
+    .input(
+      z.object({ name: z.string().min(1, "Organization name is required") }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      // Implementation of createOrganization
+      throw new Error("Not implemented");
+    }),
+
+  // Delete organization
+  deleteOrganization: protectedProcedure
+    .input(z.object({ organizationId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      // Implementation of deleteOrganization
+      throw new Error("Not implemented");
     }),
 });

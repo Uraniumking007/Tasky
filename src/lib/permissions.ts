@@ -1,5 +1,4 @@
 import { db } from "@/server/db";
-import type { User } from "next-auth";
 
 export interface UserPermissions {
   hasTeamAccess: boolean;

@@ -245,23 +245,23 @@ export default function OrganizationCard({
             </Card>
           ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {org.teams.map((team: Team) => (
+              {org.teams.map((_team, index) => (
                 <Card
-                  key={team.id}
+                  key={_team.id}
                   className="group cursor-pointer rounded-2xl bg-white/80 p-6 shadow-xl transition-all hover:scale-105 hover:shadow-2xl dark:bg-background/80"
-                  onClick={() => handleTeamClick(team)}
+                  onClick={() => handleTeamClick(_team)}
                 >
                   <div className="mb-4">
                     <div className="mb-2 flex items-center justify-between">
                       <h3 className="text-lg font-semibold text-primary">
-                        {team.name}
+                        {_team.name}
                       </h3>
                       <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                         {(userRole === "OWNER" || userRole === "MANAGER") && (
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={(e) => handleEditTeam(e, team)}
+                            onClick={(e) => handleEditTeam(e, _team)}
                             className="h-8 w-8 p-0"
                           >
                             <Edit className="h-4 w-4" />
@@ -271,7 +271,7 @@ export default function OrganizationCard({
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={(e) => handleDeleteTeam(e, team.id)}
+                            onClick={(e) => handleDeleteTeam(e, _team.id)}
                             className="h-8 w-8 p-0 text-destructive hover:text-destructive"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -282,21 +282,21 @@ export default function OrganizationCard({
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Users className="h-4 w-4" />
                       <span>
-                        {team.members.length} member
-                        {team.members.length !== 1 ? "s" : ""}
+                        {_team.members.length} member
+                        {_team.members.length !== 1 ? "s" : ""}
                       </span>
                     </div>
                   </div>
 
                   <div className="space-y-2">
                     <h4 className="text-sm font-medium">Members</h4>
-                    {team.members.length === 0 ? (
+                    {_team.members.length === 0 ? (
                       <p className="text-xs text-muted-foreground">
                         No members yet
                       </p>
                     ) : (
                       <div className="space-y-1">
-                        {team.members.slice(0, 3).map((member: TeamMember) => (
+                        {_team.members.slice(0, 3).map((member: TeamMember) => (
                           <div
                             key={member.id}
                             className="flex items-center justify-between rounded bg-muted/50 px-2 py-1"
@@ -318,9 +318,9 @@ export default function OrganizationCard({
                             </Badge>
                           </div>
                         ))}
-                        {team.members.length > 3 && (
+                        {_team.members.length > 3 && (
                           <p className="text-xs text-muted-foreground">
-                            +{team.members.length - 3} more
+                            +{_team.members.length - 3} more
                           </p>
                         )}
                       </div>

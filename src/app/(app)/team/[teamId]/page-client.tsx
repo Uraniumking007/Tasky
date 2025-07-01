@@ -90,7 +90,7 @@ export function TeamPageClient({ teamId }: TeamPageClientProps) {
         <div className="text-center">
           <h1 className="mb-4 text-2xl font-bold">Team Not Found</h1>
           <p className="mb-4 text-muted-foreground">
-            The team you're looking for doesn't exist.
+            The team you&apos;re looking for doesn&apos;t exist.
           </p>
           <Button asChild>
             <Link href="/home">Go to Dashboard</Link>
@@ -108,7 +108,12 @@ export function TeamPageClient({ teamId }: TeamPageClientProps) {
       id: string;
       userId: string;
       role: string;
-      user: { id: string; name?: string; email: string; username?: string };
+      user: {
+        id: string;
+        name?: string;
+        email: string | null;
+        username?: string;
+      };
     }>;
     organization?: { id: string; name: string } | null;
     isPrivate?: boolean;
@@ -267,7 +272,7 @@ export function TeamPageClient({ teamId }: TeamPageClientProps) {
                             "Unknown User"}
                         </p>
                         <p className="text-sm text-muted-foreground">
-                          {member.user.email}
+                          {member.user.email || "No email"}
                         </p>
                       </div>
                     </div>

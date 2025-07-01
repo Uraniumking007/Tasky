@@ -1,31 +1,32 @@
 "use client";
+
 import { useState } from "react";
 import {
   Accordion,
+  AccordionContent,
   AccordionItem,
   AccordionTrigger,
-  AccordionContent,
 } from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Users, UserPlus, Mail } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { UserPlus, Users, Mail } from "lucide-react";
 import { AddTeamMemberModal } from "@/components/modals/shared-team-modals";
 import ViewTeamInvitesModal from "@/components/modals/view-team-invites-modal";
 
 export default function TeamAccordion({
   teams,
   user,
-  _handlers,
+  handlers,
 }: {
   teams: any[];
   user: any;
-  _handlers: any;
+  handlers: any;
 }) {
   const [selectedTeam, setSelectedTeam] = useState<{
     id: string;
@@ -135,9 +136,7 @@ export default function TeamAccordion({
                         <Mail className="h-4 w-4" />
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent>
-                      <p>View invitations</p>
-                    </TooltipContent>
+                    <TooltipContent>View Invites</TooltipContent>
                   </Tooltip>
                 </div>
               </div>

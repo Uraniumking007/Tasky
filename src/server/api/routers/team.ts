@@ -1,9 +1,11 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { canUserManageTeam } from "@/lib/permissions";
+import type { Session } from "next-auth";
+import type { PrismaClient } from "@prisma/client";
 
 // Helper function to get user from session
-async function getUserFromSession(ctx: { session: any; db: any }) {
+async function getUserFromSession(ctx: { session: Session; db: PrismaClient }) {
   const user = await ctx.db.users.findFirst({
     where: {
       OR: [
