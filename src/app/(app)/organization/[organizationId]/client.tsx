@@ -14,16 +14,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
-import {
-  Mail,
-  Building2,
-  UserPlus,
-  Loader2,
-  X,
-  Send,
-  Copy,
-  Search,
-} from "lucide-react";
+import { Building2, Mail, Loader2, ArrowUp, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -34,6 +25,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { api } from "@/trpc/react";
+import { useRouter } from "next/navigation";
 
 interface EditOrganizationModalProps {
   organizationId: string;
@@ -278,7 +270,7 @@ export function CreateTeamModal({
 
     createTeamMutation.mutate({
       organizationId,
-      teamName: teamName.trim(),
+      name: teamName.trim(),
     });
   };
 
@@ -352,6 +344,7 @@ export function AddTeamMemberModal({
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
   const utils = api.useUtils();
+  const router = useRouter();
 
   // Fetch available members when modal opens
   const { data: availableMembers, isLoading: isLoadingMembers } =
@@ -378,6 +371,7 @@ export function AddTeamMemberModal({
       setIsOpen(false);
       // Invalidate and refetch organization data
       utils.organization.getOrganization.invalidate({ organizationId });
+      router.refresh();
     },
     onError: (error) => {
       toast({
@@ -398,6 +392,7 @@ export function AddTeamMemberModal({
       setIsOpen(false);
       // Invalidate and refetch organization data
       utils.organization.getOrganization.invalidate({ organizationId });
+      router.refresh();
     },
     onError: (error) => {
       toast({
@@ -473,7 +468,7 @@ export function AddTeamMemberModal({
     <Dialog open={isOpen} onOpenChange={handleDialogChange}>
       <DialogTrigger asChild>
         <Button size="sm" variant="outline">
-          <UserPlus className="mr-2 h-4 w-4" />
+          <Mail className="mr-2 h-4 w-4" />
           Add Member
         </Button>
       </DialogTrigger>
@@ -510,7 +505,7 @@ export function AddTeamMemberModal({
 
                 {/* Search Input */}
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     placeholder="Search members..."
                     value={searchTerm}
@@ -676,7 +671,7 @@ export function RemoveMemberButton({
   const handleRemove = async () => {
     removeMemberMutation.mutate({
       organizationId,
-      memberUserId,
+      userId: memberUserId,
     });
   };
 
@@ -867,7 +862,7 @@ export function ViewInvitesModal({
                         variant="outline"
                         onClick={() => copyInviteUrl(invite.id)}
                       >
-                        <Copy className="h-4 w-4" />
+                        <Mail className="h-4 w-4" />
                       </Button>
                       <Button
                         size="sm"
@@ -878,7 +873,7 @@ export function ViewInvitesModal({
                         {resendInviteMutation.isPending ? (
                           <Loader2 className="h-4 w-4 animate-spin" />
                         ) : (
-                          <Send className="h-4 w-4" />
+                          <Mail className="h-4 w-4" />
                         )}
                       </Button>
                       <Button
@@ -1079,6 +1074,174 @@ export function EditTeamButton({
         teamName={teamName}
         organizationId={organizationId}
       />
+    </>
+  );
+}
+
+interface PromoteMemberButtonProps {
+  organizationId: string;
+  memberUserId: string;
+  memberName: string;
+  currentRole: "MEMBER" | "TEAM_LEAD" | "MANAGER" | "OWNER";
+  userRole: "MEMBER" | "TEAM_LEAD" | "MANAGER" | "OWNER";
+  canPromote: boolean;
+}
+
+export function PromoteMemberButton({
+  organizationId,
+  memberUserId,
+  memberName,
+  currentRole,
+  userRole,
+  canPromote,
+}: PromoteMemberButtonProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<string>("");
+  const { toast } = useToast();
+  const router = useRouter();
+
+  const utils = api.useUtils();
+
+  const promoteMemberMutation = api.organization.promoteMember.useMutation({
+    onSuccess: () => {
+      // Determine if it's a promotion or demotion based on role hierarchy
+      const roleHierarchy = { MEMBER: 1, TEAM_LEAD: 2, MANAGER: 3, OWNER: 4 };
+      const currentRoleLevel = roleHierarchy[currentRole];
+      const newRoleLevel =
+        roleHierarchy[selectedRole as keyof typeof roleHierarchy];
+
+      const isPromotion = newRoleLevel > currentRoleLevel;
+      const actionText = isPromotion ? "promoted" : "demoted";
+      const newRoleFormatted = selectedRole.replace("_", " ");
+
+      toast({
+        title: "Success",
+        description: `${memberName} has been ${actionText} to ${newRoleFormatted} successfully`,
+      });
+      setIsOpen(false);
+      setSelectedRole("");
+      // Invalidate all relevant cached data
+      utils.organization.getOrganization.invalidate({ organizationId });
+      utils.organization.getAvailableMembers.invalidate({ organizationId });
+      utils.workspace.getWorkspaceData.invalidate(); // This provides user permissions
+      utils.organization.invalidate(); // Invalidate all organization queries
+      utils.workspace.invalidate(); // Invalidate all workspace queries
+      router.refresh(); // Refresh the page data
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update member role",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handlePromote = () => {
+    if (!selectedRole) {
+      toast({
+        title: "Error",
+        description: "Please select a role",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    promoteMemberMutation.mutate({
+      organizationId,
+      userId: memberUserId,
+      newRole: selectedRole as "MEMBER" | "TEAM_LEAD" | "MANAGER" | "OWNER",
+    });
+  };
+
+  // Get available roles based on current user's permissions
+  const getAvailableRoles = () => {
+    const roles = [];
+
+    if (userRole === "OWNER") {
+      // Owners can promote to any role except OWNER
+      if (currentRole !== "MEMBER")
+        roles.push({ value: "MEMBER", label: "Member" });
+      if (currentRole !== "TEAM_LEAD")
+        roles.push({ value: "TEAM_LEAD", label: "Team Lead" });
+      if (currentRole !== "MANAGER")
+        roles.push({ value: "MANAGER", label: "Manager" });
+    } else if (userRole === "MANAGER") {
+      // Managers can only promote to TEAM_LEAD or demote to MEMBER
+      if (currentRole !== "MEMBER")
+        roles.push({ value: "MEMBER", label: "Member" });
+      if (currentRole !== "TEAM_LEAD")
+        roles.push({ value: "TEAM_LEAD", label: "Team Lead" });
+    }
+
+    return roles;
+  };
+
+  const availableRoles = getAvailableRoles();
+
+  if (!canPromote || availableRoles.length === 0) {
+    return null;
+  }
+
+  return (
+    <>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => setIsOpen(true)}
+        disabled={promoteMemberMutation.isPending}
+      >
+        <ArrowUp className="h-4 w-4" />
+      </Button>
+
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Promote Member</DialogTitle>
+            <DialogDescription>
+              Change the role of {memberName} in this organization. Current
+              role: <strong>{currentRole.replace("_", " ")}</strong>
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="role">New Role</Label>
+              <Select value={selectedRole} onValueChange={setSelectedRole}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select new role" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableRoles.map((role) => (
+                    <SelectItem key={role.value} value={role.value}>
+                      {role.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsOpen(false)}
+              disabled={promoteMemberMutation.isPending}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handlePromote}
+              disabled={promoteMemberMutation.isPending || !selectedRole}
+            >
+              {promoteMemberMutation.isPending && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              Promote Member
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
