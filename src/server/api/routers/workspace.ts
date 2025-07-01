@@ -102,19 +102,16 @@ export const workspaceRouter = createTRPCRouter({
         members: org.members,
       })),
       ...memberOrganizations.map((membership) => {
-        const userRole = membership.role as "MANAGER" | "MEMBER";
+        const userRole = membership.role as "MANAGER" | "TEAM_LEAD" | "MEMBER";
 
         // Filter teams based on user role
         let visibleTeams;
-        if (userRole === "MANAGER") {
-          // Managers can see all teams in the organization
-          visibleTeams = membership.organization.teams;
-        } else {
-          // Regular members can only see teams they belong to
-          visibleTeams = membership.organization.teams.filter((team) =>
-            userTeamIds.has(team.id),
-          );
-        }
+        visibleTeams =
+          userRole === "MANAGER" || userRole === "TEAM_LEAD"
+            ? membership.organization.teams
+            : membership.organization.teams.filter((team) =>
+                userTeamIds.has(team.id),
+              );
 
         return {
           id: membership.organization.id,

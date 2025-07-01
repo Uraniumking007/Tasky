@@ -172,8 +172,10 @@ export const teamRouter = createTRPCRouter({
 
       // Check if user can manage this team
       const managementCheck = await canUserManageTeam(user.id, teamId);
+
+      // Only OWNER can delete teams (not MANAGER or TEAM_LEAD as per requirements)
       if (!managementCheck.canManage || managementCheck.role !== "OWNER") {
-        throw new Error("Only team owners can delete teams");
+        throw new Error("Only organization owners can delete teams");
       }
 
       // Get team to check organization

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { api } from "@/trpc/react";
 import {
   Loader2,
@@ -8,6 +9,7 @@ import {
   Shield,
   User,
   Calendar,
+  Eye,
 } from "lucide-react";
 import {
   Card,
@@ -28,6 +30,7 @@ import {
 } from "./client";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
+import { MemberDetailsModal } from "@/components/modals/member-details-modal";
 
 interface TeamPageClientProps {
   teamId: string;
@@ -35,6 +38,11 @@ interface TeamPageClientProps {
 
 export function TeamPageClient({ teamId }: TeamPageClientProps) {
   const { data: session } = useSession();
+  const [selectedMember, setSelectedMember] = useState<{
+    id: string;
+    name: string;
+    email: string;
+  } | null>(null);
 
   if (!session?.user) {
     redirect("/auth/login");
@@ -140,11 +148,12 @@ export function TeamPageClient({ teamId }: TeamPageClientProps) {
 
   // For permissions, we'll use simple role-based logic here
   // In a full implementation, you'd want to import the actual permission functions
-  const isOwnerOrManager = userRole === "OWNER" || userRole === "MANAGER";
-  const canEditTeam = canManage && isOwnerOrManager;
-  const canDeleteTeam = canManage && userRole === "OWNER";
-  const canInviteMembers = canManage && isOwnerOrManager;
-  const canRemoveMembers = canManage && isOwnerOrManager;
+  const isOwnerOrManagerOrTeamLead =
+    userRole === "OWNER" || userRole === "MANAGER" || userRole === "TEAM_LEAD";
+  const canEditTeam = canManage && isOwnerOrManagerOrTeamLead;
+  const canDeleteTeam = canManage && userRole === "OWNER"; // Only owners can delete teams
+  const canInviteMembers = canManage && isOwnerOrManagerOrTeamLead;
+  const canRemoveMembers = canManage && isOwnerOrManagerOrTeamLead;
 
   // For manage settings, we'll also allow if user is team owner regardless of canManage
   const currentUserMember = teamWithTypes.members.find(
@@ -193,10 +202,14 @@ export function TeamPageClient({ teamId }: TeamPageClientProps) {
                     ? "default"
                     : userRole === "MANAGER"
                       ? "secondary"
-                      : "outline"
+                      : userRole === "TEAM_LEAD"
+                        ? "outline"
+                        : "outline"
                 }
               >
-                {userRole ? userRole : `Org ${managementReason}`}
+                {userRole
+                  ? userRole.replace("_", " ")
+                  : `Org ${managementReason}`}
               </Badge>
               {canEditTeam && (
                 <EditTeamButton teamId={team.id} teamName={team.name} />
@@ -256,7 +269,13 @@ export function TeamPageClient({ teamId }: TeamPageClientProps) {
                 const isCurrentUser =
                   member.user.email === session?.user?.email;
                 const canRemoveThisMember =
-                  canRemoveMembers && !isCurrentUser && member.role !== "OWNER";
+                  canRemoveMembers &&
+                  !isCurrentUser &&
+                  member.role !== "OWNER" &&
+                  (userRole === "OWNER" || member.role !== "TEAM_LEAD"); // Only owners can remove team leads
+
+                const canViewMemberDetails =
+                  !isCurrentUser && isOwnerOrManagerOrTeamLead;
 
                 return (
                   <div
@@ -283,11 +302,31 @@ export function TeamPageClient({ teamId }: TeamPageClientProps) {
                             ? "default"
                             : member.role === "MANAGER"
                               ? "secondary"
-                              : "outline"
+                              : member.role === "TEAM_LEAD"
+                                ? "outline"
+                                : "outline"
                         }
                       >
-                        {member.role}
+                        {member.role.replace("_", " ")}
                       </Badge>
+                      {canViewMemberDetails && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            setSelectedMember({
+                              id: member.userId,
+                              name:
+                                member.user.name ||
+                                member.user.username ||
+                                "Unknown User",
+                              email: member.user.email || "",
+                            })
+                          }
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      )}
                       {canRemoveThisMember && (
                         <RemoveMemberButton
                           teamId={team.id}
@@ -371,6 +410,20 @@ export function TeamPageClient({ teamId }: TeamPageClientProps) {
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* Member Details Modal */}
+      {selectedMember && (
+        <MemberDetailsModal
+          isOpen={!!selectedMember}
+          onClose={() => setSelectedMember(null)}
+          memberId={selectedMember.id}
+          memberName={selectedMember.name}
+          memberEmail={selectedMember.email}
+          teamId={team.id}
+          currentUserRole={userRole}
+          canManageNotes={isOwnerOrManagerOrTeamLead}
+        />
       )}
     </div>
   );

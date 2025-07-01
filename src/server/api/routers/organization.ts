@@ -423,6 +423,90 @@ export const organizationRouter = createTRPCRouter({
       return result;
     }),
 
+  // Promote organization member
+  promoteMember: protectedProcedure
+    .input(
+      z.object({
+        organizationId: z.string(),
+        userId: z.string(),
+        newRole: z.enum(["MEMBER", "TEAM_LEAD", "MANAGER", "OWNER"]),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { organizationId, userId, newRole } = input;
+
+      // Get user from database
+      const user = await getUserFromSession(ctx);
+
+      // Check user permissions
+      const permissions = await getUserPermissions(user.id);
+      const userRole = getUserRoleInOrganization(permissions, organizationId);
+
+      if (!userRole) {
+        throw new Error("No access to organization");
+      }
+
+      // Only owners and managers can promote members
+      if (userRole !== "OWNER" && userRole !== "MANAGER") {
+        throw new Error("No permission to promote members");
+      }
+
+      // Get the member being promoted
+      const memberToPromote = await ctx.db.organizationMember.findFirst({
+        where: {
+          organizationId,
+          userId,
+        },
+      });
+
+      if (!memberToPromote) {
+        throw new Error("Member not found in organization");
+      }
+
+      // Validate promotion rules
+      if (userRole === "MANAGER") {
+        // Managers can only promote to TEAM_LEAD, not to MANAGER
+        if (newRole === "MANAGER") {
+          throw new Error("Managers cannot promote members to Manager role");
+        }
+        // Managers cannot promote other managers or owners
+        if (
+          memberToPromote.role === "MANAGER" ||
+          memberToPromote.role === "OWNER"
+        ) {
+          throw new Error("Cannot modify Manager or Owner roles");
+        }
+      }
+
+      // Owners cannot promote to OWNER (only one owner per organization)
+      if (newRole === "OWNER") {
+        throw new Error("Cannot promote to Owner role");
+      }
+
+      // Cannot demote yourself
+      if (userId === user.id) {
+        throw new Error("Cannot change your own role");
+      }
+
+      // Update the member's role
+      await ctx.db.organizationMember.update({
+        where: {
+          organizationId_userId: {
+            organizationId,
+            userId,
+          },
+        },
+        data: {
+          role: newRole,
+        },
+      });
+
+      return {
+        success: true,
+        message: `Member promoted to ${newRole} successfully`,
+      };
+    }),
+
   // Create organization
   createOrganization: protectedProcedure
     .input(

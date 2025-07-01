@@ -1,22 +1,25 @@
 import { db } from "@/server/db";
+import type { MemberRole } from "@prisma/client";
 
 export interface UserPermissions {
   hasTeamAccess: boolean;
   hasOrganizationAccess: boolean;
   isTeamOwner: boolean;
   isTeamManager: boolean;
+  isTeamLead: boolean;
   isOrganizationOwner: boolean;
   isOrganizationManager: boolean;
+  isOrganizationTeamLead: boolean;
   userTeams: Array<{
     id: string;
     name: string;
-    role: "OWNER" | "MANAGER" | "MEMBER";
+    role: MemberRole;
     organizationId?: string;
   }>;
   userOrganizations: Array<{
     id: string;
     name: string;
-    role: "OWNER" | "MANAGER" | "MEMBER";
+    role: MemberRole;
   }>;
 }
 
@@ -50,7 +53,8 @@ export interface RolePermissions {
 }
 
 export function getRolePermissions(
-  role: "OWNER" | "MANAGER" | "MEMBER",
+  role: "OWNER" | "MANAGER" | "TEAM_LEAD" | "MEMBER",
+  context: "organization" | "team" = "organization",
 ): RolePermissions {
   switch (role) {
     case "OWNER":
@@ -95,12 +99,12 @@ export function getRolePermissions(
         canEditOrganization: false, // Can't edit org details
         canDeleteOrganization: false, // Can't delete org
 
-        // Team level - management access
+        // Team level - management access but can't delete teams
         canViewOwnTeam: true,
         canViewAllTeamsInOrg: true,
         canCreateTeams: true,
         canEditTeams: true,
-        canDeleteTeams: false, // Can't delete teams
+        canDeleteTeams: false, // Can't delete teams as per requirements
         canManageTeamMembers: true,
         canInviteTeamMembers: true,
         canRemoveTeamMembers: true,
@@ -112,6 +116,68 @@ export function getRolePermissions(
         canEditAllNotes: true,
         canDeleteNotes: false, // Can't delete notes
       };
+
+    case "TEAM_LEAD":
+      if (context === "team") {
+        return {
+          // Organization level - limited access
+          canViewOrganization: true,
+          canViewOrganizationMembers: true,
+          canViewAllTeams: false, // Can only see their own teams
+          canManageOrganization: false,
+          canInviteOrganizationMembers: false,
+          canRemoveOrganizationMembers: false,
+          canEditOrganization: false,
+          canDeleteOrganization: false,
+
+          // Team level - team management access
+          canViewOwnTeam: true,
+          canViewAllTeamsInOrg: false,
+          canCreateTeams: false,
+          canEditTeams: true, // Can edit their team
+          canDeleteTeams: false,
+          canManageTeamMembers: true, // Can manage their team members
+          canInviteTeamMembers: true,
+          canRemoveTeamMembers: true,
+
+          // Notes - can manage team member notes
+          canViewOwnNotes: true,
+          canViewTeamNotes: true,
+          canAddNotesToMembers: true, // Key permission - can add notes to team members
+          canEditAllNotes: false, // Can't edit all notes, only team member notes
+          canDeleteNotes: false,
+        };
+      } else {
+        // Organization Team Lead
+        return {
+          // Organization level - enhanced access
+          canViewOrganization: true,
+          canViewOrganizationMembers: true,
+          canViewAllTeams: true, // Can see all teams in org
+          canManageOrganization: false,
+          canInviteOrganizationMembers: true, // Can invite org members
+          canRemoveOrganizationMembers: false,
+          canEditOrganization: false,
+          canDeleteOrganization: false,
+
+          // Team level - can manage teams
+          canViewOwnTeam: true,
+          canViewAllTeamsInOrg: true,
+          canCreateTeams: true, // Can create teams
+          canEditTeams: true,
+          canDeleteTeams: false,
+          canManageTeamMembers: true,
+          canInviteTeamMembers: true,
+          canRemoveTeamMembers: true,
+
+          // Notes - can manage notes
+          canViewOwnNotes: true,
+          canViewTeamNotes: true,
+          canAddNotesToMembers: true,
+          canEditAllNotes: false,
+          canDeleteNotes: false,
+        };
+      }
 
     case "MEMBER":
       return {
@@ -240,11 +306,23 @@ export async function getUserPermissions(
   const isTeamManager = userTeams.some(
     (team) => team.role === "MANAGER" || team.role === "OWNER",
   );
+  const isTeamLead = userTeams.some(
+    (team) =>
+      team.role === "TEAM_LEAD" ||
+      team.role === "MANAGER" ||
+      team.role === "OWNER",
+  );
   const isOrganizationOwner = userOrganizations.some(
     (org) => org.role === "OWNER",
   );
   const isOrganizationManager = userOrganizations.some(
     (org) => org.role === "MANAGER" || org.role === "OWNER",
+  );
+  const isOrganizationTeamLead = userOrganizations.some(
+    (org) =>
+      org.role === "TEAM_LEAD" ||
+      org.role === "MANAGER" ||
+      org.role === "OWNER",
   );
 
   return {
@@ -252,8 +330,10 @@ export async function getUserPermissions(
     hasOrganizationAccess,
     isTeamOwner,
     isTeamManager,
+    isTeamLead,
     isOrganizationOwner,
     isOrganizationManager,
+    isOrganizationTeamLead,
     userTeams,
     userOrganizations,
   };
@@ -279,7 +359,7 @@ export function canManageOrganization(permissions: UserPermissions): boolean {
 export function getUserRoleInOrganization(
   permissions: UserPermissions,
   organizationId: string,
-): "OWNER" | "MANAGER" | "MEMBER" | null {
+): MemberRole | null {
   const org = permissions.userOrganizations.find(
     (org) => org.id === organizationId,
   );
@@ -290,7 +370,7 @@ export function getUserRoleInOrganization(
 export function getUserRoleInTeam(
   permissions: UserPermissions,
   teamId: string,
-): "OWNER" | "MANAGER" | "MEMBER" | null {
+): MemberRole | null {
   const team = permissions.userTeams.find((team) => team.id === teamId);
   return team ? team.role : null;
 }
@@ -329,7 +409,7 @@ export async function canUserManageTeam(
 ): Promise<{
   canManage: boolean;
   reason: "team_role" | "org_role" | "none";
-  role?: "OWNER" | "MANAGER";
+  role?: MemberRole;
 }> {
   // Get team details including organization
   const team = await db.team.findUnique({
@@ -361,7 +441,7 @@ export async function canUserManageTeam(
   const teamMembership = team.members[0];
   if (
     teamMembership &&
-    (teamMembership.role === "OWNER" || teamMembership.role === "MANAGER")
+    ["OWNER", "MANAGER", "TEAM_LEAD"].includes(teamMembership.role)
   ) {
     return { canManage: true, reason: "team_role", role: teamMembership.role };
   }
@@ -371,7 +451,7 @@ export async function canUserManageTeam(
     const orgMembership = team.organization.members[0];
     if (
       orgMembership &&
-      (orgMembership.role === "OWNER" || orgMembership.role === "MANAGER")
+      ["OWNER", "MANAGER", "TEAM_LEAD"].includes(orgMembership.role)
     ) {
       return { canManage: true, reason: "org_role", role: orgMembership.role };
     }
@@ -386,7 +466,7 @@ export function getUserEffectiveRoleInTeam(
   permissions: UserPermissions,
   teamId: string,
   organizationId?: string,
-): "OWNER" | "MANAGER" | "MEMBER" | null {
+): MemberRole | null {
   // First check direct team membership
   const teamRole = getUserRoleInTeam(permissions, teamId);
   if (teamRole) {
@@ -397,8 +477,12 @@ export function getUserEffectiveRoleInTeam(
   // check organization role
   if (organizationId) {
     const orgRole = getUserRoleInOrganization(permissions, organizationId);
-    if (orgRole === "OWNER" || orgRole === "MANAGER") {
-      return orgRole; // Organization owners/managers can manage teams
+    if (
+      orgRole === "OWNER" ||
+      orgRole === "MANAGER" ||
+      orgRole === "TEAM_LEAD"
+    ) {
+      return orgRole; // Organization owners/managers/team leads can manage teams
     }
   }
 
