@@ -15,9 +15,9 @@ model Organization {
   updatedAt DateTime             @updatedAt
   ownerId   String
   owner     users                @relation("OrganizationOwner", fields: [ownerId], references: [id])
+  invites   OrganizationInvite[]
   members   OrganizationMember[]
   teams     Team[]
-  invites   OrganizationInvite[]
 }
 
 model OrganizationMember {
@@ -36,17 +36,18 @@ model OrganizationMember {
 model Team {
   id             String        @id @default(cuid())
   name           String
-  isPrivate      Boolean       @default(false)
-  allowAutoJoin  Boolean       @default(true)
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   ownerId        String
   organizationId String?
+  isPrivate      Boolean?      @default(false)
+  allowAutoJoin  Boolean?      @default(true)
   tasks          Task[]
   organization   Organization? @relation(fields: [organizationId], references: [id])
   owner          users         @relation("TeamOwner", fields: [ownerId], references: [id])
   invites        TeamInvite[]
   members        TeamMember[]
+  notes          Note[]
 }
 
 model TeamMember {
@@ -129,13 +130,15 @@ model users {
   updatedAt               DateTime
   active_team             String?
   ownedOrganizations      Organization[]       @relation("OrganizationOwner")
+  organizationInvites     OrganizationInvite[] @relation("OrganizationInviteInviter")
   organizationMemberships OrganizationMember[] @relation("OrganizationMembers")
   subTasks                SubTask[]
   tasks                   Task[]
   ownedTeams              Team[]               @relation("TeamOwner")
   teamInvites             TeamInvite[]         @relation("TeamInviteInviter")
-  organizationInvites     OrganizationInvite[] @relation("OrganizationInviteInviter")
   teamMemberships         TeamMember[]         @relation("TeamMembers")
+  authoredNotes           Note[]               @relation("NoteAuthor")
+  notesAboutMe            Note[]               @relation("NoteSubject")
   accounts                accounts[]
   sessions                sessions[]
 }
@@ -172,8 +175,29 @@ model OrganizationInvite {
   organization   Organization @relation(fields: [organizationId], references: [id])
 }
 
+model Note {
+  id        String   @id @default(cuid())
+  title     String
+  content   String?
+  isPrivate Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  authorId  String   // Who created the note
+  subjectId String?  // Who the note is about (for team lead notes about members)
+  teamId    String?  // Which team this note belongs to
+  
+  author    users    @relation("NoteAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  subject   users?   @relation("NoteSubject", fields: [subjectId], references: [id], onDelete: Cascade)
+  team      Team?    @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  
+  @@index([authorId])
+  @@index([subjectId])
+  @@index([teamId])
+}
+
 enum MemberRole {
   OWNER
   MANAGER
   MEMBER
+  TEAM_LEAD
 }
