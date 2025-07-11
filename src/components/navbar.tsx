@@ -9,13 +9,9 @@ import { useSession, signOut } from "next-auth/react";
 import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import type { User } from "next-auth";
-import { getUserPermissions } from "@/lib/permissions";
-import { usePathname } from "next/navigation";
-import { NavigationMenu } from "./ui/navigation-menu";
-import { Bell, PlusCircle, Search } from "lucide-react";
 
 export default function Navbar() {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [permissions, setPermissions] = useState();
@@ -42,6 +38,14 @@ export default function Navbar() {
   }, [session?.user]);
 
   const handleSignOut = async () => {
+    try {
+      // Call custom logout API to clear cookies
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch (error) {
+      console.error("Error calling logout API:", error);
+    }
+
+    // Then sign out
     await signOut({ callbackUrl: "/" });
   };
 
