@@ -456,7 +456,7 @@ export const notesRouter = createTRPCRouter({
         title: z.string().min(1, "Title is required"),
         content: z.string().optional(),
         isPrivate: z.boolean().default(true),
-        subjectId: z.string().optional(), // If creating note about someone else
+        subjectId: z.string().optional(), // If creating note about someone else (empty string = personal note)
         teamId: z.string().optional(),
         organizationId: z.string().optional(), // Organization context for permissions
       }),
@@ -467,7 +467,7 @@ export const notesRouter = createTRPCRouter({
       const user = await getUserFromSession(ctx);
 
       // If creating note about someone else, check permissions
-      if (subjectId && subjectId !== user.id) {
+      if (subjectId && subjectId !== "" && subjectId !== user.id) {
         const canManage = await canManageNotesForMember(
           ctx,
           user.id,
@@ -487,7 +487,7 @@ export const notesRouter = createTRPCRouter({
           content,
           isPrivate,
           authorId: user.id,
-          subjectId: subjectId || user.id,
+          subjectId: subjectId === "" ? user.id : subjectId || user.id,
           teamId,
         },
         include: {
