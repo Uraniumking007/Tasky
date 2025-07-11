@@ -10,19 +10,12 @@ import bcrypt from "bcrypt";
 import { env } from "@/env";
 import { db } from "@/server/db";
 import Credentials from "next-auth/providers/credentials";
+import { CustomUser } from "@/lib/types/auth";
 
 declare module "next-auth" {
-  interface User {
-    username: string;
-    email: string;
-    active_team: string | null;
-  }
-  interface Session extends DefaultSession {
-    user: {
-      username: string;
-      email: string;
-      active_team: string | null;
-    } & DefaultSession["user"];
+  export interface User extends CustomUser {}
+  export interface Session extends DefaultSession {
+    user: CustomUser & DefaultSession["user"];
   }
 }
 
