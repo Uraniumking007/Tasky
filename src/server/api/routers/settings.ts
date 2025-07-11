@@ -52,6 +52,12 @@ export const settingsRouter = createTRPCRouter({
         showTeamActivity: z.boolean().optional(),
         showQuickActions: z.boolean().optional(),
         tasksPerPage: z.number().min(1).max(100).optional(),
+        showTotalTasksCard: z.boolean().optional(),
+        showCompletedCard: z.boolean().optional(),
+        showPendingCard: z.boolean().optional(),
+        showHighPriorityCard: z.boolean().optional(),
+        showSubtasksCard: z.boolean().optional(),
+        showProductivityCard: z.boolean().optional(),
 
         // Notification preferences
         emailNotifications: z.boolean().optional(),

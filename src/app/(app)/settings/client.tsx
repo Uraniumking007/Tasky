@@ -96,6 +96,12 @@ export function SettingsClient({ user }: SettingsClientProps) {
     showTeamActivity: true,
     showQuickActions: true,
     tasksPerPage: 10,
+    showTotalTasksCard: true,
+    showCompletedCard: true,
+    showPendingCard: true,
+    showHighPriorityCard: true,
+    showSubtasksCard: true,
+    showProductivityCard: true,
   });
 
   const [preferences, setPreferences] = useState({
@@ -171,6 +177,12 @@ export function SettingsClient({ user }: SettingsClientProps) {
         showTeamActivity: userSettings.showTeamActivity ?? true,
         showQuickActions: userSettings.showQuickActions ?? true,
         tasksPerPage: userSettings.tasksPerPage ?? 10,
+        showTotalTasksCard: userSettings.showTotalTasksCard ?? true,
+        showCompletedCard: userSettings.showCompletedCard ?? true,
+        showPendingCard: userSettings.showPendingCard ?? true,
+        showHighPriorityCard: userSettings.showHighPriorityCard ?? true,
+        showSubtasksCard: userSettings.showSubtasksCard ?? true,
+        showProductivityCard: userSettings.showProductivityCard ?? true,
       });
 
       setPreferences({
@@ -465,6 +477,129 @@ export function SettingsClient({ user }: SettingsClientProps) {
                       <SelectItem value="50">50 tasks</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-4">
+                  <h4 className="text-sm font-medium">Dashboard Stats Cards</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Choose which statistics cards to display on your dashboard
+                  </p>
+
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label>Total Tasks Card</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Show total tasks and completion rate
+                      </p>
+                    </div>
+                    <Switch
+                      checked={dashboard.showTotalTasksCard}
+                      onCheckedChange={(checked) => {
+                        setDashboard({
+                          ...dashboard,
+                          showTotalTasksCard: checked,
+                        });
+                        handleAutoSave({ showTotalTasksCard: checked });
+                      }}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label>Completed Tasks Card</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Show completed tasks count and percentage
+                      </p>
+                    </div>
+                    <Switch
+                      checked={dashboard.showCompletedCard}
+                      onCheckedChange={(checked) => {
+                        setDashboard({
+                          ...dashboard,
+                          showCompletedCard: checked,
+                        });
+                        handleAutoSave({ showCompletedCard: checked });
+                      }}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label>Pending Tasks Card</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Show pending tasks count and percentage
+                      </p>
+                    </div>
+                    <Switch
+                      checked={dashboard.showPendingCard}
+                      onCheckedChange={(checked) => {
+                        setDashboard({
+                          ...dashboard,
+                          showPendingCard: checked,
+                        });
+                        handleAutoSave({ showPendingCard: checked });
+                      }}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label>High Priority Tasks Card</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Show high priority tasks that need attention
+                      </p>
+                    </div>
+                    <Switch
+                      checked={dashboard.showHighPriorityCard}
+                      onCheckedChange={(checked) => {
+                        setDashboard({
+                          ...dashboard,
+                          showHighPriorityCard: checked,
+                        });
+                        handleAutoSave({ showHighPriorityCard: checked });
+                      }}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label>Subtasks Card</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Show subtasks count and completion rate
+                      </p>
+                    </div>
+                    <Switch
+                      checked={dashboard.showSubtasksCard}
+                      onCheckedChange={(checked) => {
+                        setDashboard({
+                          ...dashboard,
+                          showSubtasksCard: checked,
+                        });
+                        handleAutoSave({ showSubtasksCard: checked });
+                      }}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label>Productivity Card</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Show overall productivity and completion rate
+                      </p>
+                    </div>
+                    <Switch
+                      checked={dashboard.showProductivityCard}
+                      onCheckedChange={(checked) => {
+                        setDashboard({
+                          ...dashboard,
+                          showProductivityCard: checked,
+                        });
+                        handleAutoSave({ showProductivityCard: checked });
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
             </CardContent>

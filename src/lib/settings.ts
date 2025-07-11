@@ -14,6 +14,12 @@ export interface UserSettingsData {
   showTeamActivity: boolean;
   showQuickActions: boolean;
   tasksPerPage: number;
+  showTotalTasksCard: boolean;
+  showCompletedCard: boolean;
+  showPendingCard: boolean;
+  showHighPriorityCard: boolean;
+  showSubtasksCard: boolean;
+  showProductivityCard: boolean;
 
   // Notification preferences
   emailNotifications: boolean;
@@ -42,6 +48,12 @@ export const DEFAULT_SETTINGS: UserSettingsData = {
   showTeamActivity: true,
   showQuickActions: true,
   tasksPerPage: 10,
+  showTotalTasksCard: true,
+  showCompletedCard: true,
+  showPendingCard: true,
+  showHighPriorityCard: true,
+  showSubtasksCard: true,
+  showProductivityCard: true,
 
   // Notification preferences
   emailNotifications: true,
@@ -166,6 +178,12 @@ export class SettingsManager {
         showTeamActivity: dbSettings.showTeamActivity,
         showQuickActions: dbSettings.showQuickActions,
         tasksPerPage: dbSettings.tasksPerPage,
+        showTotalTasksCard: dbSettings.showTotalTasksCard,
+        showCompletedCard: dbSettings.showCompletedCard,
+        showPendingCard: dbSettings.showPendingCard,
+        showHighPriorityCard: dbSettings.showHighPriorityCard,
+        showSubtasksCard: dbSettings.showSubtasksCard,
+        showProductivityCard: dbSettings.showProductivityCard,
         emailNotifications: dbSettings.emailNotifications,
         pushNotifications: dbSettings.pushNotifications,
         taskReminders: dbSettings.taskReminders,
@@ -203,6 +221,12 @@ export class SettingsManager {
           showTeamActivity: settings.showTeamActivity,
           showQuickActions: settings.showQuickActions,
           tasksPerPage: settings.tasksPerPage,
+          showTotalTasksCard: settings.showTotalTasksCard,
+          showCompletedCard: settings.showCompletedCard,
+          showPendingCard: settings.showPendingCard,
+          showHighPriorityCard: settings.showHighPriorityCard,
+          showSubtasksCard: settings.showSubtasksCard,
+          showProductivityCard: settings.showProductivityCard,
           emailNotifications: settings.emailNotifications,
           pushNotifications: settings.pushNotifications,
           taskReminders: settings.taskReminders,
@@ -223,6 +247,12 @@ export class SettingsManager {
           showTeamActivity: settings.showTeamActivity,
           showQuickActions: settings.showQuickActions,
           tasksPerPage: settings.tasksPerPage,
+          showTotalTasksCard: settings.showTotalTasksCard,
+          showCompletedCard: settings.showCompletedCard,
+          showPendingCard: settings.showPendingCard,
+          showHighPriorityCard: settings.showHighPriorityCard,
+          showSubtasksCard: settings.showSubtasksCard,
+          showProductivityCard: settings.showProductivityCard,
           emailNotifications: settings.emailNotifications,
           pushNotifications: settings.pushNotifications,
           taskReminders: settings.taskReminders,

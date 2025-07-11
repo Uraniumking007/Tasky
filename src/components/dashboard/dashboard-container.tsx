@@ -101,6 +101,12 @@ export function DashboardContainer({ user }: DashboardContainerProps) {
     showQuickActions: true,
     tasksPerPage: 10,
     showCompletedTasks: false,
+    showTotalTasksCard: true,
+    showCompletedCard: true,
+    showPendingCard: true,
+    showHighPriorityCard: true,
+    showSubtasksCard: true,
+    showProductivityCard: true,
   };
 
   return (
@@ -129,7 +135,18 @@ export function DashboardContainer({ user }: DashboardContainerProps) {
         </div>
 
         {/* Statistics Cards */}
-        <DashboardStats tasks={tasks} subTasks={subTasks} />
+        <DashboardStats
+          tasks={tasks}
+          subTasks={subTasks}
+          settings={{
+            showTotalTasksCard: settings.showTotalTasksCard,
+            showCompletedCard: settings.showCompletedCard,
+            showPendingCard: settings.showPendingCard,
+            showHighPriorityCard: settings.showHighPriorityCard,
+            showSubtasksCard: settings.showSubtasksCard,
+            showProductivityCard: settings.showProductivityCard,
+          }}
+        />
 
         {/* View Toggle */}
         <Card className="border-border/50 bg-background/50 backdrop-blur-sm">

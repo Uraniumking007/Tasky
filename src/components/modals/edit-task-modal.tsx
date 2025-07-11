@@ -48,6 +48,9 @@ interface EditSubtaskType {
   id: string;
   title: string;
   isSaved: boolean;
+  isNew: boolean; // Track if this is a new subtask
+  originalTitle?: string; // Track original title for comparison
+  isEditing?: boolean; // Track if this subtask is being edited inline
 }
 
 export function EditTaskModal({
@@ -62,7 +65,12 @@ export function EditTaskModal({
     content: task.content ?? "",
   });
   const [editedSubTasks, setEditedSubTasks] = useState<EditSubtaskType[]>(
-    subtasks.map((subtask) => ({ ...subtask, isSaved: true })),
+    subtasks.map((subtask) => ({
+      ...subtask,
+      isSaved: true,
+      isNew: false,
+      originalTitle: subtask.title,
+    })),
   );
   const [subTaskCount, setSubTaskCount] = useState(subtasks.length);
 
@@ -89,6 +97,24 @@ export function EditTaskModal({
   });
 
   const addSubtaskMutation = api.tasks.addSubtask.useMutation({
+    onSuccess: (data) => {
+      toast({
+        variant: "default",
+        title: "Success",
+        description: data.message,
+      });
+      utils.tasks.getAllSubTasks.invalidate();
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
+    },
+  });
+
+  const updateSubtaskMutation = api.tasks.updateSubtask.useMutation({
     onSuccess: (data) => {
       toast({
         variant: "default",
@@ -151,41 +177,158 @@ export function EditTaskModal({
   };
 
   const handleSaveSubTask = async (index: number) => {
-    const newSubTasks = editedSubTasks.map((subtask, i) =>
-      i === index ? { ...subtask, isSaved: true } : subtask,
-    );
+    const subtask = editedSubTasks[index];
 
-    for (const editedSubTask of editedSubTasks) {
-      if (!editedSubTask.title || editedSubTask.title == "") {
-        throw new Error("Subtask title cannot be empty");
-      }
-      if (!editedSubTask.isSaved) {
-        addSubtaskMutation.mutate({
+    if (!subtask) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Subtask not found",
+      });
+      return;
+    }
+
+    if (!subtask.title || subtask.title.trim() === "") {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Subtask title cannot be empty",
+      });
+      return;
+    }
+
+    try {
+      if (subtask.isNew) {
+        // Create new subtask
+        await addSubtaskMutation.mutateAsync({
           taskId: task.id,
-          title: editedSubTask.title,
+          title: subtask.title.trim(),
           content: "",
           status: "incomplete",
         });
+      } else {
+        // Update existing subtask if title changed
+        if (subtask.title !== subtask.originalTitle) {
+          await updateSubtaskMutation.mutateAsync({
+            id: subtask.id,
+            title: subtask.title.trim(),
+            content: "",
+            status: "incomplete",
+          });
+        }
       }
-    }
 
-    setEditedSubTasks(newSubTasks);
+      // Mark as saved
+      const newSubTasks = editedSubTasks.map((st, i) =>
+        i === index
+          ? { ...st, isSaved: true, isNew: false, originalTitle: st.title }
+          : st,
+      );
+      setEditedSubTasks(newSubTasks);
+    } catch (error) {
+      console.error("Error saving subtask:", error);
+    }
   };
 
   const addNewSubTask = () => {
     setEditedSubTasks([
       ...editedSubTasks,
-      { id: crypto.randomUUID(), title: "", isSaved: false },
+      {
+        id: crypto.randomUUID(),
+        title: "",
+        isSaved: false,
+        isNew: true,
+      },
     ]);
     setSubTaskCount(subTaskCount + 1);
   };
 
-  function deleteSubTask(id: string) {
-    const newSubTasks = editedSubTasks.filter(
-      (subtask, index) => subtask.id !== id,
+  const startEditingSubtask = (index: number) => {
+    const newSubTasks = editedSubTasks.map((st, i) =>
+      i === index ? { ...st, isEditing: true } : st,
     );
+    setEditedSubTasks(newSubTasks);
+  };
+
+  const cancelEditingSubtask = (index: number) => {
+    const newSubTasks = editedSubTasks.map((st, i) =>
+      i === index
+        ? { ...st, isEditing: false, title: st.originalTitle || st.title }
+        : st,
+    );
+    setEditedSubTasks(newSubTasks);
+  };
+
+  const saveEditingSubtask = async (index: number) => {
+    const subtask = editedSubTasks[index];
+
+    if (!subtask) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Subtask not found",
+      });
+      return;
+    }
+
+    if (!subtask.title || subtask.title.trim() === "") {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Subtask title cannot be empty",
+      });
+      return;
+    }
+
+    try {
+      if (subtask.isNew) {
+        // Create new subtask
+        await addSubtaskMutation.mutateAsync({
+          taskId: task.id,
+          title: subtask.title.trim(),
+          content: "",
+          status: "incomplete",
+        });
+      } else {
+        // Update existing subtask if title changed
+        if (subtask.title !== subtask.originalTitle) {
+          await updateSubtaskMutation.mutateAsync({
+            id: subtask.id,
+            title: subtask.title.trim(),
+            content: "",
+            status: "incomplete",
+          });
+        }
+      }
+
+      // Mark as saved and stop editing
+      const newSubTasks = editedSubTasks.map((st, i) =>
+        i === index
+          ? {
+              ...st,
+              isSaved: true,
+              isNew: false,
+              isEditing: false,
+              originalTitle: st.title,
+            }
+          : st,
+      );
+      setEditedSubTasks(newSubTasks);
+    } catch (error) {
+      console.error("Error saving subtask:", error);
+    }
+  };
+
+  function deleteSubTask(id: string) {
+    const subtask = editedSubTasks.find((st) => st.id === id);
+    const newSubTasks = editedSubTasks.filter((st) => st.id !== id);
     setSubTaskCount(subTaskCount - 1);
-    deleteSubtaskMutation.mutate({ id });
+
+    // Only call delete API if it's a saved subtask (not a new one)
+    if (subtask && !subtask.isNew) {
+      deleteSubtaskMutation.mutate({ id });
+    }
+
     setEditedSubTasks(newSubTasks);
   }
 
