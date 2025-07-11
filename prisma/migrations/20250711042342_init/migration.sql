@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "MemberRole" AS ENUM ('OWNER', 'MANAGER', 'MEMBER');
+CREATE TYPE "MemberRole" AS ENUM ('OWNER', 'MANAGER', 'MEMBER', 'TEAM_LEAD');
 
 -- CreateTable
 CREATE TABLE "Organization" (
@@ -32,6 +32,8 @@ CREATE TABLE "Team" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "ownerId" TEXT NOT NULL,
     "organizationId" TEXT,
+    "isPrivate" BOOLEAN DEFAULT false,
+    "allowAutoJoin" BOOLEAN DEFAULT true,
 
     CONSTRAINT "Team_pkey" PRIMARY KEY ("id")
 );
@@ -142,6 +144,60 @@ CREATE TABLE "TeamInvite" (
     CONSTRAINT "TeamInvite_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "OrganizationInvite" (
+    "id" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "organizationId" TEXT NOT NULL,
+    "invitedBy" TEXT NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'pending',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "expiry" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "OrganizationInvite_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Note" (
+    "id" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "content" TEXT,
+    "isPrivate" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "authorId" TEXT NOT NULL,
+    "subjectId" TEXT,
+    "teamId" TEXT,
+
+    CONSTRAINT "Note_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "UserSettings" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "theme" TEXT NOT NULL DEFAULT 'system',
+    "compactMode" BOOLEAN NOT NULL DEFAULT false,
+    "showAnimations" BOOLEAN NOT NULL DEFAULT true,
+    "defaultView" TEXT NOT NULL DEFAULT 'list',
+    "showRecentTasks" BOOLEAN NOT NULL DEFAULT true,
+    "showTeamActivity" BOOLEAN NOT NULL DEFAULT true,
+    "showQuickActions" BOOLEAN NOT NULL DEFAULT true,
+    "tasksPerPage" INTEGER NOT NULL DEFAULT 10,
+    "emailNotifications" BOOLEAN NOT NULL DEFAULT true,
+    "pushNotifications" BOOLEAN NOT NULL DEFAULT false,
+    "taskReminders" BOOLEAN NOT NULL DEFAULT true,
+    "weeklyDigest" BOOLEAN NOT NULL DEFAULT false,
+    "autoSave" BOOLEAN NOT NULL DEFAULT true,
+    "showCompletedTasks" BOOLEAN NOT NULL DEFAULT false,
+    "allowCookies" BOOLEAN NOT NULL DEFAULT true,
+    "allowCachedData" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "UserSettings_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "OrganizationMember_organizationId_userId_key" ON "OrganizationMember"("organizationId", "userId");
 
@@ -162,6 +218,21 @@ CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "verificationtokens_identifier_token_key" ON "verificationtokens"("identifier", "token");
+
+-- CreateIndex
+CREATE INDEX "Note_authorId_idx" ON "Note"("authorId");
+
+-- CreateIndex
+CREATE INDEX "Note_subjectId_idx" ON "Note"("subjectId");
+
+-- CreateIndex
+CREATE INDEX "Note_teamId_idx" ON "Note"("teamId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "UserSettings_userId_key" ON "UserSettings"("userId");
+
+-- CreateIndex
+CREATE INDEX "UserSettings_userId_idx" ON "UserSettings"("userId");
 
 -- AddForeignKey
 ALTER TABLE "Organization" ADD CONSTRAINT "Organization_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -207,3 +278,21 @@ ALTER TABLE "TeamInvite" ADD CONSTRAINT "TeamInvite_invitedBy_fkey" FOREIGN KEY 
 
 -- AddForeignKey
 ALTER TABLE "TeamInvite" ADD CONSTRAINT "TeamInvite_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OrganizationInvite" ADD CONSTRAINT "OrganizationInvite_invitedBy_fkey" FOREIGN KEY ("invitedBy") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OrganizationInvite" ADD CONSTRAINT "OrganizationInvite_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Note" ADD CONSTRAINT "Note_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Note" ADD CONSTRAINT "Note_subjectId_fkey" FOREIGN KEY ("subjectId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Note" ADD CONSTRAINT "Note_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "UserSettings" ADD CONSTRAINT "UserSettings_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
