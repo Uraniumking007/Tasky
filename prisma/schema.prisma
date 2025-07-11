@@ -141,6 +141,7 @@ model users {
   notesAboutMe            Note[]               @relation("NoteSubject")
   accounts                accounts[]
   sessions                sessions[]
+  settings                UserSettings?
 }
 
 model verificationtokens {
@@ -200,4 +201,41 @@ enum MemberRole {
   MANAGER
   MEMBER
   TEAM_LEAD
+}
+
+model UserSettings {
+  id                    String   @id @default(cuid())
+  userId                String   @unique
+  user                  users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Appearance settings
+  theme                 String   @default("system") // "light", "dark", "system"
+  compactMode           Boolean  @default(false)
+  showAnimations        Boolean  @default(true)
+  
+  // Dashboard settings
+  defaultView           String   @default("list") // "list", "board", "calendar"
+  showRecentTasks       Boolean  @default(true)
+  showTeamActivity      Boolean  @default(true)
+  showQuickActions      Boolean  @default(true)
+  tasksPerPage          Int      @default(10)
+  
+  // Notification preferences
+  emailNotifications    Boolean  @default(true)
+  pushNotifications     Boolean  @default(false)
+  taskReminders         Boolean  @default(true)
+  weeklyDigest          Boolean  @default(false)
+  
+  // General preferences
+  autoSave              Boolean  @default(true)
+  showCompletedTasks    Boolean  @default(false)
+  
+  // Cookie preferences
+  allowCookies          Boolean  @default(true)
+  allowCachedData       Boolean  @default(true)
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  
+  @@index([userId])
 }
