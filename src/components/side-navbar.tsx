@@ -133,11 +133,6 @@ export default function SideNavbar({
       href: "/tasks?create=true",
       icon: IconPlus,
     },
-    {
-      title: "Settings",
-      href: "/settings",
-      icon: IconSettings,
-    },
   ];
 
   return (
