@@ -104,21 +104,15 @@ export const organizationRouter = createTRPCRouter({
 
       // Filter teams based on user's role and team privacy
       const visibleTeams = rolePermissions.canViewAllTeamsInOrg
-        ? organization.teams.filter(
-            (team: {
-              isPrivate?: boolean;
-              members: Array<{ userId: string }>;
-            }) => {
-              // If team is private, user must be a member to see it
-              if (team.isPrivate) {
-                return team.members.some((member) => member.userId === user.id);
-              }
-              return true; // Public teams are visible to all org members
-            },
-          )
-        : organization.teams.filter(
-            (team: { members: Array<{ userId: string }> }) =>
-              team.members.some((member) => member.userId === user.id),
+        ? organization.teams.filter((team) => {
+            // If team is private, user must be a member to see it
+            if (team.isPrivate) {
+              return team.members.some((member) => member.user.id === user.id);
+            }
+            return true; // Public teams are visible to all org members
+          })
+        : organization.teams.filter((team) =>
+            team.members.some((member) => member.user.id === user.id),
           );
 
       return {
