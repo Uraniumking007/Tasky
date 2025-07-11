@@ -1,14 +1,14 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -39,6 +39,7 @@ import {
 import { api } from "@/trpc/react";
 import { useToast } from "../ui/use-toast";
 import { useSession } from "next-auth/react";
+import { generateUUID } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -48,6 +49,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 interface TaskData {
   id: string;
@@ -59,6 +69,7 @@ interface TaskData {
   teamId: string;
   status: string;
   priority: string;
+  assignedTo?: string;
 }
 
 interface SubTaskData {
@@ -105,6 +116,10 @@ export function TaskCreationModal() {
   const [editingSubtaskId, setEditingSubtaskId] = useState<string | null>(null);
   const [newSubtaskTitle, setNewSubtaskTitle] = useState("");
   const [selectedTeamId, setSelectedTeamId] = useState<string>("");
+  const [selectedAssignee, setSelectedAssignee] =
+    useState<string>("unassigned");
+  const [dueDate, setDueDate] = useState<Date | undefined>(undefined);
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
   const { toast } = useToast();
   const ref = useRef<HTMLButtonElement>(null);
@@ -115,6 +130,18 @@ export function TaskCreationModal() {
     refetchOnWindowFocus: false,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
+
+  // Get team members for assignment (only when a team is selected and it's not personal)
+  const { data: teamMembers = [] } = api.users.getTeamMembers.useQuery(
+    { teamId: selectedTeamId },
+    {
+      enabled:
+        !!selectedTeamId &&
+        userTeams.find((t) => t.id === selectedTeamId)?.name !== "Personal",
+      refetchOnWindowFocus: false,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    },
+  );
 
   // Switch active team mutation
   const switchTeamMutation = api.users.switchActiveTeam.useMutation({
@@ -176,9 +203,13 @@ export function TaskCreationModal() {
       setSubTasks([]);
       setNewSubtaskTitle("");
       setEditingSubtaskId(null);
+      setSelectedAssignee("unassigned");
+      setDueDate(undefined);
       // Invalidate and refetch tasks
       utils.tasks.getAllTasks.invalidate();
       utils.tasks.getAllSubTasks.invalidate();
+      // Close the sheet
+      ref.current?.click();
     },
     onError: (error) => {
       toast({
@@ -226,6 +257,10 @@ export function TaskCreationModal() {
       content: task.content.trim(),
       status: task.status,
       priority: task.priority,
+      teamId: selectedTeamId,
+      assignedTo:
+        selectedAssignee === "unassigned" ? undefined : selectedAssignee,
+      dueDate: dueDate ? dueDate.toISOString() : undefined,
       subtasks: subTasks.map((subtask) => ({
         title: subtask.title.trim(),
         content: subtask.content || "",
@@ -238,6 +273,9 @@ export function TaskCreationModal() {
     setSelectedTeamId(teamId);
     setTask((prev) => ({ ...prev, teamId }));
 
+    // Reset assignee when team changes
+    setSelectedAssignee("unassigned");
+
     // Switch active team if different from current
     const currentActiveTeam = userTeams.find((team) => team.isActive);
     if (currentActiveTeam && currentActiveTeam.id !== teamId) {
@@ -249,7 +287,7 @@ export function TaskCreationModal() {
     if (!newSubtaskTitle.trim()) return;
 
     const newSubtask: SubTaskData = {
-      id: crypto.randomUUID(),
+      id: generateUUID(),
       title: newSubtaskTitle.trim(),
       content: "",
       status: "pending",
@@ -301,8 +339,8 @@ export function TaskCreationModal() {
   };
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
+    <Sheet>
+      <SheetTrigger asChild>
         <Button
           variant="default"
           size="lg"
@@ -310,9 +348,9 @@ export function TaskCreationModal() {
         >
           <IconPlus size={24} className="text-white" />
         </Button>
-      </DialogTrigger>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[600px]">
-        <DialogHeader className="space-y-3">
+      </SheetTrigger>
+      <SheetContent className="max-h-[90vh] overflow-y-auto sm:max-w-[600px]">
+        <SheetHeader className="space-y-3">
           <div className="flex items-center gap-3">
             <div className="rounded-lg bg-blue-100 p-2 dark:bg-blue-900/20">
               <IconList
@@ -320,14 +358,14 @@ export function TaskCreationModal() {
                 className="text-blue-600 dark:text-blue-400"
               />
             </div>
-            <DialogTitle className="text-xl font-semibold">
+            <SheetTitle className="text-xl font-semibold">
               Create New Task
-            </DialogTitle>
+            </SheetTitle>
           </div>
           <p className="text-sm text-muted-foreground">
             Add a new task with details, priority, and subtasks
           </p>
-        </DialogHeader>
+        </SheetHeader>
 
         <div className="space-y-6 py-4">
           {/* Team Selection Section */}
@@ -494,6 +532,129 @@ export function TaskCreationModal() {
             </CardContent>
           </Card>
 
+          {/* Due Date Section */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <CalendarIcon size={18} />
+                Due Date
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col gap-3">
+                <Label htmlFor="due-date" className="text-sm font-medium">
+                  Select due date
+                </Label>
+                <div className="relative flex gap-2">
+                  <Input
+                    id="due-date"
+                    value={dueDate ? format(dueDate, "PPPP") : ""}
+                    placeholder="Select a due date..."
+                    className="bg-background pr-10"
+                    onChange={(e) => {
+                      const date = new Date(e.target.value);
+                      if (!isNaN(date.getTime())) {
+                        setDueDate(date);
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "ArrowDown") {
+                        e.preventDefault();
+                        setIsDatePickerOpen(true);
+                      }
+                    }}
+                  />
+                  <Popover
+                    open={isDatePickerOpen}
+                    onOpenChange={setIsDatePickerOpen}
+                  >
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        className="absolute right-2 top-1/2 size-6 -translate-y-1/2"
+                      >
+                        <CalendarIcon className="size-3.5" />
+                        <span className="sr-only">Select date</span>
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className="w-auto overflow-hidden p-0"
+                      align="end"
+                      alignOffset={-8}
+                      sideOffset={10}
+                    >
+                      <Calendar
+                        mode="single"
+                        selected={dueDate}
+                        captionLayout="dropdown"
+                        onSelect={(date) => {
+                          setDueDate(date);
+                          setIsDatePickerOpen(false);
+                        }}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Task Assignment Section - Only show for non-personal teams */}
+          {selectedTeamId &&
+            userTeams.find((t) => t.id === selectedTeamId)?.name !==
+              "Personal" &&
+            teamMembers.length > 0 && (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <IconUsers size={18} />
+                    Assign Task
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-2 text-sm font-medium">
+                      <IconUsers size={16} />
+                      Assign to Team Member
+                    </Label>
+                    <Select
+                      value={selectedAssignee}
+                      onValueChange={setSelectedAssignee}
+                    >
+                      <SelectTrigger className="h-11">
+                        <SelectValue placeholder="Select team member (optional)..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Team Members</SelectLabel>
+                          <SelectItem value="unassigned">Unassigned</SelectItem>
+                          {teamMembers.map((member) => (
+                            <SelectItem key={member.id} value={member.id}>
+                              <div className="flex items-center gap-2">
+                                <span className="flex-1">{member.name}</span>
+                                <Badge variant="outline" className="text-xs">
+                                  {member.role}
+                                </Badge>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                    {selectedAssignee && selectedAssignee !== "unassigned" && (
+                      <p className="text-xs text-muted-foreground">
+                        Task will be assigned to{" "}
+                        {
+                          teamMembers.find((m) => m.id === selectedAssignee)
+                            ?.name
+                        }
+                      </p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
           {/* Subtasks Section */}
           <Card>
             <CardHeader className="pb-3">
@@ -630,12 +791,12 @@ export function TaskCreationModal() {
           </Card>
         </div>
 
-        <DialogFooter className="gap-2">
-          <DialogClose asChild>
+        <SheetFooter className="gap-2">
+          <SheetClose asChild>
             <Button variant="outline" ref={ref}>
               Cancel
             </Button>
-          </DialogClose>
+          </SheetClose>
           <Button
             onClick={handleSubmit}
             disabled={
@@ -657,8 +818,8 @@ export function TaskCreationModal() {
               </>
             )}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
   );
 }

@@ -247,6 +247,61 @@ export const usersRouter = createTRPCRouter({
 
     return allTeams;
   }),
+
+  // Get team members for task assignment
+  getTeamMembers: protectedProcedure
+    .input(z.object({ teamId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const user = await getUserFromSession(ctx);
+      const { teamId } = input;
+
+      // Check if user has access to this team
+      const teamMembership = await ctx.db.teamMember.findFirst({
+        where: {
+          userId: user.id,
+          teamId: teamId,
+        },
+      });
+
+      const ownedTeam = await ctx.db.team.findFirst({
+        where: {
+          id: teamId,
+          ownerId: user.id,
+        },
+      });
+
+      if (!teamMembership && !ownedTeam) {
+        throw new Error("No access to this team");
+      }
+
+      // Get all team members
+      const teamMembers = await ctx.db.teamMember.findMany({
+        where: { teamId },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              username: true,
+            },
+          },
+        },
+        orderBy: {
+          user: {
+            name: "asc",
+          },
+        },
+      });
+
+      return teamMembers.map((member) => ({
+        id: member.user.id,
+        name: member.user.name || member.user.username || "Unknown User",
+        email: member.user.email,
+        username: member.user.username,
+        role: member.role,
+      }));
+    }),
 });
 
 // Helper function to check if current user can view member details

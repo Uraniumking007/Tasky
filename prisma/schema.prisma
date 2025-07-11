@@ -74,6 +74,7 @@ model Task {
   userId    String
   teamId    String?
   assignedTo String?  // ID of the user assigned to this task
+  dueDate   DateTime? // Optional due date
   subTasks  SubTask[]
   team      Team?     @relation(fields: [teamId], references: [id])
   user      users     @relation(fields: [userId], references: [id])

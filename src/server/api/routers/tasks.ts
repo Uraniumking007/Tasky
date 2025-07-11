@@ -31,7 +31,7 @@ export const tasksRouter = createTRPCRouter({
 
     const tasks = await ctx.db.task.findMany({
       where: {
-        teamId: user.active_team,
+        OR: [{ userId: user.id }, { assignedTo: user.id }],
       },
       orderBy: {
         createdAt: "desc",
@@ -102,6 +102,7 @@ export const tasksRouter = createTRPCRouter({
         priority: z.string(),
         teamId: z.string().optional(),
         assignedTo: z.string().optional(),
+        dueDate: z.string().datetime().optional(),
         subtasks: z
           .array(
             z.object({
@@ -144,6 +145,7 @@ export const tasksRouter = createTRPCRouter({
           userId: user.id,
           teamId: input.teamId || user.active_team,
           assignedTo: input.assignedTo,
+          dueDate: input.dueDate ? new Date(input.dueDate) : undefined,
         },
       });
 
@@ -155,7 +157,7 @@ export const tasksRouter = createTRPCRouter({
             content: subtask.content || "",
             status: subtask.status,
             taskId: task.id,
-            user_id: user.id,
+            user_id: input.assignedTo || user.id,
           })),
         });
       }
@@ -172,10 +174,47 @@ export const tasksRouter = createTRPCRouter({
         content: z.string().optional(),
         status: z.string(),
         priority: z.string(),
+        assignedTo: z.string().optional(),
+        dueDate: z.string().datetime().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       const user = await getUserFromSession(ctx);
+
+      // Validate that the user can assign to the specified user if assignedTo is provided
+      if (input.assignedTo) {
+        // Get the task to check if it has a team
+        const existingTask = await ctx.db.task.findUnique({
+          where: { id: input.id },
+          select: { teamId: true, assignedTo: true },
+        });
+
+        if (existingTask?.teamId) {
+          // Check if the assigned user is a member of the team
+          const teamMember = await ctx.db.teamMember.findFirst({
+            where: {
+              teamId: existingTask.teamId,
+              userId: input.assignedTo,
+            },
+          });
+
+          if (!teamMember) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message:
+                "Cannot assign task to user who is not a member of the team",
+            });
+          }
+        }
+
+        // If the assignee changed, update all subtasks to the new assignee
+        if (input.assignedTo !== existingTask?.assignedTo) {
+          await ctx.db.subTask.updateMany({
+            where: { taskId: input.id },
+            data: { user_id: input.assignedTo },
+          });
+        }
+      }
 
       const task = await ctx.db.task.update({
         where: {
@@ -187,6 +226,8 @@ export const tasksRouter = createTRPCRouter({
           content: input.content,
           status: input.status,
           priority: input.priority,
+          assignedTo: input.assignedTo,
+          dueDate: input.dueDate ? new Date(input.dueDate) : undefined,
         },
       });
 

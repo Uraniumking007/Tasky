@@ -118,10 +118,10 @@ export function DashboardContainer({ user }: DashboardContainerProps) {
         <div className="space-y-3 lg:space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-3xl font-bold text-transparent sm:text-4xl lg:text-5xl xl:text-6xl">
-                Welcome back, {user.username || user.name}! 👋
+              <h1 className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-xl font-bold text-transparent sm:text-3xl lg:text-4xl xl:text-4xl">
+                Welcome back, {user.username || user.name}!
               </h1>
-              <p className="max-w-4xl text-lg text-muted-foreground lg:text-xl xl:text-2xl">
+              <p className="max-w-4xl text-base text-muted-foreground lg:text-base xl:text-lg">
                 Here&apos;s an overview of your tasks and progress
               </p>
             </div>

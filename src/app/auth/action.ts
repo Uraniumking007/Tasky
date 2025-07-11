@@ -2,6 +2,7 @@
 
 import { db } from "@/server/db";
 import bcrypt from "bcrypt";
+import { generateUUID } from "@/lib/utils";
 
 export async function registerUser(prevState: object, formData: FormData) {
   const name = formData.get("name") as string;
@@ -69,7 +70,7 @@ export async function registerUser(prevState: object, formData: FormData) {
   try {
     const user = await db.users.create({
       data: {
-        id: crypto.randomUUID(),
+        id: generateUUID(),
         name,
         username: username.toLowerCase(),
         email: email.toLowerCase(),
@@ -79,7 +80,7 @@ export async function registerUser(prevState: object, formData: FormData) {
     });
     const team = await db.team.create({
       data: {
-        id: crypto.randomUUID(),
+        id: generateUUID(),
         name: "Personal",
         ownerId: user.id,
       },
