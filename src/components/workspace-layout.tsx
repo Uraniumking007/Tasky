@@ -10,7 +10,7 @@ import { Loader2 } from "lucide-react";
 interface Organization {
   id: string;
   name: string;
-  userRole: string;
+  userRole: "OWNER" | "MANAGER" | "MEMBER";
   teams: Array<{
     id: string;
     name: string;
@@ -28,7 +28,7 @@ interface Organization {
 interface WorkspaceLayoutProps {
   children: React.ReactNode;
   organizations: Organization[];
-  user: { name?: string; email: string | null; username?: string };
+  user: User;
 }
 
 export default function WorkspaceLayout({
