@@ -126,9 +126,12 @@ export function SettingsClient({ user }: SettingsClientProps) {
 
   const handleAutoSave = async (data: any) => {
     try {
+      console.log("Saving settings:", data);
       // Auto-save without showing toast - this is expected behavior
       await saveSettingsMutation.mutateAsync(data);
+      console.log("Settings saved successfully");
     } catch (error) {
+      console.error("Error saving settings:", error);
       // Only show error toast if something goes wrong
       toast({
         title: "Error",

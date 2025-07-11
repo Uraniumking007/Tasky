@@ -25,7 +25,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${nunito.className}`}>
-      <body className="dark flex h-screen w-screen justify-center">
+      <body className="flex h-screen w-screen justify-center">
         <Providers>
           <TRPCReactProvider>{children}</TRPCReactProvider>
         </Providers>

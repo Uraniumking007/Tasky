@@ -43,9 +43,9 @@ export default async function HomeLayout({
   return (
     <WorkspaceLayout
       user={{
-        name: session.user.name || "",
-        email: session.user.email || "",
-        username: session.user.username || "",
+        ...session.user,
+        id: dbUser.id,
+        active_team: dbUser.active_team,
       }}
       organizations={[]}
     >
