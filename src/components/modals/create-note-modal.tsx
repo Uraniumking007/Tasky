@@ -15,13 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2, User, Users } from "lucide-react";
 
@@ -57,19 +51,6 @@ export function CreateNoteModal({
   const [isPrivate, setIsPrivate] = useState(true);
   const [subjectId, setSubjectId] = useState<string>("");
 
-  // Get team members if teamId is provided
-  const {
-    data: teamMembers,
-    isLoading: isLoadingMembers,
-    error: membersError,
-  } = api.notes.getTeamMembers.useQuery(
-    { teamId: teamId! },
-    {
-      enabled: !!teamId && isOpen,
-      retry: 1,
-    },
-  );
-
   // Get current user session
   const { data: session } = useSession();
 
@@ -86,29 +67,17 @@ export function CreateNoteModal({
         setContent("");
         setIsPrivate(true);
 
-        // Set default subject - use defaultSubjectId if provided, otherwise exclude current user
+        // Set default subject - use defaultSubjectId if provided, otherwise default to personal note
         if (defaultSubjectId) {
           // Use the provided default subject (e.g., from member details modal)
           setSubjectId(defaultSubjectId);
-        } else if (teamMembers && session?.user?.email) {
-          // Filter out current user from team members since self notes aren't allowed
-          const otherMembers = teamMembers.filter(
-            (member) => member.email !== session.user.email,
-          );
-
-          if (otherMembers.length > 0 && otherMembers[0]) {
-            // Default to first available team member (excluding self)
-            setSubjectId(otherMembers[0].id);
-          } else {
-            // No other members available
-            setSubjectId("");
-          }
         } else {
+          // Default to personal note (empty string means about self)
           setSubjectId("");
         }
       }
     }
-  }, [isOpen, editNote, teamMembers, session?.user?.email, defaultSubjectId]);
+  }, [isOpen, editNote, session?.user?.email, defaultSubjectId]);
 
   const createNoteMutation = api.notes.createNote.useMutation({
     onSuccess: () => {
@@ -185,7 +154,7 @@ export function CreateNoteModal({
     }
   };
 
-  const isLoading = isSubmitting || isLoadingMembers;
+  const isLoading = isSubmitting;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -207,9 +176,7 @@ export function CreateNoteModal({
           <DialogDescription>
             {editNote
               ? "Update the note details below."
-              : teamId
-                ? "Create a note for yourself or a team member."
-                : "Create a personal note."}
+              : "Create a note about this member."}
           </DialogDescription>
         </DialogHeader>
 
@@ -226,54 +193,6 @@ export function CreateNoteModal({
               required
             />
           </div>
-
-          {/* Subject Selection (only for team notes and when creating) */}
-          {teamId && !editNote && teamMembers && teamMembers.length > 0 && (
-            <div className="space-y-2">
-              <Label htmlFor="subject">Note Subject</Label>
-              <Select
-                value={subjectId}
-                onValueChange={setSubjectId}
-                disabled={isLoading}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select team member to write note about" />
-                </SelectTrigger>
-                <SelectContent>
-                  {teamMembers
-                    .filter(
-                      (member) =>
-                        member.id &&
-                        member.id.trim() !== "" &&
-                        member.email !== session?.user?.email, // Exclude current user
-                    )
-                    .map((member) => (
-                      <SelectItem key={member.id} value={member.id}>
-                        <div className="flex items-center gap-2">
-                          <span>{member.name || "Unknown User"}</span>
-                          <span className="text-xs text-muted-foreground">
-                            ({member.role.replace("_", " ")})
-                          </span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  {teamMembers?.filter(
-                    (member) => member.email !== session?.user?.email,
-                  ).length === 0 && (
-                    <div className="p-2 text-sm text-muted-foreground">
-                      No other team members available
-                    </div>
-                  )}
-                </SelectContent>
-              </Select>
-              {membersError && (
-                <p className="text-xs text-destructive">
-                  Failed to load team members. You can still create a personal
-                  note.
-                </p>
-              )}
-            </div>
-          )}
 
           {/* Content Field */}
           <div className="space-y-2">
