@@ -177,7 +177,7 @@ export function RemoveOrganizationMemberModal({
   const handleRemove = () => {
     removeMemberMutation.mutate({
       organizationId,
-      memberUserId: memberId,
+      userId: memberId,
     });
   };
 
