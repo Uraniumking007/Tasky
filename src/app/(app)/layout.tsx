@@ -5,6 +5,7 @@ import { db } from "@/server/db";
 import { Toaster } from "@/components/ui/toaster";
 import type { User } from "next-auth";
 import { type ReactNode } from "react";
+import { redirect } from "next/navigation";
 
 export default async function HomeLayout({
   children,
@@ -14,12 +15,7 @@ export default async function HomeLayout({
   const session = await getServerAuthSession();
 
   if (!session?.user) {
-    return {
-      redirect: {
-        destination: "/auth/login",
-        permanent: false,
-      },
-    };
+    redirect("/auth/login");
   }
 
   const user = session?.user as User;
@@ -32,12 +28,7 @@ export default async function HomeLayout({
   });
 
   if (!dbUser) {
-    return {
-      redirect: {
-        destination: "/auth/login",
-        permanent: false,
-      },
-    };
+    redirect("/auth/login");
   }
 
   return (
