@@ -42,12 +42,12 @@ model Team {
   organizationId String?
   isPrivate      Boolean?      @default(false)
   allowAutoJoin  Boolean?      @default(true)
+  notes          Note[]
   tasks          Task[]
   organization   Organization? @relation(fields: [organizationId], references: [id])
   owner          users         @relation("TeamOwner", fields: [ownerId], references: [id])
   invites        TeamInvite[]
   members        TeamMember[]
-  notes          Note[]
 }
 
 model TeamMember {
@@ -129,6 +129,8 @@ model users {
   createdAt               DateTime             @default(now())
   updatedAt               DateTime
   active_team             String?
+  authoredNotes           Note[]               @relation("NoteAuthor")
+  notesAboutMe            Note[]               @relation("NoteSubject")
   ownedOrganizations      Organization[]       @relation("OrganizationOwner")
   organizationInvites     OrganizationInvite[] @relation("OrganizationInviteInviter")
   organizationMemberships OrganizationMember[] @relation("OrganizationMembers")
@@ -137,11 +139,9 @@ model users {
   ownedTeams              Team[]               @relation("TeamOwner")
   teamInvites             TeamInvite[]         @relation("TeamInviteInviter")
   teamMemberships         TeamMember[]         @relation("TeamMembers")
-  authoredNotes           Note[]               @relation("NoteAuthor")
-  notesAboutMe            Note[]               @relation("NoteSubject")
+  settings                UserSettings?
   accounts                accounts[]
   sessions                sessions[]
-  settings                UserSettings?
 }
 
 model verificationtokens {
@@ -183,17 +183,48 @@ model Note {
   isPrivate Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  authorId  String   // Who created the note
-  subjectId String?  // Who the note is about (for team lead notes about members)
-  teamId    String?  // Which team this note belongs to
-  
+  authorId  String
+  subjectId String?
+  teamId    String?
   author    users    @relation("NoteAuthor", fields: [authorId], references: [id], onDelete: Cascade)
   subject   users?   @relation("NoteSubject", fields: [subjectId], references: [id], onDelete: Cascade)
   team      Team?    @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  
+
   @@index([authorId])
   @@index([subjectId])
   @@index([teamId])
+}
+
+model UserSettings {
+  id                   String   @id @default(cuid())
+  userId               String   @unique
+  theme                String   @default("system")
+  compactMode          Boolean  @default(false)
+  showAnimations       Boolean  @default(true)
+  defaultView          String   @default("list")
+  showRecentTasks      Boolean  @default(true)
+  showTeamActivity     Boolean  @default(true)
+  showQuickActions     Boolean  @default(true)
+  tasksPerPage         Int      @default(10)
+  showTotalTasksCard   Boolean  @default(true)
+  showCompletedCard    Boolean  @default(true)
+  showPendingCard      Boolean  @default(true)
+  showHighPriorityCard Boolean  @default(true)
+  showSubtasksCard     Boolean  @default(true)
+  showProductivityCard Boolean  @default(true)
+  emailNotifications   Boolean  @default(true)
+  pushNotifications    Boolean  @default(false)
+  taskReminders        Boolean  @default(true)
+  weeklyDigest         Boolean  @default(false)
+  autoSave             Boolean  @default(true)
+  showCompletedTasks   Boolean  @default(false)
+  allowCookies         Boolean  @default(true)
+  allowCachedData      Boolean  @default(true)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  user                 users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 enum MemberRole {
@@ -201,41 +232,4 @@ enum MemberRole {
   MANAGER
   MEMBER
   TEAM_LEAD
-}
-
-model UserSettings {
-  id                    String   @id @default(cuid())
-  userId                String   @unique
-  user                  users    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  // Appearance settings
-  theme                 String   @default("system") // "light", "dark", "system"
-  compactMode           Boolean  @default(false)
-  showAnimations        Boolean  @default(true)
-  
-  // Dashboard settings
-  defaultView           String   @default("list") // "list", "board", "calendar"
-  showRecentTasks       Boolean  @default(true)
-  showTeamActivity      Boolean  @default(true)
-  showQuickActions      Boolean  @default(true)
-  tasksPerPage          Int      @default(10)
-  
-  // Notification preferences
-  emailNotifications    Boolean  @default(true)
-  pushNotifications     Boolean  @default(false)
-  taskReminders         Boolean  @default(true)
-  weeklyDigest          Boolean  @default(false)
-  
-  // General preferences
-  autoSave              Boolean  @default(true)
-  showCompletedTasks    Boolean  @default(false)
-  
-  // Cookie preferences
-  allowCookies          Boolean  @default(true)
-  allowCachedData       Boolean  @default(true)
-  
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-  
-  @@index([userId])
 }

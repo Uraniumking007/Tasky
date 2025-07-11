@@ -184,6 +184,12 @@ CREATE TABLE "UserSettings" (
     "showTeamActivity" BOOLEAN NOT NULL DEFAULT true,
     "showQuickActions" BOOLEAN NOT NULL DEFAULT true,
     "tasksPerPage" INTEGER NOT NULL DEFAULT 10,
+    "showTotalTasksCard" BOOLEAN NOT NULL DEFAULT true,
+    "showCompletedCard" BOOLEAN NOT NULL DEFAULT true,
+    "showPendingCard" BOOLEAN NOT NULL DEFAULT true,
+    "showHighPriorityCard" BOOLEAN NOT NULL DEFAULT true,
+    "showSubtasksCard" BOOLEAN NOT NULL DEFAULT true,
+    "showProductivityCard" BOOLEAN NOT NULL DEFAULT true,
     "emailNotifications" BOOLEAN NOT NULL DEFAULT true,
     "pushNotifications" BOOLEAN NOT NULL DEFAULT false,
     "taskReminders" BOOLEAN NOT NULL DEFAULT true,
@@ -296,3 +302,4 @@ ALTER TABLE "Note" ADD CONSTRAINT "Note_teamId_fkey" FOREIGN KEY ("teamId") REFE
 
 -- AddForeignKey
 ALTER TABLE "UserSettings" ADD CONSTRAINT "UserSettings_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
