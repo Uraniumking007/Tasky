@@ -69,8 +69,11 @@ export const settingsRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      console.log("Settings router - Received input:", input);
       const user = await getUserFromSession(ctx);
+      console.log("Settings router - User ID:", user.id);
       await saveUserSettings(user.id, input);
+      console.log("Settings router - Settings saved successfully");
       return { success: true };
     }),
 
