@@ -34,6 +34,36 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 
+// Logout button component with cookie clearing
+function LogoutButton({ isCollapsed }: { isCollapsed: boolean }) {
+  const handleLogout = async () => {
+    try {
+      // Call custom logout API to clear cookies
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch (error) {
+      console.error("Error calling logout API:", error);
+    }
+
+    // Then sign out
+    await signOut({ callbackUrl: "/" });
+  };
+
+  return (
+    <Button
+      variant="ghost"
+      onClick={handleLogout}
+      className={cn(
+        "h-9 w-full justify-start gap-3 transition-all duration-200 hover:bg-red-50 hover:text-red-600",
+        isCollapsed && "justify-center px-2",
+      )}
+      title={isCollapsed ? "Logout" : undefined}
+    >
+      <IconLogout className="h-4 w-4 flex-shrink-0" />
+      {!isCollapsed && <span className="text-sm">Logout</span>}
+    </Button>
+  );
+}
+
 interface Organization {
   id: string;
   name: string;
@@ -102,6 +132,11 @@ export default function SideNavbar({
       title: "Create Task",
       href: "/tasks?create=true",
       icon: IconPlus,
+    },
+    {
+      title: "Settings",
+      href: "/settings",
+      icon: IconSettings,
     },
   ];
 
@@ -361,20 +396,7 @@ export default function SideNavbar({
           </Link>
 
           {user ? (
-            <Button
-              variant="ghost"
-              onClick={async () => {
-                await signOut({ callbackUrl: "/" });
-              }}
-              className={cn(
-                "h-9 w-full justify-start gap-3 transition-all duration-200 hover:bg-red-50 hover:text-red-600",
-                isCollapsed && "justify-center px-2",
-              )}
-              title={isCollapsed ? "Logout" : undefined}
-            >
-              <IconLogout className="h-4 w-4 flex-shrink-0" />
-              {!isCollapsed && <span className="text-sm">Logout</span>}
-            </Button>
+            <LogoutButton isCollapsed={isCollapsed} />
           ) : (
             <Link href="/auth/login">
               <Button
