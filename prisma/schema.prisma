@@ -73,9 +73,11 @@ model Task {
   updatedAt DateTime  @updatedAt
   userId    String
   teamId    String?
+  assignedTo String?  // ID of the user assigned to this task
   subTasks  SubTask[]
   team      Team?     @relation(fields: [teamId], references: [id])
   user      users     @relation(fields: [userId], references: [id])
+  assignee  users?    @relation("AssignedTasks", fields: [assignedTo], references: [id])
 }
 
 model SubTask {
@@ -136,6 +138,7 @@ model users {
   organizationMemberships OrganizationMember[] @relation("OrganizationMembers")
   subTasks                SubTask[]
   tasks                   Task[]
+  assignedTasks           Task[]               @relation("AssignedTasks")
   ownedTeams              Team[]               @relation("TeamOwner")
   teamInvites             TeamInvite[]         @relation("TeamInviteInviter")
   teamMemberships         TeamMember[]         @relation("TeamMembers")
