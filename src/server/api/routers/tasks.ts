@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import { TRPCError } from "@trpc/server";
 import type { Session } from "next-auth";
 import type { PrismaClient } from "@prisma/client";
 
@@ -99,6 +100,8 @@ export const tasksRouter = createTRPCRouter({
         content: z.string().optional(),
         status: z.string(),
         priority: z.string(),
+        teamId: z.string().optional(),
+        assignedTo: z.string().optional(),
         subtasks: z
           .array(
             z.object({
@@ -113,6 +116,25 @@ export const tasksRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const user = await getUserFromSession(ctx);
 
+      // Validate that the user can assign to the specified user if teamId is provided
+      if (input.assignedTo && input.teamId) {
+        // Check if the assigned user is a member of the team
+        const teamMember = await ctx.db.teamMember.findFirst({
+          where: {
+            teamId: input.teamId,
+            userId: input.assignedTo,
+          },
+        });
+
+        if (!teamMember) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message:
+              "Cannot assign task to user who is not a member of the team",
+          });
+        }
+      }
+
       const task = await ctx.db.task.create({
         data: {
           title: input.title,
@@ -120,7 +142,8 @@ export const tasksRouter = createTRPCRouter({
           status: input.status,
           priority: input.priority,
           userId: user.id,
-          teamId: user.active_team,
+          teamId: input.teamId || user.active_team,
+          assignedTo: input.assignedTo,
         },
       });
 

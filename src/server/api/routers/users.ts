@@ -153,6 +153,100 @@ export const usersRouter = createTRPCRouter({
         );
       }
     }),
+
+  // Switch active team
+  switchActiveTeam: protectedProcedure
+    .input(z.object({ teamId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { teamId } = input;
+      const user = await getUserFromSession(ctx);
+
+      // Check if user has access to this team
+      const teamMembership = await ctx.db.teamMember.findFirst({
+        where: {
+          userId: user.id,
+          teamId: teamId,
+        },
+      });
+
+      // Also check if user owns this team
+      const ownedTeam = await ctx.db.team.findFirst({
+        where: {
+          id: teamId,
+          ownerId: user.id,
+        },
+      });
+
+      if (!teamMembership && !ownedTeam) {
+        throw new Error("No access to this team");
+      }
+
+      // Update user's active team
+      await ctx.db.users.update({
+        where: { id: user.id },
+        data: { active_team: teamId },
+      });
+
+      return {
+        success: true,
+        message: "Active team switched successfully",
+        teamId,
+      };
+    }),
+
+  // Get user's teams for team switching
+  getUserTeams: protectedProcedure.query(async ({ ctx }) => {
+    const user = await getUserFromSession(ctx);
+
+    // Get teams where user is a member
+    const teamMemberships = await ctx.db.teamMember.findMany({
+      where: { userId: user.id },
+      include: {
+        team: {
+          include: {
+            organization: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // Get teams owned by user
+    const ownedTeams = await ctx.db.team.findMany({
+      where: { ownerId: user.id },
+      include: {
+        organization: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    const allTeams = [
+      ...teamMemberships.map((membership) => ({
+        id: membership.team.id,
+        name: membership.team.name,
+        role: membership.role,
+        organization: membership.team.organization,
+        isActive: user.active_team === membership.team.id,
+      })),
+      ...ownedTeams.map((team) => ({
+        id: team.id,
+        name: team.name,
+        role: "OWNER" as const,
+        organization: team.organization,
+        isActive: user.active_team === team.id,
+      })),
+    ];
+
+    return allTeams;
+  }),
 });
 
 // Helper function to check if current user can view member details
