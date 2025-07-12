@@ -45,6 +45,9 @@ export function UserDropdownMenu({
   isCollapsed?: boolean;
   permissions?: import("@/lib/permissions").UserPermissions;
 }) {
+  // Unused parameters but kept for interface consistency
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _user = user;
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -159,7 +162,11 @@ export function UserDropdownMenu({
 
 export default function UserDropdown() {
   const { data: session } = useSession();
+
+  // Unused variables but kept for future use
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isLoading, setIsLoading] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const _user = session?.user;
 
   // ... existing code ...

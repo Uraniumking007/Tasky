@@ -2,15 +2,7 @@
 
 import { useState } from "react";
 import { api } from "@/trpc/react";
-import {
-  Loader2,
-  Users,
-  Building2,
-  Shield,
-  User,
-  Calendar,
-  Eye,
-} from "lucide-react";
+import { Loader2, Users, Building2, Calendar, Eye, User } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -103,7 +95,7 @@ export function OrganizationPageClient({
         <div className="text-center">
           <h1 className="mb-4 text-2xl font-bold">Organization Not Found</h1>
           <p className="mb-4 text-muted-foreground">
-            The organization you're looking for doesn't exist.
+            The organization you&apos;re looking for doesn&apos;t exist.
           </p>
           <Button asChild>
             <Link href="/home">Go to Dashboard</Link>

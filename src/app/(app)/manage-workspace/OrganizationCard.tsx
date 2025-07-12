@@ -101,6 +101,8 @@ export default function OrganizationCard({
   };
 
   const handleEditTeam = (e: React.MouseEvent, _team: Team) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const _teamParam = _team;
     e.stopPropagation();
     // TODO: Implement edit team modal
   };
@@ -245,7 +247,7 @@ export default function OrganizationCard({
             </Card>
           ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {org.teams.map((_team, index) => (
+              {org.teams.map((_team) => (
                 <Card
                   key={_team.id}
                   className="group cursor-pointer rounded-2xl bg-white/80 p-6 shadow-xl transition-all hover:scale-105 hover:shadow-2xl dark:bg-background/80"

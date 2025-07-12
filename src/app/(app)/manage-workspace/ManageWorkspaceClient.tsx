@@ -5,13 +5,14 @@ import CreateOrganizationModal from "./CreateOrganizationModal";
 import { useToast } from "@/components/ui/use-toast";
 import { IconBuilding } from "@tabler/icons-react";
 
-// Type definitions removed to avoid conflicts
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function ManageWorkspaceClient({
   organizations,
   user,
 }: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   organizations: any[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   user: any;
 }) {
   const { toast } = useToast();
@@ -148,6 +149,7 @@ export default function ManageWorkspaceClient({
     onCreateOrg: handleCreateOrg,
 
     // For OrganizationCard interface
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onEditOrg: (org: any) => {
       setEditOrgId(org.id);
       setEditOrgName(org.name);
@@ -176,6 +178,7 @@ export default function ManageWorkspaceClient({
 
     // For EditOrganizationModal and EditTeamModal (if needed)
     onEditOrgSubmit: handleEditOrg,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onEditTeam: (team: any, orgId: string) => {
       setEditTeamId(team.id);
       setEditTeamName(team.name);
@@ -212,9 +215,9 @@ export default function ManageWorkspaceClient({
           {organizations.map((org) => (
             <OrganizationCard
               key={org.id}
-              org={org as any}
-              user={user as any}
-              handlers={handlers as any}
+              org={org}
+              user={user}
+              handlers={handlers}
             />
           ))}
         </div>

@@ -8,9 +8,34 @@ import {
   IconList,
 } from "@tabler/icons-react";
 
+interface Task {
+  id: string;
+  title: string;
+  content?: string | null;
+  status: string;
+  priority: string;
+  createdAt: Date;
+  updatedAt: Date;
+  userId: string;
+  teamId?: string | null;
+  assignedTo?: string | null;
+  dueDate?: Date | null;
+}
+
+interface SubTask {
+  id: string;
+  title: string;
+  content?: string | null;
+  status: string;
+  taskId: string;
+  user_id: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 interface DashboardStatsProps {
-  tasks: any[];
-  subTasks: any[];
+  tasks: Task[];
+  subTasks: SubTask[];
   settings?: {
     showTotalTasksCard?: boolean;
     showCompletedCard?: boolean;

@@ -105,7 +105,7 @@ export default async function TeamInvitePage({
           </div>
           <CardTitle className="text-2xl">Team Invitation</CardTitle>
           <CardDescription>
-            You've been invited to join a team on Tasky
+            You&apos;ve been invited to join a team on Tasky
           </CardDescription>
         </CardHeader>
 

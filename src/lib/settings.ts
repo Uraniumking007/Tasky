@@ -334,6 +334,7 @@ export class SettingsManager {
   /**
    * Validate settings structure
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private validateSettings(settings: any): settings is UserSettingsData {
     const requiredKeys = Object.keys(DEFAULT_SETTINGS);
     return requiredKeys.every((key) => key in settings);

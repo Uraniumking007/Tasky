@@ -23,7 +23,7 @@ export default async function Home() {
         <div className="container relative mx-auto flex min-h-screen flex-col items-center justify-center gap-8 p-4 text-center">
           <div className="space-y-6">
             <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm text-primary backdrop-blur-sm">
-              ✨ Streamline your team's workflow
+              ✨ Streamline your team&apos;s workflow
             </div>
 
             <h1 className="bg-gradient-to-r from-primary via-primary to-primary/80 bg-clip-text text-6xl font-bold tracking-tight text-transparent md:text-7xl lg:text-8xl">
@@ -35,10 +35,10 @@ export default async function Home() {
             </h1>
 
             <p className="mx-auto max-w-3xl text-xl leading-relaxed text-muted-foreground/80">
-              Tasky is designed to streamline your team's workflow, ensuring
-              that every project runs smoothly from start to finish. With our
-              intuitive interface and powerful features, managing team tasks has
-              never been easier.
+              Tasky is designed to streamline your team&apos;s workflow,
+              ensuring that every project runs smoothly from start to finish.
+              With our intuitive interface and powerful features, managing team
+              tasks has never been easier.
             </p>
 
             <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
@@ -135,7 +135,7 @@ export default async function Home() {
                 icon: "🚀",
                 title: "Boost Productivity",
                 description:
-                  "Enhance your team's productivity with streamlined task management and goal achievement.",
+                  "Enhance your team&apos;s productivity with streamlined task management and goal achievement.",
                 features: [
                   "Workflow optimization",
                   "Deadline management",

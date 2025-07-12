@@ -84,7 +84,7 @@ export function AddOrganizationMemberModal({
             Add Organization Member
           </DialogTitle>
           <DialogDescription>
-            Invite someone to join "{organizationName}" organization.
+            Invite someone to join &quot;{organizationName}&quot; organization.
           </DialogDescription>
         </DialogHeader>
 
@@ -196,8 +196,9 @@ export function RemoveOrganizationMemberModal({
             Remove Member
           </DialogTitle>
           <DialogDescription>
-            Are you sure you want to remove {memberName} ({memberEmail}) from "
-            {organizationName}"?
+            Are you sure you want to remove {memberName} ({memberEmail}) from
+            &quot;
+            {organizationName}&quot;?
           </DialogDescription>
         </DialogHeader>
 

@@ -1,17 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -19,12 +14,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
 import { api } from "@/trpc/react";
 import { useTheme } from "@/components/theme-provider";
-import { UserSettingsData } from "@/lib/settings";
 import {
   Palette,
   LayoutDashboard,
@@ -33,12 +25,6 @@ import {
   Moon,
   Sun,
   Monitor,
-  Zap,
-  Users,
-  Database,
-  List,
-  Shield,
-  Cookie,
 } from "lucide-react";
 import type { CustomUser } from "@/lib/types/auth";
 
@@ -46,6 +32,7 @@ interface SettingsClientProps {
   user: CustomUser;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function SettingsClient({ user }: SettingsClientProps) {
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
@@ -72,16 +59,6 @@ export function SettingsClient({ user }: SettingsClientProps) {
       });
     },
   });
-
-  // Helper function to validate default view
-  const getValidDefaultView = (
-    view?: string,
-  ): "list" | "board" | "calendar" => {
-    if (view === "list" || view === "board" || view === "calendar") {
-      return view;
-    }
-    return "list";
-  };
 
   // Settings state - initialize with defaults first
   const [appearance, setAppearance] = useState({
@@ -113,23 +90,7 @@ export function SettingsClient({ user }: SettingsClientProps) {
     showCompletedTasks: false,
   });
 
-  const [cookiePreferences, setCookiePreferences] = useState({
-    allowCookies: true,
-    allowCachedData: true,
-  });
-
-  const [plan, setPlan] = useState({
-    currentPlan: "free",
-    usage: {
-      tasks: 45,
-      maxTasks: 100,
-      storage: 2.5,
-      maxStorage: 5,
-      teamMembers: 3,
-      maxTeamMembers: 5,
-    },
-  });
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleAutoSave = async (data: any) => {
     try {
       console.log("Saving settings:", data);
@@ -145,10 +106,6 @@ export function SettingsClient({ user }: SettingsClientProps) {
         variant: "destructive",
       });
     }
-  };
-
-  const getUsagePercentage = (current: number, max: number) => {
-    return Math.min((current / max) * 100, 100);
   };
 
   // Sync appearance state with theme provider
@@ -192,11 +149,6 @@ export function SettingsClient({ user }: SettingsClientProps) {
         weeklyDigest: userSettings.weeklyDigest ?? false,
         autoSave: userSettings.autoSave ?? true,
         showCompletedTasks: userSettings.showCompletedTasks ?? false,
-      });
-
-      setCookiePreferences({
-        allowCookies: userSettings.allowCookies ?? true,
-        allowCachedData: userSettings.allowCachedData ?? true,
       });
     }
   }, [userSettings, theme]);
@@ -264,9 +216,9 @@ export function SettingsClient({ user }: SettingsClientProps) {
                 <Palette className="h-5 w-5" />
                 Theme Settings
               </CardTitle>
-              <CardDescription>
+              <p className="text-sm text-muted-foreground">
                 Customize the appearance of your workspace.
-              </CardDescription>
+              </p>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
@@ -361,9 +313,9 @@ export function SettingsClient({ user }: SettingsClientProps) {
                 <LayoutDashboard className="h-5 w-5" />
                 Dashboard View
               </CardTitle>
-              <CardDescription>
+              <p className="text-sm text-muted-foreground">
                 Configure how your dashboard is displayed.
-              </CardDescription>
+              </p>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
@@ -617,9 +569,9 @@ export function SettingsClient({ user }: SettingsClientProps) {
                 <SettingsIcon className="h-5 w-5" />
                 Notification Preferences
               </CardTitle>
-              <CardDescription>
+              <p className="text-sm text-muted-foreground">
                 Manage how and when you receive notifications.
-              </CardDescription>
+              </p>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
@@ -758,9 +710,9 @@ export function SettingsClient({ user }: SettingsClientProps) {
                 <CreditCard className="h-5 w-5" />
                 Subscription Plans
               </CardTitle>
-              <CardDescription>
+              <p className="text-sm text-muted-foreground">
                 Manage your subscription and billing preferences.
-              </CardDescription>
+              </p>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="rounded-lg border border-muted/50 bg-muted/20 p-8 text-center">
@@ -771,8 +723,9 @@ export function SettingsClient({ user }: SettingsClientProps) {
                   <div className="space-y-2">
                     <h3 className="text-xl font-semibold">Coming Soon</h3>
                     <p className="max-w-md text-muted-foreground">
-                      We're working on exciting subscription plans with premium
-                      features. Stay tuned for updates on pricing and features.
+                      We&apos;re working on exciting subscription plans with
+                      premium features. Stay tuned for updates on pricing and
+                      features.
                     </p>
                   </div>
                   <Badge variant="secondary" className="w-fit">

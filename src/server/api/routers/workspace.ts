@@ -105,8 +105,7 @@ export const workspaceRouter = createTRPCRouter({
         const userRole = membership.role as "MANAGER" | "TEAM_LEAD" | "MEMBER";
 
         // Filter teams based on user role
-        let visibleTeams;
-        visibleTeams =
+        const visibleTeams =
           userRole === "MANAGER" || userRole === "TEAM_LEAD"
             ? membership.organization.teams
             : membership.organization.teams.filter((team) =>

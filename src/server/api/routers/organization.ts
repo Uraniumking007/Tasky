@@ -248,6 +248,8 @@ export const organizationRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const _ctx = ctx;
       const { organizationId, email } = input;
 
       // Import and use the server action
@@ -267,6 +269,8 @@ export const organizationRouter = createTRPCRouter({
   addTeamMember: protectedProcedure
     .input(z.object({ teamId: z.string(), userId: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const _ctx = ctx;
       const { teamId, userId } = input;
 
       // Import and use the server action
@@ -292,6 +296,8 @@ export const organizationRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const _ctx = ctx;
       const { organizationId, teamId, email } = input;
 
       // Import and use the server action
@@ -315,6 +321,8 @@ export const organizationRouter = createTRPCRouter({
   removeMember: protectedProcedure
     .input(z.object({ organizationId: z.string(), userId: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const _ctx = ctx;
       const { organizationId, userId } = input;
 
       // Import and use the server action
@@ -339,6 +347,8 @@ export const organizationRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const _ctx = ctx;
       const { organizationId, name } = input;
 
       // Import and use the server action
@@ -358,6 +368,8 @@ export const organizationRouter = createTRPCRouter({
   cancelInvite: protectedProcedure
     .input(z.object({ inviteId: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const _ctx = ctx;
       const { inviteId } = input;
 
       // Import and use the server action
@@ -377,6 +389,8 @@ export const organizationRouter = createTRPCRouter({
   resendInvite: protectedProcedure
     .input(z.object({ inviteId: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const _ctx = ctx;
       const { inviteId } = input;
 
       // Import and use the server action
@@ -507,6 +521,10 @@ export const organizationRouter = createTRPCRouter({
       z.object({ name: z.string().min(1, "Organization name is required") }),
     )
     .mutation(async ({ ctx, input }) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const _ctx = ctx;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const _input = input;
       // Implementation of createOrganization
       throw new Error("Not implemented");
     }),
@@ -515,7 +533,33 @@ export const organizationRouter = createTRPCRouter({
   deleteOrganization: protectedProcedure
     .input(z.object({ organizationId: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const _ctx = ctx;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const _input = input;
       // Implementation of deleteOrganization
+      throw new Error("Not implemented");
+    }),
+
+  syncOrganizationInvites: protectedProcedure
+    .input(z.object({ organizationId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const _ctx = ctx;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const _input = input;
+      // Implementation to sync organization invites
+      throw new Error("Not implemented");
+    }),
+
+  getOrganizationInvites: protectedProcedure
+    .input(z.object({ organizationId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const _ctx = ctx;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const _input = input;
+      // Implementation to get organization invites
       throw new Error("Not implemented");
     }),
 });

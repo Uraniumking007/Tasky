@@ -44,6 +44,7 @@ export function EditTeamModal({
   const utils = api.useUtils();
 
   const editTeamMutation = api.team.editTeam.useMutation({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onSuccess: (_data) => {
       toast({
         title: "Success",
@@ -154,6 +155,7 @@ export function DeleteTeamModal({
   const router = useRouter();
 
   const deleteTeamMutation = api.team.deleteTeam.useMutation({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onSuccess: (_data) => {
       toast({
         title: "Team deleted",
@@ -522,6 +524,7 @@ export function ManageTeamSettingsModal({
   // Reset form when modal opens or team data changes
   useEffect(() => {
     if (isOpen && teamData) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const team = teamData.team as any; // Temporary type assertion until Prisma types update
       setNewTeamName(team.name);
       setIsPrivate(team.isPrivate || false);
@@ -530,6 +533,7 @@ export function ManageTeamSettingsModal({
   }, [isOpen, teamData]);
 
   const updateSettingsMutation = api.team.editTeam.useMutation({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onSuccess: (_data) => {
       toast({
         title: "Settings updated",

@@ -69,7 +69,9 @@ interface Organization {
   name: string;
   userRole: "OWNER" | "MANAGER" | "MEMBER";
   teams: Team[];
-  members: any[];
+  members: {
+    user: { name?: string; email: string | null; username?: string };
+  }[];
 }
 
 interface Team {
@@ -78,7 +80,9 @@ interface Team {
   organizationId?: string | null;
   isPrivate?: boolean | null;
   allowAutoJoin?: boolean | null;
-  members: any[];
+  members: {
+    user: { name?: string; email: string | null; username?: string };
+  }[];
 }
 
 export default function SideNavbar({

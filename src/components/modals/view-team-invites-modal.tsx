@@ -1,8 +1,6 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import { api } from "@/trpc/react";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -155,7 +153,7 @@ export default function ViewTeamInvitesModal({
             Team Invitations
           </DialogTitle>
           <DialogDescription>
-            Manage invitations for team "{teamName}"
+            Manage invitations for team &quot;{teamName}&quot;
           </DialogDescription>
         </DialogHeader>
 

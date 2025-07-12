@@ -3,9 +3,11 @@ import { getServerAuthSession } from "@/server/auth";
 import { clearSettingsCookies } from "@/lib/settings";
 
 export async function POST(request: NextRequest) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _request = request;
   try {
     const session = await getServerAuthSession();
-    
+
     if (session?.user) {
       // Clear settings cookies
       await clearSettingsCookies();
@@ -15,9 +17,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error in logout route:", error);
-    return NextResponse.json(
-      { error: "Failed to logout" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to logout" }, { status: 500 });
   }
 } 

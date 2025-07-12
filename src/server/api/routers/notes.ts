@@ -337,7 +337,8 @@ export const notesRouter = createTRPCRouter({
       const { teamId, subjectId, includePrivate, organizationId } = input;
       const user = await getUserFromSession(ctx);
 
-      let whereClause: any = {};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const whereClause: any = {};
 
       if (subjectId) {
         // Getting notes about a specific user
@@ -566,6 +567,7 @@ export const notesRouter = createTRPCRouter({
       }
 
       // Build update data
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const updateData: any = {};
       if (title !== undefined) updateData.title = title;
       if (content !== undefined) updateData.content = content;

@@ -360,8 +360,8 @@ export function NotesList({
           <DialogHeader>
             <DialogTitle>Delete Note</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete "{deletingNote?.title}"? This
-              action cannot be undone.
+              Are you sure you want to delete &quot;{deletingNote?.title}&quot;?
+              This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

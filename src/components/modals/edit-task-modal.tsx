@@ -16,7 +16,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
-  IconCirclePlus,
   IconTrash,
   IconEdit,
   IconCheck,
@@ -27,7 +26,7 @@ import {
   IconList,
   IconUsers,
 } from "@tabler/icons-react";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import {
   Tooltip,
   TooltipContent,
@@ -47,7 +46,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { generateUUID } from "@/lib/utils";
+import { v4 as uuidv4 } from "uuid";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -56,7 +55,6 @@ import {
 } from "@/components/ui/popover";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
 
 type TaskData = {
   title: string;
@@ -225,7 +223,7 @@ export function EditTaskModal({
     if (!newSubtaskTitle.trim()) return;
 
     const newSubtask: EditSubtaskType = {
-      id: generateUUID(),
+      id: uuidv4(),
       title: newSubtaskTitle.trim(),
       isSaved: false,
       isNew: true,

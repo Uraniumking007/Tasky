@@ -15,9 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import type { Task } from "@prisma/client";
 import {
-  IconCirclePlus,
   IconTrash,
   IconEdit,
   IconCheck,
@@ -38,8 +36,8 @@ import {
 } from "../ui/tooltip";
 import { api } from "@/trpc/react";
 import { useToast } from "../ui/use-toast";
-import { useSession } from "next-auth/react";
-import { generateUUID } from "@/lib/utils";
+
+import { v4 as uuidv4 } from "uuid";
 import {
   Select,
   SelectContent,
@@ -57,7 +55,6 @@ import {
 } from "@/components/ui/popover";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
 
 interface TaskData {
   id: string;
@@ -100,7 +97,6 @@ const priorityConfig = {
 };
 
 export function TaskCreationModal() {
-  const { data: session } = useSession();
   const [task, setTask] = useState<TaskData>({
     id: "",
     title: "",
@@ -287,7 +283,7 @@ export function TaskCreationModal() {
     if (!newSubtaskTitle.trim()) return;
 
     const newSubtask: SubTaskData = {
-      id: generateUUID(),
+      id: uuidv4(),
       title: newSubtaskTitle.trim(),
       content: "",
       status: "pending",

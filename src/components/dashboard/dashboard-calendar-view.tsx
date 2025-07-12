@@ -11,9 +11,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  IconCheck,
-  IconClock,
-  IconAlertTriangle,
   IconPlus,
   IconList,
   IconChevronLeft,
@@ -22,17 +19,18 @@ import {
 import Link from "next/link";
 
 interface DashboardCalendarViewProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tasks: any[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   subTasks: any[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   settings: any;
   isCompact: boolean;
 }
 
 export function DashboardCalendarView({
   tasks,
-  subTasks,
   settings,
-  isCompact,
 }: DashboardCalendarViewProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
 
@@ -55,6 +53,7 @@ export function DashboardCalendarView({
 
   const getTasksForDate = (date: Date) => {
     return tasksWithDueDates.filter((task) => {
+      if (!task.dueDate) return false;
       const taskDate = new Date(task.dueDate);
       return (
         taskDate.getDate() === date.getDate() &&
@@ -146,8 +145,9 @@ export function DashboardCalendarView({
               No tasks found
             </h3>
             <p className="mb-4 max-w-md text-sm text-muted-foreground lg:max-w-lg lg:text-base">
-              Start organizing your work by creating your first task. You'll be
-              able to track progress, set priorities, and manage your workflow.
+              Start organizing your work by creating your first task.
+              You&apos;ll be able to track progress, set priorities, and manage
+              your workflow.
             </p>
             <Button
               asChild

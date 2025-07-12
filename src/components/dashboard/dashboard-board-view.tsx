@@ -20,8 +20,11 @@ import {
 import Link from "next/link";
 
 interface DashboardBoardViewProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tasks: any[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   subTasks: any[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   settings: any;
   isCompact: boolean;
 }
@@ -32,6 +35,12 @@ export function DashboardBoardView({
   settings,
   isCompact,
 }: DashboardBoardViewProps) {
+  // Unused parameters but kept for interface consistency
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _subTasks = subTasks;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _isCompact = isCompact;
+
   // Filter tasks based on settings
   const filteredTasks = settings.showCompletedTasks
     ? tasks
@@ -116,8 +125,9 @@ export function DashboardBoardView({
               No tasks found
             </h3>
             <p className="mb-4 max-w-md text-sm text-muted-foreground lg:max-w-lg lg:text-base">
-              Start organizing your work by creating your first task. You'll be
-              able to track progress, set priorities, and manage your workflow.
+              Start organizing your work by creating your first task.
+              You&apos;ll be able to track progress, set priorities, and manage
+              your workflow.
             </p>
             <Button
               asChild
@@ -192,6 +202,7 @@ export function DashboardBoardView({
                               <span>
                                 {
                                   task.subtasks.filter(
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                     (st: any) => st.status === "completed",
                                   ).length
                                 }

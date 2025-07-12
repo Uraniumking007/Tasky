@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
+
 import {
   Loader2,
   LayoutGrid,
@@ -223,7 +223,11 @@ export function DashboardContainer({ user }: DashboardContainerProps) {
           {/* Recent Tasks */}
           {settings.showRecentTasks && (
             <div className="xl:col-span-1">
-              <DashboardRecentTasks tasks={tasks} settings={settings} />
+              <DashboardRecentTasks
+                tasks={tasks}
+                subTasks={subTasks}
+                settings={settings}
+              />
             </div>
           )}
 

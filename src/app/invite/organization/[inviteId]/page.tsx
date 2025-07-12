@@ -102,7 +102,7 @@ export default async function OrganizationInvitePage({
           </div>
           <CardTitle className="text-2xl">Organization Invitation</CardTitle>
           <CardDescription>
-            You've been invited to join an organization on Tasky
+            You&apos;ve been invited to join an organization on Tasky
           </CardDescription>
         </CardHeader>
 

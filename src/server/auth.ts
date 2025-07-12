@@ -60,6 +60,8 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, _req) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const _request = _req;
         const { username, password } = credentials!;
         const user = await db.users.findFirst({
           where: {

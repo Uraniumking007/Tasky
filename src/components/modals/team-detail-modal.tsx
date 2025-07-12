@@ -29,7 +29,16 @@ import { api } from "@/trpc/react";
 interface TeamDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
-  team: any;
+  team: {
+    id: string;
+    name: string;
+    createdAt?: Date | string;
+    members: {
+      id: string;
+      role: string;
+      user: { username?: string | null; email: string | null };
+    }[];
+  };
   onInviteSent: () => void;
 }
 
@@ -73,6 +82,7 @@ export default function TeamDetailModal({
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const getTimeUntilExpiry = (expiryString: string) => {
     const expiry = new Date(expiryString);
     const now = new Date();
@@ -129,7 +139,10 @@ export default function TeamDetailModal({
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Calendar className="h-4 w-4" />
-                    <span>Created: {formatDate(team.createdAt)}</span>
+                    <span>
+                      Created:{" "}
+                      {team.createdAt ? formatDate(team.createdAt) : "Unknown"}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Users className="h-4 w-4" />
@@ -181,29 +194,37 @@ export default function TeamDetailModal({
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {team.members.map((member: any) => (
-                    <div
-                      key={member.id}
-                      className="flex items-center justify-between rounded-lg border bg-muted/30 p-4"
-                    >
-                      <div className="flex items-center gap-3">
-                        {getRoleIcon(member.role)}
-                        <div>
-                          <div className="font-medium">
-                            {member.user.username || member.user.email}
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            {member.user.email}
+                  {team.members.map(
+                    (member: {
+                      id: string;
+                      role: string;
+                      user: { username?: string | null; email: string | null };
+                    }) => (
+                      <div
+                        key={member.id}
+                        className="flex items-center justify-between rounded-lg border bg-muted/30 p-4"
+                      >
+                        <div className="flex items-center gap-3">
+                          {getRoleIcon(member.role)}
+                          <div>
+                            <div className="font-medium">
+                              {member.user.username ||
+                                member.user.email ||
+                                "Unknown"}
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              {member.user.email || "No email"}
+                            </div>
                           </div>
                         </div>
+                        <div className="flex items-center gap-2">
+                          <Badge variant={getRoleBadgeVariant(member.role)}>
+                            {member.role}
+                          </Badge>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant={getRoleBadgeVariant(member.role)}>
-                          {member.role}
-                        </Badge>
-                      </div>
-                    </div>
-                  ))}
+                    ),
+                  )}
                 </div>
               )}
             </div>
@@ -224,18 +245,16 @@ export default function TeamDetailModal({
                 </div>
                 <div className="rounded-lg border bg-muted/30 p-4 text-center">
                   <div className="text-2xl font-bold text-blue-600">
-                    {
-                      team.members.filter((m: any) => m.role === "MANAGER")
-                        .length
-                    }
+                    {team.members.filter((m) => m.role === "MANAGER").length}
                   </div>
                   <div className="text-sm text-muted-foreground">Managers</div>
                 </div>
                 <div className="rounded-lg border bg-muted/30 p-4 text-center">
                   <div className="text-2xl font-bold text-green-600">
                     {
-                      team.members.filter((m: any) => m.role === "MEMBER")
-                        .length
+                      team.members.filter(
+                        (m: { role: string }) => m.role === "MEMBER",
+                      ).length
                     }
                   </div>
                   <div className="text-sm text-muted-foreground">Members</div>

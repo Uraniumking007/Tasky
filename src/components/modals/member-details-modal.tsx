@@ -251,7 +251,11 @@ export function MemberDetailsModal({
                       <CardContent>
                         <div className="space-y-3">
                           {memberDetails.teamMemberships.map(
-                            (membership: any) => (
+                            (membership: {
+                              id: string;
+                              team: { name: string };
+                              role: string;
+                            }) => (
                               <div
                                 key={membership.id}
                                 className="flex items-center justify-between rounded-lg border p-3"
@@ -288,7 +292,11 @@ export function MemberDetailsModal({
                       <CardContent>
                         <div className="space-y-3">
                           {memberDetails.organizationMemberships.map(
-                            (membership: any) => (
+                            (membership: {
+                              id: string;
+                              organization: { name: string };
+                              role: string;
+                            }) => (
                               <div
                                 key={membership.id}
                                 className="flex items-center justify-between rounded-lg border p-3"

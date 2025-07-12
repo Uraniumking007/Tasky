@@ -8,14 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  IconUser,
-  IconUsers,
-  IconCheck,
-  IconPlus,
-  IconEdit,
-  IconTrash,
-} from "@tabler/icons-react";
+import { IconUsers, IconCheck, IconPlus, IconEdit } from "@tabler/icons-react";
 
 export function DashboardTeamActivity() {
   // Mock team activity data - in a real app, this would come from the API
@@ -79,7 +72,12 @@ export function DashboardTeamActivity() {
     }
   };
 
-  const getActivityDescription = (activity: any) => {
+  const getActivityDescription = (activity: {
+    type: string;
+    user: string;
+    action: string;
+    target: string;
+  }) => {
     if (activity.type === "member_joined") {
       return `${activity.user} joined the team`;
     }

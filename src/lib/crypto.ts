@@ -1,4 +1,10 @@
-import { createCipheriv, createDecipheriv, randomBytes, scrypt } from "crypto";
+import {
+  createCipheriv,
+  createDecipheriv,
+  randomBytes,
+  scrypt,
+  createHash,
+} from "crypto";
 import { promisify } from "util";
 
 const scryptAsync = promisify(scrypt);
@@ -86,6 +92,5 @@ export function generateSecureToken(length: number = 32): string {
  * Hash data using SHA-256
  */
 export function hash(data: string): string {
-  const crypto = require("crypto");
-  return crypto.createHash("sha256").update(data).digest("hex");
+  return createHash("sha256").update(data).digest("hex");
 }

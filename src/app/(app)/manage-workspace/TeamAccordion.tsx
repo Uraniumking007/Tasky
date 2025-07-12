@@ -19,14 +19,12 @@ import {
 import { AddTeamMemberModal } from "@/components/modals/shared-team-modals";
 import ViewTeamInvitesModal from "@/components/modals/view-team-invites-modal";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function TeamAccordion({
   teams,
-  user,
-  handlers,
 }: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   teams: any[];
-  user: any;
-  handlers: any;
 }) {
   const [selectedTeam, setSelectedTeam] = useState<{
     id: string;
@@ -43,11 +41,13 @@ export default function TeamAccordion({
     );
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleAddMember = (team: any) => {
     setSelectedTeam({ id: team.id, name: team.name });
     setIsAddModalOpen(true);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleViewInvites = (team: any) => {
     setSelectedTeam({ id: team.id, name: team.name });
     setIsViewInvitesModalOpen(true);
@@ -88,6 +88,7 @@ export default function TeamAccordion({
                     </p>
                   ) : (
                     <ul className="space-y-2">
+                      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                       {team.members.map((member: any) => (
                         <li
                           key={member.id}

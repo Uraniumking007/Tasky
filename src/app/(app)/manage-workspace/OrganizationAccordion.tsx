@@ -45,8 +45,11 @@ export default function OrganizationAccordion({
       {organizations.map((org) => (
         <OrganizationCard
           key={org.id}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           org={org as any}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           user={user as any}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           handlers={handlers as any}
         />
       ))}

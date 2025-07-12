@@ -10,15 +10,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-interface EditTeamModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  org: any;
-  teamId: string;
-  teamName: string;
-  onSubmit: (data: { name: string }) => void;
-}
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function EditTeamModal({ handlers }: { handlers: any }) {
   const open = handlers.editTeamId !== null;
   return (

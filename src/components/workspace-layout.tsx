@@ -1,8 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import SideNavbar from "./side-navbar";
-import Navbar from "./navbar";
 import { api } from "@/trpc/react";
 import type { User } from "next-auth";
 import { Loader2 } from "lucide-react";
@@ -36,6 +34,9 @@ export default function WorkspaceLayout({
   organizations,
   user,
 }: WorkspaceLayoutProps) {
+  // Unused parameters but kept for interface consistency
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _organizations = organizations;
   const {
     data: organizationsData = [],
     isLoading,
