@@ -8,17 +8,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { 
-  MessageCircle, 
-  Send, 
-  Users, 
-  Wifi, 
+import {
+  MessageCircle,
+  Send,
+  Users,
+  Wifi,
   WifiOff,
   MoreHorizontal,
   Edit,
   Trash,
-  User
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useToast } from "@/components/ui/use-toast";
@@ -51,19 +49,31 @@ interface Message {
 }
 
 // Avatar component for users
-function UserAvatar({ user, size = "sm" }: { 
-  user: { name?: string | null; username?: string | null; email?: string | null };
+function UserAvatar({
+  user,
+  size = "sm",
+}: {
+  user: {
+    name?: string | null;
+    username?: string | null;
+    email?: string | null;
+  };
   size?: "xs" | "sm" | "md";
 }) {
   const sizeClasses = {
     xs: "h-6 w-6 text-xs",
-    sm: "h-8 w-8 text-sm", 
-    md: "h-10 w-10 text-base"
+    sm: "h-8 w-8 text-sm",
+    md: "h-10 w-10 text-base",
   };
 
   const getInitials = () => {
     const name = user.name || user.username || user.email || "U";
-    return name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
   };
 
   const getColorFromString = (str: string) => {
@@ -72,8 +82,14 @@ function UserAvatar({ user, size = "sm" }: {
       hash = str.charCodeAt(i) + ((hash << 5) - hash);
     }
     const colors = [
-      "bg-red-500", "bg-blue-500", "bg-green-500", "bg-yellow-500", 
-      "bg-purple-500", "bg-pink-500", "bg-indigo-500", "bg-teal-500"
+      "bg-red-500",
+      "bg-blue-500",
+      "bg-green-500",
+      "bg-yellow-500",
+      "bg-purple-500",
+      "bg-pink-500",
+      "bg-indigo-500",
+      "bg-teal-500",
     ];
     return colors[Math.abs(hash) % colors.length];
   };
@@ -82,13 +98,19 @@ function UserAvatar({ user, size = "sm" }: {
   const bgColor = getColorFromString(name);
 
   return (
-    <div className={`${sizeClasses[size]} ${bgColor} rounded-full flex items-center justify-center text-white font-medium shadow-sm`}>
+    <div
+      className={`${sizeClasses[size]} ${bgColor} flex items-center justify-center rounded-full font-medium text-white shadow-sm`}
+    >
       {getInitials()}
     </div>
   );
 }
 
-export function ChatWindow({ teamId, teamName, currentUserId }: ChatWindowProps) {
+export function ChatWindow({
+  teamId,
+  teamName,
+  currentUserId,
+}: ChatWindowProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
@@ -98,10 +120,11 @@ export function ChatWindow({ teamId, teamName, currentUserId }: ChatWindowProps)
   const { toast } = useToast();
 
   // Get team messages from TRPC
-  const { data: messagesData, isLoading: messagesLoading } = api.chat.getTeamMessages.useQuery({
-    teamId,
-    limit: 50,
-  });
+  const { data: messagesData, isLoading: messagesLoading } =
+    api.chat.getTeamMessages.useQuery({
+      teamId,
+      limit: 50,
+    });
 
   // Get team members
   const { data: teamMembers = [] } = api.chat.getTeamMembers.useQuery({
@@ -109,7 +132,14 @@ export function ChatWindow({ teamId, teamName, currentUserId }: ChatWindowProps)
   });
 
   // Socket.IO connection with event handlers
-  const { isConnected, sendMessage, editMessage, deleteMessage, handleTyping, typingUsers } = useSocket({
+  const {
+    isConnected,
+    sendMessage,
+    editMessage,
+    deleteMessage,
+    handleTyping,
+    typingUsers,
+  } = useSocket({
     teamId,
     userId: currentUserId,
     onMessage: (message: SocketMessage) => {
@@ -122,7 +152,7 @@ export function ChatWindow({ teamId, teamName, currentUserId }: ChatWindowProps)
         editedAt: message.editedAt,
         author: message.author,
       };
-      setMessages(prev => [...prev, newMsg]);
+      setMessages((prev) => [...prev, newMsg]);
     },
     onMessageUpdated: (message: SocketMessage) => {
       const updatedMsg: Message = {
@@ -134,22 +164,22 @@ export function ChatWindow({ teamId, teamName, currentUserId }: ChatWindowProps)
         editedAt: message.editedAt,
         author: message.author,
       };
-      setMessages(prev => prev.map(msg => 
-        msg.id === message.id ? updatedMsg : msg
-      ));
+      setMessages((prev) =>
+        prev.map((msg) => (msg.id === message.id ? updatedMsg : msg)),
+      );
     },
     onMessageDeleted: (messageId: string) => {
-      setMessages(prev => prev.filter(msg => msg.id !== messageId));
+      setMessages((prev) => prev.filter((msg) => msg.id !== messageId));
     },
-    onUserJoined: (user, teamId) => {
-      setOnlineUsers(prev => new Set(prev).add(user.id));
+    onUserJoined: (user) => {
+      setOnlineUsers((prev) => new Set(prev).add(user.id));
       toast({
         title: "User joined",
         description: `${user.name || user.username} joined the chat`,
       });
     },
-    onUserLeft: (user, teamId) => {
-      setOnlineUsers(prev => {
+    onUserLeft: (user) => {
+      setOnlineUsers((prev) => {
         const newSet = new Set(prev);
         newSet.delete(user.id);
         return newSet;
@@ -167,7 +197,7 @@ export function ChatWindow({ teamId, teamName, currentUserId }: ChatWindowProps)
   // Add current user to online users when connected
   useEffect(() => {
     if (isConnected && currentUserId) {
-      setOnlineUsers(prev => new Set(prev).add(currentUserId));
+      setOnlineUsers((prev) => new Set(prev).add(currentUserId));
     }
   }, [isConnected, currentUserId]);
 
@@ -200,17 +230,26 @@ export function ChatWindow({ teamId, teamName, currentUserId }: ChatWindowProps)
     setEditContent(currentContent);
   };
 
-  const getDisplayName = (user: Message['author']) => {
+  const getDisplayName = (user: Message["author"]) => {
     return user.name || user.username || user.email || "Unknown User";
   };
 
   const getTypingText = () => {
     const typingUsersList = Array.from(typingUsers);
     if (typingUsersList.length === 0) return "";
-    
+
     const typingNames = typingUsersList
-      .map(userId => {
-        const member = teamMembers.find((m: any) => m.id === userId);
+      .map((userId) => {
+        const member = teamMembers.find(
+          (m: {
+            id: string;
+            name: string | null;
+            username: string | null;
+            email: string | null;
+            role: string;
+            accessType: string;
+          }) => m.id === userId,
+        );
         return member?.name || member?.username || "Someone";
       })
       .filter(Boolean);
@@ -222,43 +261,49 @@ export function ChatWindow({ teamId, teamName, currentUserId }: ChatWindowProps)
     } else if (typingNames.length > 2) {
       return `${typingNames[0]} and ${typingNames.length - 1} others are typing...`;
     }
-    
+
     return "";
   };
 
-  const groupedMessages = messages.reduce((acc, message, index) => {
-    const prevMessage = messages[index - 1];
-    const isSameAuthor = prevMessage?.authorId === message.authorId;
-    const isWithinTimeLimit = prevMessage && 
-      new Date(message.createdAt).getTime() - new Date(prevMessage.createdAt).getTime() < 300000; // 5 minutes
+  const groupedMessages = messages.reduce(
+    (acc, message, index) => {
+      const prevMessage = messages[index - 1];
+      const isSameAuthor = prevMessage?.authorId === message.authorId;
+      const isWithinTimeLimit =
+        prevMessage &&
+        new Date(message.createdAt).getTime() -
+          new Date(prevMessage.createdAt).getTime() <
+          300000; // 5 minutes
 
-    const shouldGroup = isSameAuthor && isWithinTimeLimit;
+      const shouldGroup = isSameAuthor && isWithinTimeLimit;
 
-    if (shouldGroup && acc.length > 0) {
-      acc[acc.length - 1]!.messages.push(message);
-    } else {
-      acc.push({
-        author: message.author,
-        authorId: message.authorId,
-        messages: [message],
-        timestamp: message.createdAt
-      });
-    }
+      if (shouldGroup && acc.length > 0) {
+        acc[acc.length - 1]!.messages.push(message);
+      } else {
+        acc.push({
+          author: message.author,
+          authorId: message.authorId,
+          messages: [message],
+          timestamp: message.createdAt,
+        });
+      }
 
-    return acc;
-  }, [] as Array<{
-    author: Message['author'];
-    authorId: string;
-    messages: Message[];
-    timestamp: Date;
-  }>);
+      return acc;
+    },
+    [] as Array<{
+      author: Message["author"];
+      authorId: string;
+      messages: Message[];
+      timestamp: Date;
+    }>,
+  );
 
   if (messagesLoading || !currentUserId) {
     return (
-      <Card className="h-[700px] flex items-center justify-center border-0 shadow-lg">
-        <div className="text-center space-y-4">
-          <div className="h-12 w-12 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
-            <MessageCircle className="h-5 w-5 text-primary animate-pulse" />
+      <Card className="flex h-[700px] items-center justify-center border-0 shadow-lg">
+        <div className="space-y-4 text-center">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+            <MessageCircle className="h-5 w-5 animate-pulse text-primary" />
           </div>
           <p className="text-sm text-muted-foreground">Loading chat...</p>
         </div>
@@ -267,11 +312,11 @@ export function ChatWindow({ teamId, teamName, currentUserId }: ChatWindowProps)
   }
 
   return (
-    <Card className="h-[700px] flex flex-col border-0 shadow-lg bg-gradient-to-b from-background to-muted/10">
-      <CardHeader className="p-4 border-b bg-card/90 backdrop-blur-sm">
+    <Card className="flex h-[700px] flex-col border-0 bg-gradient-to-b from-background to-muted/10 shadow-lg">
+      <CardHeader className="border-b bg-card/90 p-4 backdrop-blur-sm">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-3">
-            <div className="h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
               <MessageCircle className="h-5 w-5 text-primary" />
             </div>
             <div className="space-y-1">
@@ -280,82 +325,109 @@ export function ChatWindow({ teamId, teamName, currentUserId }: ChatWindowProps)
             </div>
           </CardTitle>
           <div className="flex items-center gap-2">
-            <Badge variant={isConnected ? "default" : "destructive"} className="h-6 px-2 text-xs">
+            <Badge
+              variant={isConnected ? "default" : "destructive"}
+              className="h-6 px-2 text-xs"
+            >
               {isConnected ? (
-                <><Wifi className="h-3 w-3 mr-1" />Online</>
+                <>
+                  <Wifi className="mr-1 h-3 w-3" />
+                  Online
+                </>
               ) : (
-                <><WifiOff className="h-3 w-3 mr-1" />Offline</>
+                <>
+                  <WifiOff className="mr-1 h-3 w-3" />
+                  Offline
+                </>
               )}
             </Badge>
             <Badge variant="outline" className="h-6 px-2 text-xs">
-              <Users className="h-3 w-3 mr-1" />
+              <Users className="mr-1 h-3 w-3" />
               {onlineUsers.size}
             </Badge>
           </div>
         </div>
       </CardHeader>
-      
-      <CardContent className="flex-1 flex flex-col p-0 bg-muted/5">
+
+      <CardContent className="flex flex-1 flex-col bg-muted/5 p-0">
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="flex-1 space-y-4 overflow-y-auto p-4">
           {groupedMessages.length === 0 ? (
-            <div className="text-center py-16 space-y-4">
-              <div className="h-12 w-12 mx-auto bg-muted/50 rounded-full flex items-center justify-center">
+            <div className="space-y-4 py-16 text-center">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-muted/50">
                 <MessageCircle className="h-5 w-5 text-muted-foreground" />
               </div>
               <div className="space-y-2">
                 <h3 className="text-base font-medium">No messages yet</h3>
-                <p className="text-sm text-muted-foreground">Start the conversation with your team!</p>
+                <p className="text-sm text-muted-foreground">
+                  Start the conversation with your team!
+                </p>
               </div>
             </div>
           ) : (
             groupedMessages.map((group, groupIndex) => (
               <div key={`group-${groupIndex}`} className="space-y-2">
-                <div className={`flex items-start gap-3 ${
-                  group.authorId === currentUserId ? 'flex-row-reverse' : 'flex-row'
-                }`}>
+                <div
+                  className={`flex items-start gap-3 ${
+                    group.authorId === currentUserId
+                      ? "flex-row-reverse"
+                      : "flex-row"
+                  }`}
+                >
                   {group.authorId !== currentUserId && (
                     <UserAvatar user={group.author} size="sm" />
                   )}
-                  
-                  <div className={`flex flex-col space-y-1 max-w-[75%] ${
-                    group.authorId === currentUserId ? 'items-end' : 'items-start'
-                  }`}>
+
+                  <div
+                    className={`flex max-w-[75%] flex-col space-y-1 ${
+                      group.authorId === currentUserId
+                        ? "items-end"
+                        : "items-start"
+                    }`}
+                  >
                     {group.authorId !== currentUserId && (
                       <div className="flex items-center gap-2 px-1">
                         <span className="text-sm font-medium text-foreground">
                           {getDisplayName(group.author)}
                         </span>
                         <span className="text-xs text-muted-foreground">
-                          {formatDistanceToNow(new Date(group.timestamp), { addSuffix: true })}
+                          {formatDistanceToNow(new Date(group.timestamp), {
+                            addSuffix: true,
+                          })}
                         </span>
                       </div>
                     )}
-                    
+
                     {group.messages.map((message, messageIndex) => (
-                      <div 
-                        key={message.id} 
+                      <div
+                        key={message.id}
                         className={`group relative ${
-                          group.authorId === currentUserId ? 'flex flex-row-reverse items-start gap-2' : 'flex items-start gap-2'
+                          group.authorId === currentUserId
+                            ? "flex flex-row-reverse items-start gap-2"
+                            : "flex items-start gap-2"
                         }`}
                       >
-                        <div className={`rounded-lg px-3 py-2 shadow-sm max-w-full ${
-                          group.authorId === currentUserId
-                            ? 'bg-primary text-primary-foreground'
-                            : 'bg-card border'
-                        }`}>
+                        <div
+                          className={`max-w-full rounded-lg px-3 py-2 shadow-sm ${
+                            group.authorId === currentUserId
+                              ? "bg-primary text-primary-foreground"
+                              : "border bg-card"
+                          }`}
+                        >
                           {editingMessageId === message.id ? (
-                            <div className="space-y-2 min-w-[200px]">
+                            <div className="min-w-[200px] space-y-2">
                               <Input
                                 value={editContent}
                                 onChange={(e) => setEditContent(e.target.value)}
-                                className="border-0 bg-transparent p-0 focus-visible:ring-0 text-sm"
+                                className="border-0 bg-transparent p-0 text-sm focus-visible:ring-0"
                                 autoFocus
                               />
                               <div className="flex gap-2">
                                 <Button
                                   size="sm"
-                                  onClick={() => handleEditMessage(message.id, editContent)}
+                                  onClick={() =>
+                                    handleEditMessage(message.id, editContent)
+                                  }
                                   className="h-6 px-2 text-xs"
                                 >
                                   Save
@@ -375,50 +447,60 @@ export function ChatWindow({ teamId, teamName, currentUserId }: ChatWindowProps)
                             </div>
                           ) : (
                             <div className="space-y-1">
-                              <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+                              <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">
                                 {message.content}
                               </p>
                               <div className="flex items-center gap-2 text-xs opacity-60">
-                                {message.isEdited && (
-                                  <span>Edited </span>
-                                )}
-                                {group.authorId === currentUserId && messageIndex === group.messages.length - 1 && (
-                                  <span className="ml-auto">
-                                    {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
-                                  </span>
-                                )}
+                                {message.isEdited && <span>Edited </span>}
+                                {group.authorId === currentUserId &&
+                                  messageIndex ===
+                                    group.messages.length - 1 && (
+                                    <span className="ml-auto">
+                                      {formatDistanceToNow(
+                                        new Date(message.createdAt),
+                                        { addSuffix: true },
+                                      )}
+                                    </span>
+                                  )}
                               </div>
                             </div>
                           )}
                         </div>
-                        
+
                         {/* Message actions (only for own messages) */}
-                        {message.authorId === currentUserId && editingMessageId !== message.id && (
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="opacity-0 group-hover:opacity-100 h-6 w-6 p-0 hover:bg-muted"
-                              >
-                                <MoreHorizontal className="h-3 w-3" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-32">
-                              <DropdownMenuItem onClick={() => startEditing(message.id, message.content)}>
-                                <Edit className="h-3 w-3 mr-2" />
-                                Edit
-                              </DropdownMenuItem>
-                              <DropdownMenuItem 
-                                onClick={() => handleDeleteMessage(message.id)}
-                                className="text-destructive focus:text-destructive"
-                              >
-                                <Trash className="h-3 w-3 mr-2" />
-                                Delete
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        )}
+                        {message.authorId === currentUserId &&
+                          editingMessageId !== message.id && (
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-6 w-6 p-0 opacity-0 hover:bg-muted group-hover:opacity-100"
+                                >
+                                  <MoreHorizontal className="h-3 w-3" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className="w-32">
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    startEditing(message.id, message.content)
+                                  }
+                                >
+                                  <Edit className="mr-2 h-3 w-3" />
+                                  Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    handleDeleteMessage(message.id)
+                                  }
+                                  className="text-destructive focus:text-destructive"
+                                >
+                                  <Trash className="mr-2 h-3 w-3" />
+                                  Delete
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          )}
                       </div>
                     ))}
                   </div>
@@ -434,36 +516,44 @@ export function ChatWindow({ teamId, teamName, currentUserId }: ChatWindowProps)
           <div className="px-4 py-2">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <div className="flex space-x-1">
-                <div className="w-1.5 h-1.5 bg-muted-foreground/60 rounded-full animate-bounce"></div>
-                <div className="w-1.5 h-1.5 bg-muted-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                <div className="w-1.5 h-1.5 bg-muted-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground/60"></div>
+                <div
+                  className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground/60"
+                  style={{ animationDelay: "0.1s" }}
+                ></div>
+                <div
+                  className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground/60"
+                  style={{ animationDelay: "0.2s" }}
+                ></div>
               </div>
-              <span className="italic text-xs">{getTypingText()}</span>
+              <span className="text-xs italic">{getTypingText()}</span>
             </div>
           </div>
         )}
 
         {/* Message input */}
-        <div className="p-4 bg-card/50 backdrop-blur-sm border-t">
+        <div className="border-t bg-card/50 p-4 backdrop-blur-sm">
           <form onSubmit={handleSendMessage} className="flex gap-2">
-            <div className="flex-1 relative">
+            <div className="relative flex-1">
               <Input
                 value={newMessage}
                 onChange={(e) => {
                   setNewMessage(e.target.value);
                   handleTyping(teamId);
                 }}
-                placeholder={isConnected ? "Type your message..." : "Connecting..."}
+                placeholder={
+                  isConnected ? "Type your message..." : "Connecting..."
+                }
                 disabled={!isConnected}
-                className="pr-12 h-10 rounded-lg border-muted/50 bg-background/90 focus:bg-background transition-colors text-sm"
+                className="h-10 rounded-lg border-muted/50 bg-background/90 pr-12 text-sm transition-colors focus:bg-background"
                 maxLength={1000}
               />
               <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
                 {newMessage.length}/1000
               </div>
             </div>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={!newMessage.trim() || !isConnected}
               size="icon"
               className="h-10 w-10 rounded-lg"

@@ -2,8 +2,11 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { canUserAccessTeamChat } from "@/lib/permissions";
+import type { createTRPCContext } from "@/server/api/trpc";
 
-async function getUserFromSession(ctx: any) {
+type Context = Awaited<ReturnType<typeof createTRPCContext>>;
+
+async function getUserFromSession(ctx: Context) {
   if (!ctx.session?.user) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
@@ -238,8 +241,8 @@ export const chatRouter = createTRPCRouter({
       // Get team details to find organization
       const team = await ctx.db.team.findUnique({
         where: { id: input.teamId },
-        select: { 
-          ownerId: true, 
+        select: {
+          ownerId: true,
           organizationId: true,
         },
       });
@@ -273,19 +276,19 @@ export const chatRouter = createTRPCRouter({
         name: string | null;
         username: string | null;
         email: string | null;
-        role: any;
+        role: string;
         accessType: "team_member" | "team_owner" | "org_owner" | "org_manager";
       }> = teamMembers.map((member) => ({
         id: member.user.id,
         name: member.user.name,
         username: member.user.username,
         email: member.user.email,
-        role: member.role,
+        role: member.role as string,
         accessType: "team_member" as const,
       }));
 
       // Add team owner if not already in members
-      if (!allMembers.find(m => m.id === team.ownerId)) {
+      if (!allMembers.find((m) => m.id === team.ownerId)) {
         const teamOwner = await ctx.db.users.findUnique({
           where: { id: team.ownerId },
           select: {
@@ -295,7 +298,7 @@ export const chatRouter = createTRPCRouter({
             email: true,
           },
         });
-        
+
         if (teamOwner) {
           allMembers.push({
             id: teamOwner.id,
@@ -315,7 +318,7 @@ export const chatRouter = createTRPCRouter({
             organizationId: team.organizationId,
             role: { in: ["OWNER", "MANAGER"] },
             // Exclude users already in the team
-            userId: { notIn: allMembers.map(m => m.id) },
+            userId: { notIn: allMembers.map((m) => m.id) },
           },
           include: {
             user: {
@@ -335,7 +338,10 @@ export const chatRouter = createTRPCRouter({
           select: { ownerId: true },
         });
 
-        if (organization && !allMembers.find(m => m.id === organization.ownerId)) {
+        if (
+          organization &&
+          !allMembers.find((m) => m.id === organization.ownerId)
+        ) {
           const orgOwner = await ctx.db.users.findUnique({
             where: { id: organization.ownerId },
             select: {
@@ -345,7 +351,7 @@ export const chatRouter = createTRPCRouter({
               email: true,
             },
           });
-          
+
           if (orgOwner) {
             allMembers.push({
               id: orgOwner.id,
@@ -364,7 +370,7 @@ export const chatRouter = createTRPCRouter({
           name: member.user.name,
           username: member.user.username,
           email: member.user.email,
-          role: member.role,
+          role: member.role as string,
           accessType: "org_manager" as const,
         }));
 

@@ -67,7 +67,7 @@ export function useSocket(options: UseSocketOptions = {}) {
       console.error("Socket.IO connection error:", error);
     });
 
-    socketInstance.on("disconnect", (reason) => {
+    socketInstance.on("disconnect", () => {
       setIsConnected(false);
     });
 

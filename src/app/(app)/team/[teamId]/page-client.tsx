@@ -33,7 +33,6 @@ import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { MemberDetailsModal } from "@/components/modals/member-details-modal";
 import { ChatWindow } from "@/components/chat/chat-window";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface TeamPageClientProps {
   teamId: string;
