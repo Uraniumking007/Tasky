@@ -74,14 +74,14 @@ export default function WorkspaceLayout({
   }
 
   return (
-    <div className="flex min-h-screen w-full">
+    <div className="flex min-h-screen w-full overflow-hidden">
       <SideNavbar
         user={user}
         teamName={user.name || ""}
         permissions={undefined}
         organizations={organizationsData as Organization[]}
       />
-      <div className="w-full flex-1">{children}</div>
+      <div className="w-full flex-1 overflow-y-auto">{children}</div>
     </div>
   );
 }

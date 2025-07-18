@@ -11,3 +11,5 @@ prisma orm
 DO NOT USE API ROUTES FROM NEXTJS AND USE SERVER ACTIONS or TANSTACK-ROUTER
 Priotirize tanstack-router more when comparing with SERVER ACTIONS
 Add advanced features such as cacheing and prefetching to links and stuff.
+
+let's use bun instead of pnpm

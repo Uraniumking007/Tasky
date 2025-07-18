@@ -460,6 +460,73 @@ export async function canUserManageTeam(
   return { canManage: false, reason: "none" };
 }
 
+// Helper function to check if user can access team chat
+// This includes team members, org owners, and org managers
+export async function canUserAccessTeamChat(
+  userId: string,
+  teamId: string,
+): Promise<{
+  canAccess: boolean;
+  reason: "team_member" | "team_owner" | "org_owner" | "org_manager" | "none";
+  role?: MemberRole;
+}> {
+  try {
+    // Check direct team membership
+    const teamMember = await db.teamMember.findFirst({
+      where: {
+        teamId,
+        userId,
+      },
+    });
+    
+    if (teamMember) {
+      return { canAccess: true, reason: "team_member", role: teamMember.role };
+    }
+
+    // Get team details including organization
+    const team = await db.team.findFirst({
+      where: { id: teamId },
+      include: {
+        organization: true,
+      },
+    });
+
+    if (!team) {
+      return { canAccess: false, reason: "none" };
+    }
+
+    // Check if user is team owner
+    if (team.ownerId === userId) {
+      return { canAccess: true, reason: "team_owner", role: "OWNER" };
+    }
+
+    // If team belongs to an organization, check org-level permissions
+    if (team.organizationId && team.organization) {
+      // Check if user is organization owner
+      if (team.organization.ownerId === userId) {
+        return { canAccess: true, reason: "org_owner", role: "OWNER" };
+      }
+
+      // Check if user is organization manager
+      const orgMember = await db.organizationMember.findFirst({
+        where: {
+          organizationId: team.organizationId,
+          userId,
+        },
+      });
+
+      if (orgMember && ["OWNER", "MANAGER"].includes(orgMember.role)) {
+        return { canAccess: true, reason: "org_manager", role: orgMember.role };
+      }
+    }
+
+    return { canAccess: false, reason: "none" };
+  } catch (error) {
+    console.error("Error checking team chat access:", error);
+    return { canAccess: false, reason: "none" };
+  }
+}
+
 // Helper function to get user's effective role in a team
 // This considers both team membership and organization ownership
 export function getUserEffectiveRoleInTeam(

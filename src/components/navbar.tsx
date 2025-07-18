@@ -63,7 +63,7 @@ export default function Navbar() {
           <Link href="/" className="group flex items-center space-x-2">
             <div className="relative">
               <Image
-                src="/logo.png"
+                src="/transparent-logo.png"
                 alt="Tasky Logo"
                 width={40}
                 height={40}

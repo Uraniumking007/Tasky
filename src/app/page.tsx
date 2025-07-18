@@ -285,14 +285,13 @@ export default async function Home() {
             Ready to Transform Your Team?
           </h2>
           <p className="mb-8 text-xl text-muted-foreground/80">
-            Join thousands of teams who have already improved their productivity
-            with Tasky
+            Join us and improve your productivity with Tasky
           </p>
           <Link
             href={session?.user ? "/dashboard" : "/auth/register"}
             className="group relative overflow-hidden rounded-xl bg-primary px-8 py-4 text-lg font-semibold text-primary-foreground transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-primary/25"
           >
-            <span className="relative z-10">Start Your Free Trial</span>
+            <span className="relative z-10">Start Now</span>
             <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary/80 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
           </Link>
         </div>

@@ -10,6 +10,7 @@ import {
   User,
   Calendar,
   Eye,
+  MessageCircle,
 } from "lucide-react";
 import {
   Card,
@@ -31,6 +32,8 @@ import {
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { MemberDetailsModal } from "@/components/modals/member-details-modal";
+import { ChatWindow } from "@/components/chat/chat-window";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface TeamPageClientProps {
   teamId: string;
@@ -59,6 +62,11 @@ export function TeamPageClient({ teamId }: TeamPageClientProps) {
       refetchOnWindowFocus: false,
     },
   );
+
+  // Get current user data
+  const { data: currentUser } = api.users.getCurrentUser.useQuery(undefined, {
+    enabled: !!session?.user,
+  });
 
   if (isLoading) {
     return (
@@ -390,6 +398,35 @@ export function TeamPageClient({ teamId }: TeamPageClientProps) {
           </CardContent>
         </Card>
       </div>
+
+      {/* Team Chat */}
+      <Card className="mt-8">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <MessageCircle className="h-5 w-5" />
+            Team Chat
+          </CardTitle>
+          <CardDescription>
+            Communicate with your team members in real-time
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {currentUser ? (
+            <ChatWindow
+              teamId={team.id}
+              teamName={team.name}
+              currentUserId={currentUser.id}
+            />
+          ) : (
+            <div className="flex h-[400px] items-center justify-center">
+              <div className="text-center">
+                <Loader2 className="mx-auto mb-2 h-8 w-8 animate-spin" />
+                <p>Loading chat...</p>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Organization Link */}
       {teamWithTypes.organization && (

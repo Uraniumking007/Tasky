@@ -26,6 +26,16 @@ async function getUserFromSession(ctx: { session: Session; db: PrismaClient }) {
 }
 
 export const usersRouter = createTRPCRouter({
+  // Get current user data
+  getCurrentUser: protectedProcedure.query(async ({ ctx }) => {
+    const user = await getUserFromSession(ctx);
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      username: user.username,
+    };
+  }),
   // Get member details with their memberships
   getMemberDetails: protectedProcedure
     .input(
