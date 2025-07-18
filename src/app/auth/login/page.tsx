@@ -52,7 +52,6 @@ export default function LoginPage() {
           description: "Successfully signed in to your account.",
         });
         router.push("/home");
-        // Redirect will be handled by NextAuth
       }
     } catch (error) {
       setError("Something went wrong. Please try again.");
