@@ -2,8 +2,6 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { api } from "@/trpc/react";
-import { useSocket } from "@/hooks/useSocket";
-import type { SocketMessage } from "@/lib/socket";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,8 +10,6 @@ import {
   MessageCircle,
   Send,
   Users,
-  Wifi,
-  WifiOff,
   MoreHorizontal,
   Edit,
   Trash,
@@ -115,74 +111,83 @@ export function ChatWindow({
   const [newMessage, setNewMessage] = useState("");
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const [editContent, setEditContent] = useState("");
-  const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
-  // Get team messages from TRPC
+  // Get team messages from TRPC with polling for real-time updates
   const { data: messagesData, isLoading: messagesLoading } =
-    api.chat.getTeamMessages.useQuery({
-      teamId,
-      limit: 50,
-    });
+    api.chat.getTeamMessages.useQuery(
+      {
+        teamId,
+        limit: 50,
+      },
+      {
+        refetchInterval: 3000, // Poll every 3 seconds for new messages
+        refetchIntervalInBackground: true,
+      }
+    );
 
   // Get team members
   const { data: teamMembers = [] } = api.chat.getTeamMembers.useQuery({
     teamId,
   });
 
-  // Socket.IO connection with event handlers
-  const {
-    isConnected,
-    sendMessage,
-    editMessage,
-    deleteMessage,
-    handleTyping,
-    typingUsers,
-  } = useSocket({
-    teamId,
-    userId: currentUserId,
-    onMessage: (message: SocketMessage) => {
-      const newMsg: Message = {
-        id: message.id,
-        content: message.content,
-        createdAt: message.createdAt,
-        authorId: message.authorId,
-        isEdited: message.isEdited,
-        editedAt: message.editedAt,
-        author: message.author,
-      };
-      setMessages((prev) => [...prev, newMsg]);
-    },
-    onMessageUpdated: (message: SocketMessage) => {
-      const updatedMsg: Message = {
-        id: message.id,
-        content: message.content,
-        createdAt: message.createdAt,
-        authorId: message.authorId,
-        isEdited: message.isEdited,
-        editedAt: message.editedAt,
-        author: message.author,
-      };
-      setMessages((prev) =>
-        prev.map((msg) => (msg.id === message.id ? updatedMsg : msg)),
-      );
-    },
-    onMessageDeleted: (messageId: string) => {
-      setMessages((prev) => prev.filter((msg) => msg.id !== messageId));
-    },
-    onUserJoined: (user) => {
-      setOnlineUsers((prev) => new Set(prev).add(user.id));
+  // TRPC mutations
+  const sendMessageMutation = api.chat.sendMessage.useMutation({
+    onSuccess: (data) => {
+      // Add the new message to the local state
+      setMessages((prev) => [...prev, data.message as Message]);
+      setNewMessage("");
       toast({
-        title: "User joined",
-        description: `${user.name || user.username} joined the chat`,
+        title: "Message sent",
+        description: "Your message has been sent successfully.",
       });
     },
-    onUserLeft: (user) => {
-      setOnlineUsers((prev) => {
-        const newSet = new Set(prev);
-        newSet.delete(user.id);
-        return newSet;
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to send message",
+      });
+    },
+  });
+
+  const editMessageMutation = api.chat.editMessage.useMutation({
+    onSuccess: (data) => {
+      // Update the message in local state
+      setMessages((prev) =>
+        prev.map((msg) => (msg.id === data.message.id ? data.message as Message : msg))
+      );
+      setEditingMessageId(null);
+      setEditContent("");
+      toast({
+        title: "Message updated",
+        description: "Your message has been updated successfully.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to update message",
+      });
+    },
+  });
+
+  const deleteMessageMutation = api.chat.deleteMessage.useMutation({
+    onSuccess: (data) => {
+      // Remove the message from local state
+      setMessages((prev) => prev.filter((msg) => msg.id !== data.messageId));
+      toast({
+        title: "Message deleted",
+        description: "Your message has been deleted successfully.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to delete message",
       });
     },
   });
@@ -194,13 +199,6 @@ export function ChatWindow({
     }
   }, [messagesData]);
 
-  // Add current user to online users when connected
-  useEffect(() => {
-    if (isConnected && currentUserId) {
-      setOnlineUsers((prev) => new Set(prev).add(currentUserId));
-    }
-  }, [isConnected, currentUserId]);
-
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -208,21 +206,26 @@ export function ChatWindow({
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || !isConnected) return;
+    if (!newMessage.trim()) return;
 
-    sendMessage(newMessage.trim(), teamId);
-    setNewMessage("");
+    sendMessageMutation.mutate({
+      content: newMessage.trim(),
+      teamId,
+    });
   };
 
   const handleEditMessage = (messageId: string, content: string) => {
     if (!content.trim()) return;
-    editMessage(messageId, content.trim());
-    setEditingMessageId(null);
-    setEditContent("");
+    editMessageMutation.mutate({
+      messageId,
+      content: content.trim(),
+    });
   };
 
   const handleDeleteMessage = (messageId: string) => {
-    deleteMessage(messageId);
+    deleteMessageMutation.mutate({
+      messageId,
+    });
   };
 
   const startEditing = (messageId: string, currentContent: string) => {
@@ -234,36 +237,36 @@ export function ChatWindow({
     return user.name || user.username || user.email || "Unknown User";
   };
 
-  const getTypingText = () => {
-    const typingUsersList = Array.from(typingUsers);
-    if (typingUsersList.length === 0) return "";
+  // const getTypingText = () => {
+  //   const typingUsersList = Array.from(typingUsers);
+  //   if (typingUsersList.length === 0) return "";
 
-    const typingNames = typingUsersList
-      .map((userId) => {
-        const member = teamMembers.find(
-          (m: {
-            id: string;
-            name: string | null;
-            username: string | null;
-            email: string | null;
-            role: string;
-            accessType: string;
-          }) => m.id === userId,
-        );
-        return member?.name || member?.username || "Someone";
-      })
-      .filter(Boolean);
+  //   const typingNames = typingUsersList
+  //     .map((userId) => {
+  //       const member = teamMembers.find(
+  //         (m: {
+  //           id: string;
+  //           name: string | null;
+  //           username: string | null;
+  //           email: string | null;
+  //           role: string;
+  //           accessType: string;
+  //         }) => m.id === userId,
+  //       );
+  //       return member?.name || member?.username || "Someone";
+  //     })
+  //     .filter(Boolean);
 
-    if (typingNames.length === 1) {
-      return `${typingNames[0]} is typing...`;
-    } else if (typingNames.length === 2) {
-      return `${typingNames[0]} and ${typingNames[1]} are typing...`;
-    } else if (typingNames.length > 2) {
-      return `${typingNames[0]} and ${typingNames.length - 1} others are typing...`;
-    }
+  //   if (typingNames.length === 1) {
+  //     return `${typingNames[0]} is typing...`;
+  //   } else if (typingNames.length === 2) {
+  //     return `${typingNames[0]} and ${typingNames[1]} are typing...`;
+  //   } else if (typingNames.length > 2) {
+  //     return `${typingNames[0]} and ${typingNames.length - 1} others are typing...`;
+  //   }
 
-    return "";
-  };
+  //   return "";
+  // };
 
   const groupedMessages = messages.reduce(
     (acc, message, index) => {
@@ -325,25 +328,9 @@ export function ChatWindow({
             </div>
           </CardTitle>
           <div className="flex items-center gap-2">
-            <Badge
-              variant={isConnected ? "default" : "destructive"}
-              className="h-6 px-2 text-xs"
-            >
-              {isConnected ? (
-                <>
-                  <Wifi className="mr-1 h-3 w-3" />
-                  Online
-                </>
-              ) : (
-                <>
-                  <WifiOff className="mr-1 h-3 w-3" />
-                  Offline
-                </>
-              )}
-            </Badge>
             <Badge variant="outline" className="h-6 px-2 text-xs">
               <Users className="mr-1 h-3 w-3" />
-              {onlineUsers.size}
+              {teamMembers.length}
             </Badge>
           </div>
         </div>
@@ -429,8 +416,9 @@ export function ChatWindow({
                                     handleEditMessage(message.id, editContent)
                                   }
                                   className="h-6 px-2 text-xs"
+                                  disabled={editMessageMutation.isPending}
                                 >
-                                  Save
+                                  {editMessageMutation.isPending ? "Saving..." : "Save"}
                                 </Button>
                                 <Button
                                   size="sm"
@@ -494,9 +482,10 @@ export function ChatWindow({
                                     handleDeleteMessage(message.id)
                                   }
                                   className="text-destructive focus:text-destructive"
+                                  disabled={deleteMessageMutation.isPending}
                                 >
                                   <Trash className="mr-2 h-3 w-3" />
-                                  Delete
+                                  {deleteMessageMutation.isPending ? "Deleting..." : "Delete"}
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
@@ -511,40 +500,15 @@ export function ChatWindow({
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Typing indicator */}
-        {getTypingText() && (
-          <div className="px-4 py-2">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <div className="flex space-x-1">
-                <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground/60"></div>
-                <div
-                  className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground/60"
-                  style={{ animationDelay: "0.1s" }}
-                ></div>
-                <div
-                  className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground/60"
-                  style={{ animationDelay: "0.2s" }}
-                ></div>
-              </div>
-              <span className="text-xs italic">{getTypingText()}</span>
-            </div>
-          </div>
-        )}
-
         {/* Message input */}
         <div className="border-t bg-card/50 p-4 backdrop-blur-sm">
           <form onSubmit={handleSendMessage} className="flex gap-2">
             <div className="relative flex-1">
               <Input
                 value={newMessage}
-                onChange={(e) => {
-                  setNewMessage(e.target.value);
-                  handleTyping(teamId);
-                }}
-                placeholder={
-                  isConnected ? "Type your message..." : "Connecting..."
-                }
-                disabled={!isConnected}
+                onChange={(e) => setNewMessage(e.target.value)}
+                placeholder="Type your message..."
+                disabled={sendMessageMutation.isPending}
                 className="h-10 rounded-lg border-muted/50 bg-background/90 pr-12 text-sm transition-colors focus:bg-background"
                 maxLength={1000}
               />
@@ -554,7 +518,7 @@ export function ChatWindow({
             </div>
             <Button
               type="submit"
-              disabled={!newMessage.trim() || !isConnected}
+              disabled={!newMessage.trim() || sendMessageMutation.isPending}
               size="icon"
               className="h-10 w-10 rounded-lg"
             >
